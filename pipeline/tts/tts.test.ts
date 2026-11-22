@@ -68,8 +68,8 @@ describe('synthesizeVideo', () => {
     const provider = new CountingProvider();
 
     const first = await synthesizeVideo({ root, videoId: 'sample', provider });
-    expect(first.synthesized).toHaveLength(3);
-    expect(provider.calls).toBe(3);
+    expect(first.synthesized).toHaveLength(6);
+    expect(provider.calls).toBe(6);
     const manifestPath = join(root, 'public/generated/audio/sample/manifest.json');
     const manifest = AudioManifestSchema.parse(JSON.parse(readFileSync(manifestPath, 'utf8')));
     for (const scene of manifest.scenes) {
@@ -77,8 +77,8 @@ describe('synthesizeVideo', () => {
     }
 
     const second = await synthesizeVideo({ root, videoId: 'sample', provider });
-    expect(second.cached).toHaveLength(3);
-    expect(provider.calls).toBe(3);
+    expect(second.cached).toHaveLength(6);
+    expect(provider.calls).toBe(6);
   });
 
   it('re-synthesizes only the scene whose text changed', async () => {
@@ -93,7 +93,7 @@ describe('synthesizeVideo', () => {
 
     const result = await synthesizeVideo({ root, videoId: 'sample', provider });
     expect(result.synthesized).toEqual(['hook']);
-    expect(result.cached).toHaveLength(2);
+    expect(result.cached).toHaveLength(5);
   });
 
   it('re-synthesizes when speed changes', async () => {
@@ -101,7 +101,7 @@ describe('synthesizeVideo', () => {
     const provider = new CountingProvider();
     await synthesizeVideo({ root, videoId: 'sample', provider });
     const result = await synthesizeVideo({ root, videoId: 'sample', provider, speed: 1.2 });
-    expect(result.synthesized).toHaveLength(3);
+    expect(result.synthesized).toHaveLength(6);
   });
 
   it('fails clearly for a missing video', async () => {

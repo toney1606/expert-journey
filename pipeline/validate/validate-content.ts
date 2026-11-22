@@ -76,13 +76,27 @@ export const validateContent = (root: string): ValidationResult => {
     if (!file.endsWith('.json')) continue;
     const rel = `content/videos/${file}`;
     const video = checkFile(join(content, 'videos', file), rel, VideoSchema, result) as
-      { meta: { id: string; topic: string } } | undefined;
+      | {
+          meta: { id: string; topic: string };
+          scenes: { id: string; type: string; props: unknown }[];
+        }
+      | undefined;
     if (!video) continue;
     if (`${video.meta.id}.json` !== file) {
       result.issues.push({
         file: rel,
         message: `meta.id "${video.meta.id}" does not match file name`,
       });
+    }
+    for (const scene of video.scenes) {
+      const testPath =
+        scene.type === 'code' ? (scene.props as { testPath: string }).testPath : undefined;
+      if (testPath && !existsSync(join(root, testPath))) {
+        result.issues.push({
+          file: rel,
+          message: `scene "${scene.id}": testPath "${testPath}" does not exist`,
+        });
+      }
     }
     if (!topics.has(video.meta.topic)) {
       result.issues.push({
