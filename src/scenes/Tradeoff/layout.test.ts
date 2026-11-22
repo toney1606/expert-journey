@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import {
+  MAX_NAME_SIZE,
   MAX_ROW_SIZE,
+  MAX_TITLE_SIZE,
+  TITLE_PAD_TOP,
+  centeringOffset,
+  contentHeight,
   MIN_ROW_SIZE,
   chooseLayout,
   estimateLines,
@@ -61,5 +66,37 @@ describe('chooseLayout', () => {
     expect(l.fits).toBe(false);
     expect(l.rowSize).toBe(MIN_ROW_SIZE);
     expect(l.height).toBeGreaterThan(BOX.height);
+  });
+});
+
+describe('centering and growth', () => {
+  it('centres title + cards when there is spare height', () => {
+    const l = chooseLayout('Có index hay không?', make(2, 2, short), BOX);
+    expect(l.top).toBeGreaterThan(100);
+    // Equal room above the title and below the last card.
+    const below = BOX.height - (l.top + l.height - TITLE_PAD_TOP);
+    expect(Math.abs(below - l.top)).toBeLessThanOrEqual(1);
+  });
+
+  it('keeps top alignment when full or not fitting', () => {
+    const heavy = chooseLayout('T', make(3, 5, short), BOX);
+    expect(heavy.top).toBeLessThan(TITLE_PAD_TOP + BOX.height * 0.03);
+    const overflow = chooseLayout('T', make(4, 5, long), BOX);
+    expect(overflow.fits).toBe(false);
+    expect(overflow.top).toBe(TITLE_PAD_TOP);
+  });
+
+  it('centeringOffset is half the spare and never below the title padding', () => {
+    expect(centeringOffset(1000, 600 + TITLE_PAD_TOP)).toBe(200);
+    expect(centeringOffset(1000, 1001)).toBe(TITLE_PAD_TOP);
+  });
+
+  it('never exceeds maximum sizes and grows name/title when there is room', () => {
+    const l = chooseLayout('T', make(3, 3, short), BOX);
+    expect(l.rowSize).toBeLessThanOrEqual(MAX_ROW_SIZE);
+    expect(l.nameSize).toBeLessThanOrEqual(MAX_NAME_SIZE);
+    expect(l.titleSize).toBeLessThanOrEqual(MAX_TITLE_SIZE);
+    const base = contentHeight('T', make(3, 3, short), BOX.width, l);
+    expect(base).toBe(l.height);
   });
 });

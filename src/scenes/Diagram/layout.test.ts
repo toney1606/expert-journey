@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { layoutDiagram } from './layout';
+import {
+  LABEL_INSET,
+  labelSpace,
+  layoutDiagram,
+  polylineHitsRect,
+  fitNodeText,
+  defaultLayoutOptions,
+} from './layout';
 
 const box = { width: 850, height: 1130 };
 const n = (...ids: string[]) => ids.map((id) => ({ id, label: id.toUpperCase() }));
@@ -119,5 +126,136 @@ describe('layoutDiagram', () => {
   it('is deterministic', () => {
     const edges = [{ from: 'a', to: 'b' }];
     expect(layoutDiagram(n('a', 'b'), edges, box)).toEqual(layoutDiagram(n('a', 'b'), edges, box));
+  });
+});
+
+const expectEdgesAvoidOtherNodes = (layout: ReturnType<typeof layoutDiagram>) => {
+  for (const edge of layout.edges)
+    for (const node of layout.nodes) {
+      if (node.id === edge.from || node.id === edge.to) continue;
+      expect(
+        polylineHitsRect(edge.polyline, node),
+        `${edge.from}->${edge.to} crosses ${node.id}`,
+      ).toBe(false);
+    }
+};
+
+describe('layer-skipping edges', () => {
+  // a -> b -> c -> d chain, plus a -> d skipping b and c (which sit straight below a).
+  const chain = [
+    { from: 'a', to: 'b' },
+    { from: 'b', to: 'c' },
+    { from: 'c', to: 'd' },
+  ];
+
+  it('routes a skip edge around the intermediate nodes', () => {
+    const layout = layoutDiagram(
+      n('a', 'b', 'c', 'd'),
+      [...chain, { from: 'a', to: 'd', label: 'cache' }],
+      box,
+    );
+    const skip = layout.edges.find((edge) => edge.from === 'a' && edge.to === 'd');
+    expect(skip?.routed).toBe(true);
+    expectEdgesAvoidOtherNodes(layout);
+    expectInside(layout);
+    expectNoOverlap(layout);
+  });
+
+  it('keeps a mixed 6-node graph (skip + back edge) clear of foreign nodes', () => {
+    const layout = layoutDiagram(
+      n('a', 'b', 'c', 'd', 'e', 'f'),
+      [
+        { from: 'a', to: 'b' },
+        { from: 'a', to: 'c' },
+        { from: 'b', to: 'd' },
+        { from: 'c', to: 'd' },
+        { from: 'd', to: 'e' },
+        { from: 'a', to: 'e', label: 'skip' },
+        { from: 'b', to: 'f' },
+        { from: 'e', to: 'f' },
+      ],
+      box,
+    );
+    expectEdgesAvoidOtherNodes(layout);
+    expectInside(layout);
+    expectNoOverlap(layout);
+  });
+
+  it('keeps a skip edge with several skippers inside the box', () => {
+    const layout = layoutDiagram(
+      n('a', 'b', 'c', 'd', 'e'),
+      [
+        { from: 'a', to: 'b' },
+        { from: 'b', to: 'c' },
+        { from: 'c', to: 'd' },
+        { from: 'd', to: 'e' },
+        { from: 'a', to: 'd' },
+        { from: 'b', to: 'e' },
+      ],
+      box,
+    );
+    expectEdgesAvoidOtherNodes(layout);
+    for (const edge of layout.edges)
+      for (const p of edge.polyline) {
+        expect(p.x).toBeGreaterThanOrEqual(0);
+        expect(p.x).toBeLessThanOrEqual(box.width);
+      }
+  });
+
+  it('leaves a skip edge that already misses every node as a curve', () => {
+    const layout = layoutDiagram(
+      n('a', 'b', 'c'),
+      [
+        { from: 'a', to: 'b' },
+        { from: 'b', to: 'c' },
+        { from: 'a', to: 'c' },
+      ],
+      box,
+    );
+    // b is directly in the way of a -> c (all centred), so it is routed too.
+    expectEdgesAvoidOtherNodes(layout);
+  });
+});
+
+describe('long labels in narrow nodes', () => {
+  const longLabel = 'Một nhãn rất dài cần nhiều dòng trong thẻ hẹp ' + 'x'.repeat(30);
+  it('shrinks the text and/or grows the layer so the label fits', () => {
+    const ids = ['a', 'b', 'c', 'd', 'e', 'f'];
+    const nodes = [
+      { id: 'root', label: 'Root' },
+      ...ids.map((id, i) => ({ id, label: i === 2 ? longLabel : id })),
+    ];
+    const layout = layoutDiagram(
+      nodes,
+      ids.map((to) => ({ from: 'root', to })),
+      box,
+    );
+    expectInside(layout);
+    expectNoOverlap(layout);
+    for (const node of layout.nodes) {
+      const need = fitNodeText(node.label, node.width, node.height, defaultLayoutOptions);
+      expect(need.neededHeight).toBeLessThanOrEqual(node.height);
+      expect(node.fontSize).toBeGreaterThanOrEqual(defaultLayoutOptions.nodeFontMin);
+      expect(node.fontSize).toBeLessThanOrEqual(defaultLayoutOptions.nodeFontMax);
+    }
+    const long = layout.nodes.find((node) => node.id === 'c');
+    expect(long?.fontSize).toBeLessThan(defaultLayoutOptions.nodeFontMax);
+  });
+
+  it('keeps full size for short labels', () => {
+    const layout = layoutDiagram(n('a'), [], box);
+    expect(layout.nodes[0]?.fontSize).toBe(defaultLayoutOptions.nodeFontMax);
+  });
+});
+
+describe('labelSpace', () => {
+  it('keeps at least LABEL_INSET from both box edges and picks the roomier side', () => {
+    for (const x of [100, 300, 425, 600, 750]) {
+      const s = labelSpace(x, 850);
+      if (s.placeRight) expect(x + 16 + s.maxWidth).toBeLessThanOrEqual(850 - LABEL_INSET);
+      else expect(x - 16 - s.maxWidth).toBeGreaterThanOrEqual(LABEL_INSET);
+    }
+    expect(labelSpace(60, 850).placeRight).toBe(true);
+    expect(labelSpace(800, 850).placeRight).toBe(false);
   });
 });

@@ -10,6 +10,7 @@ import {
   NAME_LINE_HEIGHT,
   ROW_GAP,
   SECTION_GAP,
+  TITLE_GAP,
   chooseLayout,
 } from './layout';
 import { buildTimeline } from './timeline';
@@ -72,6 +73,7 @@ export const Tradeoff: React.FC<{ scene: TradeoffScene }> = ({ scene }) => {
         justifyContent: 'flex-start',
         gap: SECTION_GAP,
         boxSizing: 'border-box',
+        paddingTop: layout.top,
       }}
     >
       <div
@@ -82,6 +84,7 @@ export const Tradeoff: React.FC<{ scene: TradeoffScene }> = ({ scene }) => {
           fontSize: layout.titleSize,
           lineHeight: lineHeight.title,
           color: colors.text,
+          marginBottom: TITLE_GAP - SECTION_GAP,
         }}
       >
         {title}

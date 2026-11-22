@@ -6,8 +6,13 @@ export type TradeoffLayout = {
   titleSize: number;
   nameSize: number;
   rowSize: number;
-  /** Estimated total content height at the chosen sizes. */
+  /** Estimated total content height at the chosen sizes (top pad + title + gap + cards). */
   height: number;
+  /**
+   * Space above the title (px): TITLE_PAD_TOP when the content fills the box; larger when there
+   * is spare height, so that title + cards are centred vertically in the box.
+   */
+  top: number;
   /** False when even the minimum sizes do not fit in the box. */
   fits: boolean;
 };
@@ -18,6 +23,10 @@ export const TITLE_LINE_HEIGHT = 1.3;
 export const CARD_PAD_X = 28;
 export const CARD_PAD_Y = 22;
 export const SECTION_GAP = 22;
+/** Space between the top of the box and the title. */
+export const TITLE_PAD_TOP = 24;
+/** Space between the title and the first card. */
+export const TITLE_GAP = 44;
 export const ROW_GAP = 10;
 export const NAME_GAP = 12;
 export const ICON_GAP = 16;
@@ -61,17 +70,21 @@ export const estimateLines = (text: string, fontSize: number, widthPx: number): 
 export const rowTextWidth = (boxWidth: number, rowSize: number): number =>
   boxWidth - 2 * CARD_PAD_X - rowSize - ICON_GAP;
 
-export const contentHeight = (
-  title: string,
+export type Sizes = { titleSize: number; nameSize: number; rowSize: number };
+
+export const titleHeight = (title: string, boxWidth: number, titleSize: number): number =>
+  estimateLines(title, titleSize, boxWidth) * titleSize * TITLE_LINE_HEIGHT;
+
+/** Height of the card stack (cards separated by SECTION_GAP). */
+export const cardsHeight = (
   options: readonly LayoutOption[],
   boxWidth: number,
-  sizes: { titleSize: number; nameSize: number; rowSize: number },
+  sizes: Sizes,
 ): number => {
-  const { titleSize, nameSize, rowSize } = sizes;
-  const titleLines = estimateLines(title, titleSize, boxWidth);
-  let total = titleLines * titleSize * TITLE_LINE_HEIGHT;
+  const { nameSize, rowSize } = sizes;
   const textWidth = rowTextWidth(boxWidth, rowSize);
   const nameWidth = boxWidth - 2 * CARD_PAD_X;
+  let total = Math.max(0, options.length - 1) * SECTION_GAP;
   for (const option of options) {
     const rows = [...option.pros, ...option.cons];
     const rowsHeight = rows.reduce(
@@ -81,13 +94,32 @@ export const contentHeight = (
     const gaps = Math.max(0, rows.length - 1) * ROW_GAP;
     const nameHeight =
       estimateLines(option.name, nameSize, nameWidth) * nameSize * NAME_LINE_HEIGHT;
-    total += SECTION_GAP + 2 * CARD_PAD_Y + nameHeight + (rows.length > 0 ? NAME_GAP : 0);
+    total += 2 * CARD_PAD_Y + nameHeight + (rows.length > 0 ? NAME_GAP : 0);
     total += rowsHeight + gaps;
   }
   return total;
 };
 
-/** Largest sizes (stepping the row size down 1px at a time) whose content fits the box. */
+export const contentHeight = (
+  title: string,
+  options: readonly LayoutOption[],
+  boxWidth: number,
+  sizes: Sizes,
+): number =>
+  TITLE_PAD_TOP +
+  titleHeight(title, boxWidth, sizes.titleSize) +
+  TITLE_GAP +
+  cardsHeight(options, boxWidth, sizes);
+
+/** Space above the title that centres the content (height includes TITLE_PAD_TOP), at least TITLE_PAD_TOP. */
+export const centeringOffset = (boxHeight: number, contentH: number): number =>
+  Math.max(TITLE_PAD_TOP, Math.floor((boxHeight - (contentH - TITLE_PAD_TOP)) / 2));
+
+/**
+ * Largest row size (stepping down 1px at a time) whose content fits the box. With room to spare,
+ * the name and title sizes are then raised to their maximums as far as they still fit, and
+ * the content is centred vertically (`top`).
+ */
 export const chooseLayout = (
   title: string,
   options: readonly LayoutOption[],
@@ -96,14 +128,32 @@ export const chooseLayout = (
   const limit = box.height * HEIGHT_MARGIN;
   let last: TradeoffLayout | undefined;
   for (let rowSize = MAX_ROW_SIZE; rowSize >= MIN_ROW_SIZE; rowSize -= 1) {
-    const sizes = {
+    let sizes: Sizes = {
       rowSize,
       nameSize: Math.max(MIN_NAME_SIZE, Math.min(MAX_NAME_SIZE, rowSize + 16)),
       titleSize: Math.max(MIN_TITLE_SIZE, Math.min(MAX_TITLE_SIZE, rowSize + 20)),
     };
-    const height = contentHeight(title, options, box.width, sizes);
-    last = { ...sizes, height, fits: height <= limit };
-    if (last.fits) return last;
+    let height = contentHeight(title, options, box.width, sizes);
+    const fits = height <= limit;
+    if (fits) {
+      for (const grown of [
+        { ...sizes, nameSize: MAX_NAME_SIZE },
+        { ...sizes, nameSize: MAX_NAME_SIZE, titleSize: MAX_TITLE_SIZE },
+      ]) {
+        const grownHeight = contentHeight(title, options, box.width, grown);
+        if (grownHeight <= limit) {
+          sizes = grown;
+          height = grownHeight;
+        }
+      }
+    }
+    last = {
+      ...sizes,
+      height,
+      fits,
+      top: fits ? centeringOffset(box.height, height) : TITLE_PAD_TOP,
+    };
+    if (fits) return last;
   }
   if (!last) throw new Error('unreachable: row size range is empty');
   return last;

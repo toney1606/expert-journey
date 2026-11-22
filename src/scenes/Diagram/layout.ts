@@ -15,6 +15,13 @@ export type LayoutOptions = {
   arrowLength: number;
   /** Inset from every side of the box so borders and strokes never touch the edge. */
   pad: number;
+  /** Node text sizing: the label shrinks from max to min, then the layer grows taller. */
+  nodeFontMax: number;
+  nodeFontMin: number;
+  nodeLineHeight: number;
+  /** Space between a node's outer edge and its text (border + padding). */
+  nodePadX: number;
+  nodePadY: number;
 };
 
 /** Distance of the back-edge rail from the right edge of the box; its label sits left of it. */
@@ -30,7 +37,22 @@ export const defaultLayoutOptions: LayoutOptions = {
   railWidth: 80,
   arrowLength: 22,
   pad: 8,
+  nodeFontMax: 40,
+  nodeFontMin: 28,
+  nodeLineHeight: 1.3,
+  nodePadX: 20, // 4px border + 16px padding
+  nodePadY: 12, // 4px border + 8px padding
 };
+
+/** Lanes (left of the nodes) used by edges that skip layers and would cross a node. */
+export const LANE_START = 14;
+export const LANE_STEP = 22;
+export const MAX_LANES = 3;
+/** Minimum distance between an edge label and any edge of the box. */
+export const LABEL_INSET = 12;
+/** Average glyph width in em for bold Be Vietnam Pro (slightly pessimistic). */
+const NODE_CHAR_EM = 0.62;
+const MIN_GAP = 48;
 
 export type NodeInput = { id: string; label: string };
 export type EdgeInput = { from: string; to: string; label?: string };
@@ -45,7 +67,11 @@ export type PlacedNode = {
   y: number;
   width: number;
   height: number;
+  /** Label font size in px (shrunk for long labels in narrow nodes). */
+  fontSize: number;
 };
+
+export type Point = { x: number; y: number };
 
 export type PlacedEdge = {
   from: string;
@@ -53,6 +79,10 @@ export type PlacedEdge = {
   label?: string;
   /** `back` edges close a cycle and are routed along the right rail. */
   kind: 'forward' | 'back';
+  /** True when a layer-skipping edge was routed through a lane to avoid intermediate nodes. */
+  routed?: boolean;
+  /** Polyline approximating the drawn path (curves sampled); used for collision tests. */
+  polyline: Point[];
   /** SVG path data from the source border to the arrow base. */
   d: string;
   /** Arrow tip (touches the target border) and the direction it points. */
@@ -60,6 +90,10 @@ export type PlacedEdge = {
   direction: 'down' | 'left';
   /** Anchor for the edge label. */
   mid: { x: number; y: number };
+  /** Label anchoring: beside the arrow, or starting at `mid.x` and centred on a horizontal run. */
+  labelMode?: 'beside' | 'run';
+  /** For 'run' labels: maximum label width. */
+  labelMaxWidth?: number;
 };
 
 export type DiagramLayout = {
@@ -120,6 +154,104 @@ const assignLayers = (
   return layer;
 };
 
+/** Greedy word-wrap estimate of the line count for a label. */
+export const estimateLabelLines = (text: string, fontSize: number, widthPx: number): number => {
+  const perLine = Math.max(1, Math.floor(widthPx / (fontSize * NODE_CHAR_EM)));
+  let lines = 1;
+  let used = 0;
+  for (const word of text.split(/\s+/).filter(Boolean)) {
+    let len = word.length;
+    if (used > 0 && used + 1 + len <= perLine) {
+      used += 1 + len;
+      continue;
+    }
+    if (used > 0) lines += 1;
+    while (len > perLine) {
+      lines += 1;
+      len -= perLine;
+    }
+    used = len;
+  }
+  return lines;
+};
+
+/** Largest font (max..min) whose wrapped label fits the node; otherwise min and the height it needs. */
+export const fitNodeText = (
+  label: string,
+  width: number,
+  height: number,
+  opts: Pick<
+    LayoutOptions,
+    'nodeFontMax' | 'nodeFontMin' | 'nodeLineHeight' | 'nodePadX' | 'nodePadY'
+  >,
+): { fontSize: number; neededHeight: number } => {
+  const innerW = Math.max(1, width - 2 * opts.nodePadX);
+  const innerH = height - 2 * opts.nodePadY;
+  let needed = 0;
+  for (let size = opts.nodeFontMax; size >= opts.nodeFontMin; size -= 1) {
+    needed = estimateLabelLines(label, size, innerW) * size * opts.nodeLineHeight;
+    if (needed <= innerH) return { fontSize: size, neededHeight: height };
+  }
+  return { fontSize: opts.nodeFontMin, neededHeight: Math.ceil(needed + 2 * opts.nodePadY) };
+};
+
+/** Where an edge label goes: which side of the anchor and how wide it may be (>= LABEL_INSET from the box). */
+export const labelSpace = (
+  midX: number,
+  boxWidth: number,
+  side = 16,
+  maxWidth = 360,
+): { placeRight: boolean; maxWidth: number } => {
+  const right = boxWidth - LABEL_INSET - (midX + side);
+  const left = midX - side - LABEL_INSET;
+  const placeRight =
+    midX >= boxWidth / 2 - 1 ? right >= Math.min(left, 140) : left < Math.min(right, 140);
+  return { placeRight, maxWidth: Math.max(60, Math.min(maxWidth, placeRight ? right : left)) };
+};
+
+const sampleCubic = (p0: Point, p1: Point, p2: Point, p3: Point, steps = 24): Point[] =>
+  Array.from({ length: steps + 1 }, (_, i) => {
+    const t = i / steps;
+    const u = 1 - t;
+    return {
+      x: u * u * u * p0.x + 3 * u * u * t * p1.x + 3 * u * t * t * p2.x + t * t * t * p3.x,
+      y: u * u * u * p0.y + 3 * u * u * t * p1.y + 3 * u * t * t * p2.y + t * t * t * p3.y,
+    };
+  });
+
+type Rect = { x: number; y: number; width: number; height: number };
+
+/** True when the segment a-b passes through the rectangle grown by `margin`. */
+export const segmentHitsRect = (a: Point, b: Point, rect: Rect, margin = 0): boolean => {
+  const x0 = rect.x - margin;
+  const x1 = rect.x + rect.width + margin;
+  const y0 = rect.y - margin;
+  const y1 = rect.y + rect.height + margin;
+  let t0 = 0;
+  let t1 = 1;
+  const dx = b.x - a.x;
+  const dy = b.y - a.y;
+  const clip = (p: number, q: number): boolean => {
+    if (p === 0) return q >= 0;
+    const r = q / p;
+    if (p < 0) {
+      if (r > t1) return false;
+      if (r > t0) t0 = r;
+    } else {
+      if (r < t0) return false;
+      if (r < t1) t1 = r;
+    }
+    return true;
+  };
+  return clip(-dx, a.x - x0) && clip(dx, x1 - a.x) && clip(-dy, a.y - y0) && clip(dy, y1 - a.y);
+};
+
+export const polylineHitsRect = (points: readonly Point[], rect: Rect, margin = 0): boolean =>
+  points.some((point, i) => {
+    const next = points[i + 1];
+    return next !== undefined && segmentHitsRect(point, next, rect, margin);
+  });
+
 export const layoutDiagram = (
   nodeInputs: readonly NodeInput[],
   edgeInputs: readonly EdgeInput[],
@@ -160,37 +292,116 @@ export const layoutDiagram = (
 
   const hasBack = backSet.size > 0;
   const innerHeight = box.height - 2 * opts.pad;
-  const usableWidth = box.width - 2 * opts.pad - (hasBack ? opts.railWidth : 0);
   const rows = Math.max(1, layerCount);
-  const nodeHeight = Math.max(
+  const baseHeight = Math.max(
     opts.minNodeHeight,
     Math.min(opts.maxNodeHeight, (innerHeight - (rows - 1) * opts.minLayerGap) / rows),
   );
-  const gap =
-    rows === 1 ? 0 : Math.min(opts.maxLayerGap, (innerHeight - rows * nodeHeight) / (rows - 1));
-  const usedHeight = rows * nodeHeight + (rows - 1) * gap;
-  const top = opts.pad + Math.max(0, (innerHeight - usedHeight) / 2);
 
-  const placed = new Map<string, PlacedNode>();
-  layers.forEach((layerIds, layer) => {
-    const count = layerIds.length;
-    const width = Math.min(opts.maxNodeWidth, (usableWidth - (count - 1) * opts.columnGap) / count);
-    const rowWidth = count * width + (count - 1) * opts.columnGap;
-    const left = opts.pad + (usableWidth - rowWidth) / 2;
-    layerIds.forEach((id, order) => {
-      const label = nodes.find((node) => node.id === id)?.label ?? id;
-      placed.set(id, {
-        id,
-        label,
-        layer,
-        order,
-        x: left + order * (width + opts.columnGap),
-        y: top + layer * (nodeHeight + gap),
-        width,
-        height: nodeHeight,
-      });
+  /** Places nodes with `lanes` lanes reserved at the left edge. */
+  const place = (lanes: number): { placed: Map<string, PlacedNode>; gap: number } => {
+    const reserve = lanes > 0 ? LANE_STEP * lanes + 16 : 0;
+    const usableWidth = box.width - 2 * opts.pad - (hasBack ? opts.railWidth : 0) - reserve;
+    const labelOf = (id: string): string => nodes.find((node) => node.id === id)?.label ?? id;
+    const widthOf = (count: number): number =>
+      Math.min(opts.maxNodeWidth, (usableWidth - (count - 1) * opts.columnGap) / count);
+    // A layer is as tall as its most demanding label (labels shrink first, then the layer grows).
+    const layerHeights = layers.map((layerIds) => {
+      const width = widthOf(layerIds.length);
+      return layerIds.reduce(
+        (max, id) => Math.max(max, fitNodeText(labelOf(id), width, baseHeight, opts).neededHeight),
+        baseHeight,
+      );
     });
-  });
+    const sum = layerHeights.reduce((a, b) => a + b, 0);
+    const gap =
+      rows === 1
+        ? 0
+        : Math.max(MIN_GAP, Math.min(opts.maxLayerGap, (innerHeight - sum) / (rows - 1)));
+    const usedHeight = sum + (rows - 1) * gap;
+    let y = opts.pad + Math.max(0, (innerHeight - usedHeight) / 2);
+    const out = new Map<string, PlacedNode>();
+    layers.forEach((layerIds, layer) => {
+      const count = layerIds.length;
+      const width = widthOf(count);
+      const height = layerHeights[layer] ?? baseHeight;
+      const rowWidth = count * width + (count - 1) * opts.columnGap;
+      const left = opts.pad + reserve + (usableWidth - rowWidth) / 2;
+      layerIds.forEach((id, order) => {
+        out.set(id, {
+          id,
+          label: labelOf(id),
+          layer,
+          order,
+          x: left + order * (width + opts.columnGap),
+          y,
+          width,
+          height,
+          fontSize: fitNodeText(labelOf(id), width, baseHeight, opts).fontSize,
+        });
+      });
+      y += height + gap;
+    });
+    return { placed: out, gap };
+  };
+
+  const forwardPoints = (
+    source: PlacedNode,
+    target: PlacedNode,
+  ): { p0: Point; p1: Point; p2: Point; p3: Point } => {
+    const sx = source.x + source.width / 2;
+    const sy = source.y + source.height;
+    const tx = target.x + target.width / 2;
+    const by = target.y - opts.arrowLength;
+    const dy = (by - sy) / 2;
+    return {
+      p0: { x: sx, y: sy },
+      p1: { x: sx, y: sy + dy },
+      p2: { x: tx, y: by - dy },
+      p3: { x: tx, y: by },
+    };
+  };
+
+  const blockers = (
+    placedMap: Map<string, PlacedNode>,
+    edge: EdgeInput,
+    source: PlacedNode,
+    target: PlacedNode,
+  ): PlacedNode[] =>
+    [...placedMap.values()].filter(
+      (node) =>
+        node.id !== edge.from &&
+        node.id !== edge.to &&
+        node.layer > source.layer &&
+        node.layer < target.layer,
+    );
+
+  /** Forward edges whose straight-ish curve would cross an intermediate node. */
+  const needsRouting = (placedMap: Map<string, PlacedNode>): EdgeInput[] =>
+    forward.filter((edge) => {
+      const source = placedMap.get(edge.from);
+      const target = placedMap.get(edge.to);
+      if (!source || !target || target.layer - source.layer < 2) return false;
+      const { p0, p1, p2, p3 } = forwardPoints(source, target);
+      const curve = sampleCubic(p0, p1, p2, p3);
+      return blockers(placedMap, edge, source, target).some((node) =>
+        polylineHitsRect(curve, node, 14),
+      );
+    });
+
+  // Reserving lanes narrows the nodes, which can create new collisions: iterate to a fixed point.
+  let routedEdges: EdgeInput[] = needsRouting(place(0).placed);
+  let result = place(Math.min(MAX_LANES, routedEdges.length));
+  for (let pass = 0; pass < 3; pass += 1) {
+    const again = new Set([...routedEdges, ...needsRouting(result.placed)]);
+    if (again.size === routedEdges.length) break;
+    routedEdges = forward.filter((edge) => again.has(edge));
+    result = place(Math.min(MAX_LANES, routedEdges.length));
+  }
+  const { placed, gap } = result;
+  const routed = new Set<EdgeInput>(routedEdges);
+  const laneOf = new Map<EdgeInput, number>();
+  routedEdges.forEach((edge, i) => laneOf.set(edge, i % MAX_LANES));
 
   const placedEdges: PlacedEdge[] = [];
   for (const edge of edges) {
@@ -204,7 +415,6 @@ export const layoutDiagram = (
       const sx = source.x + source.width;
       const tx = target.x + target.width;
       const railX = box.width - opts.pad - RAIL_INSET;
-      const tipX = tx;
       const baseX = tx + opts.arrowLength;
       placedEdges.push({
         ...label,
@@ -212,35 +422,86 @@ export const layoutDiagram = (
         to: edge.to,
         kind: 'back',
         d: `M ${sx} ${sy} L ${railX} ${sy} L ${railX} ${ty} L ${baseX} ${ty}`,
-        tip: { x: tipX, y: ty },
+        polyline: [
+          { x: sx, y: sy },
+          { x: railX, y: sy },
+          { x: railX, y: ty },
+          { x: baseX, y: ty },
+        ],
+        tip: { x: tx, y: ty },
         direction: 'left',
         mid: { x: railX, y: (sy + ty) / 2 },
       });
       continue;
     }
-    const sx = source.x + source.width / 2;
-    const sy = source.y + source.height;
     const tx = target.x + target.width / 2;
     const ty = target.y;
     const by = ty - opts.arrowLength;
-    const dy = (by - sy) / 2;
+    const sx = source.x + source.width / 2;
+    const sy = source.y + source.height;
+    if (routed.has(edge)) {
+      // Down into the gap below the source, left to the lane, down the lane, right above the target.
+      const laneX = opts.pad + LANE_START + (laneOf.get(edge) ?? 0) * LANE_STEP;
+      const outY = sy + gap / 2;
+      const inY = ty - gap / 2;
+      const pts: Point[] = [
+        { x: sx, y: sy },
+        { x: sx, y: outY },
+        { x: laneX, y: outY },
+        { x: laneX, y: inY },
+        { x: tx, y: inY },
+        { x: tx, y: by },
+      ];
+      placedEdges.push({
+        ...label,
+        from: edge.from,
+        to: edge.to,
+        kind: 'forward',
+        routed: true,
+        d: `M ${pts.map((p) => `${p.x} ${p.y}`).join(' L ')}`,
+        polyline: pts,
+        tip: { x: tx, y: ty },
+        direction: 'down',
+        mid: { x: laneX + 16, y: inY },
+        labelMode: 'run',
+        labelMaxWidth: Math.max(120, Math.min(360, tx - 24 - (laneX + 16))),
+      });
+      continue;
+    }
+    const { p0, p1, p2, p3 } = forwardPoints(source, target);
     placedEdges.push({
       ...label,
       from: edge.from,
       to: edge.to,
       kind: 'forward',
-      d: `M ${sx} ${sy} C ${sx} ${sy + dy} ${tx} ${by - dy} ${tx} ${by}`,
+      d: `M ${p0.x} ${p0.y} C ${p1.x} ${p1.y} ${p2.x} ${p2.y} ${p3.x} ${p3.y}`,
+      polyline: sampleCubic(p0, p1, p2, p3),
       tip: { x: tx, y: ty },
       direction: 'down',
       // Label sits next to the arrow end so sibling edges from one source never share an anchor.
       mid: { x: tx, y: sy + (by - sy) * 0.6 },
+      labelMode: 'beside',
     });
+  }
+
+  // Sibling labels beside their arrows must not run into the next sibling's label: cap their width.
+  const beside = placedEdges.filter((e) => e.labelMode === 'beside' && e.label !== undefined);
+  for (const edge of beside) {
+    const srcLayer = placed.get(edge.from)?.layer;
+    const placeRight = labelSpace(edge.mid.x, box.width).placeRight;
+    let nearest = Number.POSITIVE_INFINITY;
+    for (const other of beside) {
+      if (other === edge || placed.get(other.from)?.layer !== srcLayer) continue;
+      const delta = placeRight ? other.mid.x - edge.mid.x : edge.mid.x - other.mid.x;
+      if (delta > 0) nearest = Math.min(nearest, delta);
+    }
+    if (Number.isFinite(nearest)) edge.labelMaxWidth = Math.max(70, nearest - 16 - 8);
   }
 
   return {
     nodes: nodes.map((node) => placed.get(node.id)).filter((n): n is PlacedNode => n !== undefined),
     edges: placedEdges,
     layerCount,
-    nodeHeight,
+    nodeHeight: baseHeight,
   };
 };

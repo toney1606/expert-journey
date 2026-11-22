@@ -3,12 +3,11 @@ import { interpolate, spring, useCurrentFrame, useVideoConfig } from 'remotion';
 import { colors, fontFamily, lineHeight, safeZone, spacing } from '../../design/tokens';
 import { springs } from '../../design/springs';
 import { safeBox } from '../../lib/safe-zone';
-import { layoutDiagram } from './layout';
+import { LABEL_INSET, labelSpace, layoutDiagram } from './layout';
 import type { DiagramLayout, PlacedEdge, PlacedNode } from './layout';
 import type { DiagramScene } from './schema';
 
 const TITLE_HEIGHT = 210;
-const NODE_FONT = 40;
 const EDGE_FONT = 32;
 const STROKE = 5;
 const ARROW_HALF = 12;
@@ -73,7 +72,7 @@ const NodeCard: React.FC<{ node: PlacedNode; start: number }> = ({ node, start }
         color: colors.diagram,
         fontFamily: fontFamily.title,
         fontWeight: 700,
-        fontSize: NODE_FONT,
+        fontSize: node.fontSize,
         lineHeight: lineHeight.title,
         overflowWrap: 'anywhere',
         opacity: progress,
@@ -91,11 +90,40 @@ const EdgeLabel: React.FC<{ edge: PlacedEdge; boxWidth: number; opacity: number 
   opacity,
 }) => {
   if (edge.label === undefined) return null;
-  // Labels go outward from the centre line: left of left-hand edges, right of the rest.
-  const placeRight = edge.kind === 'forward' && edge.mid.x >= boxWidth / 2 - 1;
+  const labelStyle: React.CSSProperties = {
+    position: 'absolute',
+    boxSizing: 'border-box',
+    padding: `0 ${spacing.xs}px`,
+    background: colors.bg,
+    borderRadius: 8,
+    color: colors.textMuted,
+    fontFamily: fontFamily.title,
+    fontWeight: 500,
+    fontSize: EDGE_FONT,
+    lineHeight: lineHeight.title,
+    overflowWrap: 'anywhere',
+    opacity,
+  };
+  if (edge.labelMode === 'run') {
+    // Sits on the horizontal run of a routed edge, starting just right of its lane.
+    return (
+      <div
+        style={{
+          ...labelStyle,
+          left: Math.max(LABEL_INSET, edge.mid.x),
+          top: edge.mid.y,
+          transform: 'translateY(-50%)',
+          maxWidth: edge.labelMaxWidth ?? 360,
+        }}
+      >
+        {edge.label}
+      </div>
+    );
+  }
+  // Labels go to the side with more room and wrap inside it; they keep LABEL_INSET from the box edge.
   const side = 16;
-  const space = placeRight ? boxWidth - edge.mid.x - side : edge.mid.x - side;
-  const horizontal: React.CSSProperties = placeRight
+  const space = labelSpace(edge.mid.x, boxWidth, side);
+  const horizontal: React.CSSProperties = space.placeRight
     ? { left: edge.mid.x + side }
     : { right: boxWidth - edge.mid.x + side };
   if (edge.kind === 'back') {
@@ -126,20 +154,12 @@ const EdgeLabel: React.FC<{ edge: PlacedEdge; boxWidth: number; opacity: number 
   return (
     <div
       style={{
-        position: 'absolute',
+        ...labelStyle,
         ...horizontal,
         top: edge.mid.y,
         transform: 'translateY(-50%)',
-        maxWidth: Math.min(360, space),
-        padding: `0 ${spacing.xs}px`,
-        background: colors.bg,
-        borderRadius: 8,
-        color: colors.textMuted,
-        fontFamily: fontFamily.title,
-        fontWeight: 500,
-        fontSize: EDGE_FONT,
-        lineHeight: lineHeight.title,
-        opacity,
+        maxWidth: Math.min(space.maxWidth, edge.labelMaxWidth ?? space.maxWidth),
+        textAlign: space.placeRight ? 'left' : 'right',
       }}
     >
       {edge.label}
