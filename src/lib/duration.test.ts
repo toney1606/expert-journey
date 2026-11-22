@@ -20,3 +20,14 @@ describe('duration', () => {
     expect(sceneStartFrames([180, 75, 10])).toEqual([0, 180, 255]);
   });
 });
+
+describe('duration with audio', () => {
+  const audio = [{ sceneId: 'a', durationSec: 4 }];
+
+  it('prefers audio length plus tail over the draft', () => {
+    expect(sceneDurationsInFrames(scenes, 30, audio)).toEqual([132, 75]);
+  });
+  it('falls back to draft for scenes without audio', () => {
+    expect(totalDurationInFrames(scenes, 30, audio)).toBe(207);
+  });
+});

@@ -1,17 +1,24 @@
+import { staticFile } from 'remotion';
 import type { CalculateMetadataFunction } from 'remotion';
 import { VIDEO } from '../../design/tokens';
+import { fetchAudioManifest } from '../../lib/audio-manifest';
 import { totalDurationInFrames } from '../../lib/duration';
 import type { VideoCompositionProps } from './schema';
 
 /**
- * Duration comes from data, never a hardcoded frame count. Today it is the sum of the
- * scenes' draft durations; real audio durations will replace them here.
+ * Duration comes from data, never a hardcoded frame count: real audio lengths from the
+ * `pnpm tts` manifest when present, otherwise each scene's draft duration.
  */
-export const calculateVideoMetadata: CalculateMetadataFunction<VideoCompositionProps> = ({
+export const calculateVideoMetadata: CalculateMetadataFunction<VideoCompositionProps> = async ({
   props,
-}) => ({
-  durationInFrames: totalDurationInFrames(props.video.scenes, VIDEO.fps),
-  fps: VIDEO.fps,
-  width: VIDEO.width,
-  height: VIDEO.height,
-});
+}) => {
+  const { id } = props.video.meta;
+  const audio = await fetchAudioManifest(staticFile(`generated/audio/${id}/manifest.json`), id);
+  return {
+    durationInFrames: totalDurationInFrames(props.video.scenes, VIDEO.fps, audio?.scenes),
+    fps: VIDEO.fps,
+    width: VIDEO.width,
+    height: VIDEO.height,
+    props: { ...props, audio },
+  };
+};

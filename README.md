@@ -36,6 +36,7 @@ pnpm exec remotion still src/index.ts Video out/hook.png --frame=45
    outline (`debugSafeZone` prop, editable in the Studio props panel).
 2. Open `FontTest` to check stacked Vietnamese diacritics.
 3. Edit `content/videos/sample.json`, then run `pnpm validate`.
+4. Run `pnpm tts sample`, then reload Studio: scene lengths now follow the generated audio and each scene plays its audio.
 
 ## Layout
 

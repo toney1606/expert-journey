@@ -32,7 +32,7 @@ any Remotion API or `@remotion/*` package. Never write Remotion code from memory
 - TypeScript strict; `any` is a lint error. Function components and hooks only.
 - Animate only with `useCurrentFrame()`, `spring()`, `interpolate()`. No CSS transition/animation
   (lint-enforced best effort). Durations come from audio via `calculateMetadata`, never hardcoded frame
-  counts (until audio exists, scenes declare `draft.durationSec`).
+  counts. `calculateMetadata` reads `public/generated/audio/<id>/manifest.json` (from `pnpm tts`) and uses real audio length + 0.4s tail per scene; without a manifest it falls back to `draft.durationSec`. Re-run `pnpm tts <id>` after editing any `voice`.
 - Fonts are local files in `public/fonts/` (OFL), loaded via `useFonts()`. Test stacked Vietnamese diacritics.
 - Do not add dependencies outside the approved list without asking the owner.
 - Conventional commits, small steps. Never push without being asked.
