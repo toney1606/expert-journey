@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { spring, useCurrentFrame, useVideoConfig } from 'remotion';
-import { colors, fontFamily, spacing } from '../../design/tokens';
+import { CONTENT_BOX, colors, fontFamily, spacing } from '../../design/tokens';
 import { springs } from '../../design/springs';
 import { activeWordIndex, buildCaptionPages, pageAt } from '../../lib/captions';
 import type { CaptionWord } from '../../lib/captions';
@@ -13,7 +13,7 @@ type Props = {
 };
 
 const FONT_SIZE = 58;
-const MAX_WIDTH = 850;
+const MAX_WIDTH = CONTENT_BOX.width;
 
 /**
  * Word-by-word captions. Render inside the scene's Sequence; it pins itself to the bottom of its

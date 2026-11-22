@@ -24,7 +24,7 @@ export const HookCard: React.FC<{ scene: HookScene }> = ({ scene }) => {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
-        gap: spacing.lg,
+        gap: spacing.md,
       }}
     >
       {badge ? (
@@ -49,7 +49,7 @@ export const HookCard: React.FC<{ scene: HookScene }> = ({ scene }) => {
           ...rise(enter(6)),
           fontFamily: fontFamily.title,
           fontWeight: 800,
-          fontSize: 84,
+          fontSize: 72,
           lineHeight: lineHeight.title,
           color: colors.text,
         }}
@@ -62,7 +62,7 @@ export const HookCard: React.FC<{ scene: HookScene }> = ({ scene }) => {
             ...rise(enter(18)),
             fontFamily: fontFamily.title,
             fontWeight: 400,
-            fontSize: 44,
+            fontSize: 40,
             lineHeight: lineHeight.body,
             color: colors.textMuted,
           }}
