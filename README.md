@@ -52,7 +52,7 @@ src/       Remotion layer
   compositions/  Video (reads the script + audio manifest), FontTest
   scenes/        one folder per scene type + registry.tsx:
                  HookCard, Diagram, CodeDiff (type `code`), Terminal, Tradeoff, Summary
-  components/    SafeZoneFrame, ScenePlaceholder
+  components/    SafeZoneFrame, Captions, ScenePlaceholder
   design/        tokens, springs, fonts
   schemas/       zod schemas (video, common, interview-kit, audio-manifest)
   lib/           pure helpers (duration, safe-zone, audio-manifest, clamp), unit-tested

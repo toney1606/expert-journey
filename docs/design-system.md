@@ -8,11 +8,16 @@ Nguồn sự thật trong code: `src/design/` (`tokens.ts`, `springs.ts`, `fonts
 
 ## Safe zone
 
-`safeZone` trong `tokens.ts`: top **150**, bottom **420**, right **170**, left **60** px (giá trị khởi đầu, chưa chỉnh theo UI thật của
-TikTok/Reels). Hộp nội dung còn lại = **850 x 1350 px**, đặt tại (60, 150). `SafeZoneFrame` bọc mọi scene trong hộp này
-(`safeBox` trong `src/lib/safe-zone.ts`), nên scene chỉ cần fill `100%` và không tự canh lề.
-**Nền tảng mục tiêu: TikTok và Facebook Reels** (không đăng Instagram Reels). Các con số trên chưa được đối chiếu với UI thật;
-nghiên cứu ban đầu dựa nhầm vào spec Instagram Reels nên đã bị loại, đang đối chiếu lại riêng cho Facebook Reels.
+`safeZone` trong `tokens.ts`: top **270**, bottom **680**, left **120**, right **180** px. Hộp an toàn (`SAFE_BOX`) = **780 x 970 px**, đặt tại (120, 270).
+`SafeZoneFrame` bọc mọi scene trong hộp này (`safeBox` trong `src/lib/safe-zone.ts`), nên scene chỉ cần fill `100%` và không tự canh lề.
+
+**Dải caption:** `CAPTION_BAND_HEIGHT` = 200px ở đáy hộp an toàn, chứa component `Captions` (từng từ, `Video` render theo từng scene từ `words` trong manifest audio).
+Mọi scene bố cục trong `CONTENT_BOX` = **780 x 770 px** (`SAFE_BOX` trừ dải caption), nên không đè lên caption.
+
+**Nền tảng mục tiêu: TikTok và Facebook Reels** (không đăng Instagram Reels). Mỗi cạnh lấy giá trị lớn nhất của hai nguồn: số đo bên thứ ba cho TikTok
+(khoảng 240 trên / 660 dưới / 120 hai bên) và tỉ lệ safe zone quảng cáo của Meta (14% trên, 35% dưới, 6% hai bên; cùng số cho Facebook và Instagram Reels).
+**Trạng thái kiểm chứng:** chưa có số pixel chính thức cho Facebook Reels organic, nên các con số này là mặc định an toàn **chưa được xác minh**;
+cần kiểm bằng video thật trên điện thoại (TikTok và Facebook) rồi chỉnh `safeZone`. Nghiên cứu trước đó dựa nhầm vào một trang Instagram nên đã bị loại.
 Bật viền kiểm tra bằng prop `debugSafeZone` (mặc định bật trong composition mẫu): viền đỏ đứt nét và vùng ngoài được phủ hồng.
 
 ## Màu (Catppuccin Mocha)

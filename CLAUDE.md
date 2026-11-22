@@ -27,8 +27,8 @@ any Remotion API or `@remotion/*` package. Never write Remotion code from memory
   timeline helper (no React) + Vitest tests. Scenes are wired in `src/scenes/registry.tsx`. Scene types: `hook`
   (HookCard), `diagram`, `code` (CodeDiff), `terminal`, `tradeoff`, `summary`.
 - Reveal timelines are derived from `durationInFrames` (audio length), never hardcoded frame numbers.
-- Content must fit: layout helpers expose a `fits` (or `wraps`) flag and pick the largest font that fits the 850x1350
-  safe-zone box; do not add a scene that overflows silently.
+- Content must fit: layout helpers expose a `fits` (or `wraps`) flag and pick the largest font that fits the 780x770
+  `CONTENT_BOX` (safe box minus the caption band); do not add a scene that overflows silently.
 - Design tokens (colors, spacing, spring presets, safe zone) only in `src/design/`.
   Non-UI logic = pure functions in `src/lib/`, tested with Vitest.
 - TTS sits behind `TtsProvider` (`pipeline/tts/types.ts`); providers are registered in `pipeline/tts/registry.ts` and chosen by `--provider` or `TTS_PROVIDER`. A provider must return `durationSec` itself. Swapping provider must not touch the rest of the pipeline.
@@ -45,6 +45,32 @@ any Remotion API or `@remotion/*` package. Never write Remotion code from memory
 - Content policy: books are ideas + cited (`sources` on every video); images/music only from clear
   sources recorded in `public/music/LICENSES.md`; AI voice label on; code in videos must run and have a
   test; owner reviews every video before publishing.
+
+## Working rules
+
+Shared with the owner's other repos (backend, web-app, xlvm, ...), trimmed to what fits a solo Remotion project.
+
+- Chat with the owner in **Vietnamese** (with full diacritics); code, identifiers, commands, log text, commit
+  messages in **English**. Do not translate comments already in a file; quote tool/log errors verbatim, then explain.
+- Keep answers short: conclusion first, plain words, no dense tables/headings. Ask for decisions separately,
+  numbered, with what is gained/lost and a default recommendation.
+- Prefer `rg` over `grep`. Never use `rg -rn` as "recursive": `-r` is `--replace` and mangles output.
+- **Autonomy:** small technical choices (file names, internal structure, constants) are yours — state them in the
+  report. Ask first for paid providers/API keys, dependencies outside the approved list, and any push.
+- **Surgical changes:** touch the minimum, reuse existing patterns and scene-folder layout, no unrelated refactor.
+  If old code or a failing test that you did not touch blocks the task, stop and report; do not skip or rewrite it.
+- **Verify before reporting:** run the checks yourself (`pnpm lint/typecheck/test/validate`; `remotion still` for
+  visuals). A green build or reading the code is not verification. Never claim PASS without running it.
+- **Secrets:** never put keys/tokens in prompts, chat or commits; point to the `.env` path only (`.env.example` stays
+  placeholder-only).
+- **Git:** commit only when asked, with explicit paths (`git commit -- <paths>`, never `git add .` / `-u`) after
+  `git status --short`. `git pull` (merge) before editing; no rebase, no force-push. Push/merge needs approval.
+- **Parallel windows/agents:** other Claude windows may edit this repo. A temporarily broken build can be their
+  in-progress work — don't "fix" it; stop if files would be overwritten. Run important fixes in the foreground,
+  verify agent output yourself, use 4-7 independent agents split by folder (owner decision for this project), shared scaffolding (stub/registry/sample) first.
+- Kill dev processes by port (`ss -ltnp`) after checking cwd, never `pkill` by name; don't kill a Studio/dev server
+  the owner started — ask them to restart it.
+- Finish each task with a short status: what changed, real test result, what is pending, next step.
 
 ## Definition of done
 

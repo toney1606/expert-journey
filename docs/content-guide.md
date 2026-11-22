@@ -56,14 +56,17 @@ Mọi scene có chung các field:
 - **Sửa bất kỳ `voice` nào thì chạy lại `pnpm tts <id>`.** Manifest cũ làm video dùng audio và độ dài của lời cũ.
   (Manifest lưu `textHash`, nên chạy lại chỉ synthesize các scene đã đổi.)
 - Provider mặc định hiện là `fake` (WAV im lặng, độ dài theo số ký tự): dùng để xem nhịp, không phải giọng thật.
+- **Caption từng từ**: `Video` render component `Captions` cho mỗi scene từ `words` trong manifest. `pnpm tts <id> --provider edge` lấy mốc thời gian
+  từng từ từ giọng thật; provider `fake` chỉ chia đều thời gian cho các từ (chỉ để xem bố cục). Caption nằm trong dải 200px cuối hộp an toàn,
+  nên scene không phải tự vẽ phụ đề; sửa `voice` thì chạy lại `pnpm tts <id>` để `words` khớp.
 - Mục tiêu cả video 2-4 phút, re-hook quanh giây 45 và giây 100 (xem `story-arc.md`).
 
 ## Scene reference
 
 Mọi animation (thứ tự hiện, tốc độ gõ, morph) được suy ra từ độ dài scene, nên scene dài hơn thì reveal chậm hơn.
 Các helper layout trả về cờ `fits`/`wraps`: nội dung quá nhiều sẽ bị co chữ tới mức tối thiểu, rồi tràn hoặc cuộn.
-Hộp nội dung (safe zone) là **850 x 1350 px** (1080 - 60 - 170, 1920 - 150 - 420). Các con số bên dưới là giới hạn thực tế
-tính từ code, tính cho hộp này. Số "ước tính" là suy ra từ độ rộng ký tự trung bình, hãy kiểm bằng ảnh tĩnh (xem `qa-checklist.md`).
+Hộp an toàn (safe zone) là **780 x 970 px** (1080 - 120 - 180, 1920 - 270 - 680). Dải 200px dưới cùng của hộp dành cho caption, nên mỗi scene tự bố cục
+trong `CONTENT_BOX` = **780 x 770 px**. Các con số bên dưới là giới hạn thực tế tính từ code, tính cho `CONTENT_BOX`. Số "ước tính" là suy ra từ độ rộng ký tự trung bình, hãy kiểm bằng ảnh tĩnh (xem `qa-checklist.md`).
 
 ### hook
 
@@ -71,8 +74,8 @@ tính từ code, tính cho hộp này. Số "ước tính" là suy ra từ độ
 
 | Prop       | Kiểu               | Ghi chú                                          |
 | ---------- | ------------------ | ------------------------------------------------ |
-| `headline` | string, không rỗng | Chữ lớn 84px (Be Vietnam Pro 800).               |
-| `subline`  | string, tùy chọn   | 44px, màu muted.                                 |
+| `headline` | string, không rỗng | Chữ lớn 72px (Be Vietnam Pro 800).               |
+| `subline`  | string, tùy chọn   | 40px, màu muted.                                 |
 | `badge`    | string, tùy chọn   | Nhãn nhỏ phía trên, ví dụ `"Junior · Database"`. |
 
 ```json
@@ -85,8 +88,8 @@ tính từ code, tính cho hộp này. Số "ước tính" là suy ra từ độ
 }
 ```
 
-Giới hạn: **không có bước tự co chữ và không có cờ `fits`**. Cỡ chữ cố định (84 / 44 / 36), xuống dòng tự do;
-khoảng 17 ký tự mỗi dòng ở 84px, nên giữ `headline` dưới ~80 ký tự (ước tính, khoảng 5 dòng) và `subline` ngắn.
+Giới hạn: **không có bước tự co chữ và không có cờ `fits`**. Cỡ chữ cố định (72 / 40 / 36), xuống dòng tự do;
+khoảng 21 ký tự mỗi dòng ở 72px (780 / (72 x 0.5)), nên giữ `headline` dưới ~80 ký tự (ước tính) và `subline` ngắn.
 
 ### diagram
 
@@ -94,7 +97,7 @@ khoảng 17 ký tự mỗi dòng ở 84px, nên giữ `headline` dưới ~80 ký
 
 | Prop    | Kiểu                                      | Ghi chú                                     |
 | ------- | ----------------------------------------- | ------------------------------------------- |
-| `title` | string, không rỗng                        | 64px, tối đa 2 dòng (dòng thừa bị cắt).     |
+| `title` | string, không rỗng                        | 48px, tối đa 2 dòng (dòng thừa bị cắt).     |
 | `nodes` | mảng `{ id: slug, label }`, >= 1          | `id` là slug; `label` hiển thị 40px đậm.    |
 | `edges` | mảng `{ from, to, label? }` (có thể rỗng) | `from`/`to` là `id` của node; `label` 32px. |
 
@@ -118,17 +121,17 @@ khoảng 17 ký tự mỗi dòng ở 84px, nên giữ `headline` dưới ~80 ký
 Cách layout (`layout.ts`): sơ đồ chảy từ trên xuống; tầng của node = đường dài nhất từ nguồn. Mũi tên quay ngược (tạo vòng)
 được vẽ dọc đường ray bên phải (chừa 80px bề ngang). Reveal theo tầng, 80% đầu scene.
 
-Giới hạn thực tế:
+Giới hạn thực tế (đo bằng `layoutDiagram`, hộp sơ đồ 780 x 634 px = `CONTENT_BOX` trừ dải tiêu đề 136px; `label` một dòng):
 
-- **Số tầng**: vùng sơ đồ cao 1350 - 210 (tiêu đề) = 1140px; mỗi node cao tối thiểu 120px và khoảng cách tầng tối thiểu 90px nên
-  **tối đa 5 tầng** (6 tầng tràn). Chia nhánh cùng tầng thì không tốn thêm chiều cao.
-- **Số node mỗi tầng**: bề ngang 850px chia đều (khoảng cách cột 28px). 2 node mỗi tầng còn ~400px/node, 3 node còn ~260px
-  (khoảng 10 ký tự mỗi dòng ở 40px), nên với 3 node/tầng hãy giữ `label` dưới ~20 ký tự (ước tính). Tổng thực tế: dưới ~10 node.
-- Node rộng tối đa 700px, cao 120-160px; `label` dài sẽ ngắt dòng (`overflowWrap: anywhere`) và có thể tràn khung node.
+- **Số tầng**: **tối đa 5 tầng** khi mỗi tầng <= 3 node (6 tầng không vừa); **4 node mỗi tầng** chỉ vừa tới 4 tầng; 5 node mỗi tầng không bao giờ vừa
+  (node rộng tối thiểu 140px, `MIN_NODE_WIDTH`). Khi một edge nhảy qua tầng (phải đi vòng qua đường lane) cần thêm khoảng cách giữa các tầng,
+  nên hãy giữ **<= 4 tầng**. Chia nhánh cùng tầng thì không tốn thêm chiều cao.
+- Chữ node tự co từ 40 xuống 28px, rồi mới tăng chiều cao tầng; node rộng tối đa 700px, cao 80-160px. `label` dài sẽ ngắt dòng và tốn chiều cao,
+  nên giữ `label` ngắn (một dòng) khi có 3 node/tầng trở lên.
 - `edge.label` rộng tối đa 360px; label ở đường ray bên phải bị cắt bằng dấu `…`.
+- **`layoutDiagram` trả `fits`**; `pnpm qa` báo lỗi `layout.diagram-overflow` khi không vừa ở cỡ nhỏ nhất: rút ngắn label, giảm số tầng/node mỗi tầng, hoặc tách thành hai scene diagram.
 - **Không được validate**: edge trỏ tới `id` không tồn tại bị bỏ qua im lặng, edge `from == to` bị bỏ, `id` node trùng thì chỉ giữ cái đầu.
   Hãy kiểm bằng mắt rằng mọi mũi tên có hiện.
-- Hiện chưa có cờ `fits` cho Diagram.
 
 ### code
 
@@ -160,13 +163,14 @@ Giới hạn thực tế:
 
 `testPath` trong ví dụ phải trỏ tới file có thật (nếu không `pnpm validate` báo lỗi).
 
-Giới hạn (`fit.ts`, `layout.ts`, `CodeDiff.tsx`):
+Giới hạn (`fit.ts`, `CodeDiff.tsx`):
 
-- Hộp code rộng 794px (850 - 2 x 28 padding), font JetBrains Mono, bề ngang ký tự = 0.6 x cỡ chữ.
-- Cỡ chữ tự chọn từ **40px xuống 22px** sao cho dòng dài nhất (trong cả before và after) vừa một hàng:
-  dòng <= **33 ký tự** được 40px; dòng 60 ký tự được 22px; **dài hơn 60 ký tự thì bị ngắt dòng cứng** (cờ `wraps`) và nhìn xấu, hãy giữ code <= 60 cột.
-- Chiều cao: vùng code cao tối đa 1350 - 84 (header) - 130 (badge) - 56 = 1080px. Khi số hàng x 1.5 x cỡ chữ vượt quá thì toàn khối bị
-  thu nhỏ (`scale`), không cuộn. Ở 22px khoảng **32 hàng** vừa không co; hơn nữa chữ nhỏ dần, nên giữ <= ~25 dòng mỗi bên.
+- Hộp code rộng 740px (780 - 2 x 20 padding), font JetBrains Mono, bề ngang ký tự = 0.6 x cỡ chữ.
+- `fontSize` tự chọn từ **40px xuống 22px** sao cho dòng dài nhất (trong cả before và after) vừa một hàng: dòng <= **30 ký tự** được 40px;
+  dòng ~56 ký tự được 22px. Dòng dài hơn thì khối code được **thu nhỏ (scale) tới 0.75** để thêm cột (tối đa ~74 cột ở 22px); quá nữa thì bị ngắt dòng cứng (cờ `wraps`).
+- Chiều cao: vùng code cao tối đa 770 - 64 (header) - 96 (badge) - 40 (padding) = 570px. Khi số hàng x 1.5 x cỡ chữ vượt quá thì cả khối cũng bị thu nhỏ, tối thiểu 0.75.
+  Cỡ chữ thực tế thấp nhất vì vậy là khoảng **16.5px** (22 x 0.75), đọc khó trên điện thoại: **hãy giữ snippet ngắn**, ví dụ mẫu dùng 5-6 dòng, mỗi dòng tối đa ~36 ký tự.
+  Ở 22px không co thì vừa ~17 hàng; ở scale 0.75 vừa ~23 hàng. `pnpm qa` cảnh báo `code.line-too-long` khi dòng quá dài.
 - Mọi dòng giống nhau giữa before và after được giữ nguyên và trượt vị trí (diff theo dòng, LCS): đổi nhỏ giữa hai bản cho hiệu ứng đẹp nhất.
 - Màu cú pháp: xem `design-system.md`.
 
@@ -196,15 +200,15 @@ Giới hạn (`fit.ts`, `layout.ts`, `CodeDiff.tsx`):
 }
 ```
 
-Giới hạn (`timeline.ts`, `Terminal.tsx`):
+Giới hạn (`timeline.ts`, `wrap.ts`, `Terminal.tsx`):
 
-- Vùng chữ rộng 786px, cao 1214px (hộp 850 x 1350 trừ header 72px và padding 32px). Cỡ chữ tự chọn từ **40 xuống 28px** sao cho toàn bộ bản ghi vừa;
-  ở 28px một hàng chứa ~46 ký tự, và vừa khoảng **29 hàng** (mỗi lệnh tính thêm `$ ` đầu dòng).
-- Vượt quá 29 hàng thì giữ 28px và **tự cuộn lên** để hàng mới nhất luôn thấy. Chạy được, nhưng người xem không đọc lại được phần đã cuộn.
-  Thực tế: 3 lệnh x 2 dòng output vẫn được 40px; 8 lệnh x 3 dòng output đã xuống 28px.
+- Vùng chữ rộng 732px (780 trừ padding 24px mỗi bên), cao tối đa 666px (770 trừ header 56px và padding). Cỡ chữ tự chọn từ **36 xuống 24px** sao cho toàn bộ bản ghi vừa;
+  ở 24px một hàng chứa ~49 ký tự (cột cuối chừa cho con trỏ) và vừa khoảng **19 hàng** (mỗi lệnh tính thêm `$ ` đầu dòng).
+- Lệnh và output được **ngắt dòng theo từ** thành các hàng tường minh (`wrap.ts`), không còn break-all. Cửa sổ terminal **cao dần theo số hàng đã hiện**, tối đa bằng `CONTENT_BOX`.
+- Vượt quá ~19 hàng thì giữ 24px và **tự cuộn lên**; `pnpm qa` cảnh báo `terminal.auto-scroll`. Người xem không đọc lại được phần đã cuộn nên hãy rút gọn lệnh/output.
 - Tốc độ gõ tỉ lệ với độ dài lệnh: từ 22 tới tối đa 90 ký tự/giây cho tới khi mọi thứ vừa 85% độ dài scene (phần còn lại để giữ hình).
   Nếu vẫn không vừa thì tất cả bị nén đều. Lời đọc quá ngắn so với nhiều lệnh dài sẽ làm gõ rất nhanh.
-- Số trong `output` được tô màu accent tự động. Dòng dài tự ngắt (break-all).
+- Số trong `output` được tô màu accent tự động.
 
 ### tradeoff
 
@@ -231,11 +235,11 @@ Giới hạn (`timeline.ts`, `Terminal.tsx`):
 }
 ```
 
-Giới hạn (`layout.ts`, hàm `chooseLayout`): cỡ chữ dòng giảm dần từ **40px xuống 28px** (tên 40-56px, tiêu đề 44-60px); khi
-chiều cao ước tính vẫn vượt 97% hộp 1350px thì `fits = false` (nội dung tràn xuống vùng ngoài safe zone).
-Số ước tính (dòng ~40-50 ký tự mỗi hàng): **2 option** vừa tới ~10 dòng pros+cons mỗi option khi dòng ngắn (~30 ký tự), ~5 dòng khi dòng ~50 ký tự;
-**3 option** vừa ~5 dòng mỗi option (dòng ~30 ký tự) hoặc ~3 dòng (dòng ~50 ký tự). Nên giữ mỗi dòng pros/cons dưới ~45 ký tự
-và tổng số dòng pros+cons của toàn scene khoảng 8 trở xuống để chữ đủ lớn khi xem trên điện thoại.
+Giới hạn (`layout.ts`, hàm `chooseLayout`): cỡ chữ dòng giảm từng 1px từ **36 xuống 28px** (tên 36-48px, tiêu đề 40-52px); khi
+chiều cao ước tính vẫn vượt 97% `CONTENT_BOX` (770px) thì `fits = false`; `pnpm qa` báo lỗi `layout.tradeoff-overflow` (và cảnh báo `layout.tradeoff-tight` khi chỉ vừa ở 28px).
+Ở cỡ chữ nhỏ nhất, với dòng pros/cons ngắn (~20-30 ký tự, một hàng): **1 option** vừa ~10 dòng pros+cons, **2 option** ~4 dòng mỗi option,
+**3 option** ~2 dòng, **4 option** ~1 dòng; **5 option không bao giờ vừa**. Dòng ~45 ký tự thì còn 2 dòng cho 2 option, 1 dòng cho 3 option.
+Nên dùng 2 option (tối đa 3), mỗi dòng dưới ~45 ký tự.
 
 ### summary
 
@@ -259,9 +263,9 @@ và tổng số dòng pros+cons của toàn scene khoảng 8 trở xuống để
 }
 ```
 
-Giới hạn (`layout.ts`, hàm `summaryLayout`): cỡ chữ tự giảm từ **56px xuống 30px** (bước 2); không vừa hộp 850 x 1350 thì `fits = false`.
-Ước tính: với `loopLine`, vừa khoảng **9 ý** dài ~60 ký tự hoặc **7 ý** dài ~90 ký tự (không `loopLine` thêm ~1-2 ý).
-Chữ chỉ còn ~34-40px khi có từ 5 ý trở lên, nên nên giữ **3-5 ý**, mỗi ý dưới ~70 ký tự.
+Giới hạn (`layout.ts`, hàm `summaryLayout`): cỡ chữ tự giảm từ **44px xuống 28px** (bước 2); không vừa `CONTENT_BOX` (780 x 770) thì `fits = false`
+(`pnpm qa`: lỗi `layout.summary-overflow`, cảnh báo `layout.summary-tight` khi chỉ vừa ở 28px).
+Ước tính: ý dài ~78 ký tự vừa **7 ý** (6 ý nếu có `loopLine`); ý dài ~120 ký tự vừa **5 ý** (4 ý nếu có `loopLine`). Nên giữ **3-5 ý**, mỗi ý dưới ~80 ký tự.
 
 ## Policy
 
