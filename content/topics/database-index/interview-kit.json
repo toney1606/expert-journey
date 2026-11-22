@@ -1,0 +1,27 @@
+{
+  "topic": "database-index",
+  "title": "Database index",
+  "level": "junior",
+  "question": "Database index là gì và khi nào không nên thêm index?",
+  "followUps": [
+    "Composite index: thứ tự cột quan trọng thế nào?",
+    "Khi nào database bỏ qua index dù đã có?"
+  ],
+  "keyPoints": [
+    "Index là cấu trúc dữ liệu phụ (thường B-tree) giúp tìm dòng mà không quét cả bảng",
+    "Đánh đổi: đọc nhanh hơn, ghi chậm hơn, tốn thêm dung lượng",
+    "Chọn cột theo pattern truy vấn thật, đo bằng EXPLAIN"
+  ],
+  "weakAnswer": "Index giúp query nhanh hơn nên em thêm index cho tất cả các cột.",
+  "strongAnswer": "Index là cấu trúc B-tree tách riêng, đổi chi phí ghi lấy tốc độ đọc. Em index theo cột trong WHERE/JOIN/ORDER BY và kiểm chứng bằng EXPLAIN.",
+  "pitfalls": [
+    "Index cột có độ phân biệt thấp (boolean) thường không có ích",
+    "Hàm bọc quanh cột trong WHERE có thể làm index không được dùng"
+  ],
+  "sources": [
+    {
+      "title": "PostgreSQL Documentation: Indexes",
+      "url": "https://www.postgresql.org/docs/current/indexes.html"
+    }
+  ]
+}

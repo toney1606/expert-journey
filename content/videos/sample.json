@@ -1,0 +1,61 @@
+{
+  "meta": {
+    "id": "sample",
+    "title": "Database index: vì sao query nhanh hơn?",
+    "topic": "database-index",
+    "level": "junior",
+    "question": "Database index là gì và khi nào không nên thêm index?",
+    "status": "draft",
+    "aiVoiceLabel": true
+  },
+  "sources": [
+    {
+      "title": "PostgreSQL Documentation: Indexes",
+      "url": "https://www.postgresql.org/docs/current/indexes.html"
+    }
+  ],
+  "scenes": [
+    {
+      "id": "hook",
+      "type": "hook",
+      "voice": "Bảng có mười triệu dòng, query chạy năm giây. Thêm một cái index, còn năm mili giây. Nhưng tại sao?",
+      "draft": { "durationSec": 6 },
+      "props": {
+        "badge": "Junior · Database",
+        "headline": "Index làm query nhanh hơn 1000 lần. Vậy sao không index hết mọi cột?",
+        "subline": "Câu hỏi phỏng vấn kinh điển"
+      }
+    },
+    {
+      "id": "mental-model",
+      "type": "diagram",
+      "voice": "Không có index, database phải đọc từng dòng. Có index, nó đi xuống cây B-tree chỉ vài bước.",
+      "draft": { "durationSec": 8 },
+      "props": {
+        "title": "Full scan vs B-tree lookup",
+        "nodes": [
+          { "id": "query", "label": "WHERE email = ?" },
+          { "id": "scan", "label": "Full table scan O(n)" },
+          { "id": "btree", "label": "B-tree lookup O(log n)" }
+        ],
+        "edges": [
+          { "from": "query", "to": "scan", "label": "không có index" },
+          { "from": "query", "to": "btree", "label": "có index" }
+        ]
+      }
+    },
+    {
+      "id": "takeaway",
+      "type": "summary",
+      "voice": "Index đổi tốc độ ghi lấy tốc độ đọc. Hãy index theo cách bạn truy vấn, không phải theo cách bạn lưu.",
+      "draft": { "durationSec": 6 },
+      "props": {
+        "points": [
+          "Index tăng tốc đọc, làm chậm ghi và tốn bộ nhớ",
+          "Index theo cột xuất hiện trong WHERE, JOIN, ORDER BY"
+        ],
+        "loopLine": "Vậy index một cột hay nhiều cột?"
+      }
+    }
+  ]
+}
