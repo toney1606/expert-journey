@@ -2,15 +2,20 @@ import { interpolate, useCurrentFrame, useVideoConfig } from 'remotion';
 import { colors, fontFamily, spacing } from '../../design/tokens';
 import type { TerminalScene } from './schema';
 import {
+  HANG_INDENT,
   LINE_HEIGHT,
   PROMPT,
   buildTimeline,
+  charCount,
   columnsFor,
+  commandRows,
   cursorVisible,
+  outputRows,
   pickFontSize,
-  rowsAtFrame,
   scrollOffset,
+  smoothedRows,
   totalRows,
+  typedRowCount,
   visibleChars,
 } from './timeline';
 
@@ -22,6 +27,7 @@ const BOX_WIDTH = 850;
 const BOX_HEIGHT = 1350;
 
 const NUMBER_PATTERN = /(\d+(?:[.,]\d+)*)/;
+const INDENT = ' '.repeat(HANG_INDENT);
 
 /** Output text with numbers highlighted. */
 const HighlightedOutput: React.FC<{ text: string }> = ({ text }) => (
@@ -41,7 +47,10 @@ const HighlightedOutput: React.FC<{ text: string }> = ({ text }) => (
 export const Terminal: React.FC<{ scene: TerminalScene }> = ({ scene }) => {
   const frame = useCurrentFrame();
   const { fps, durationInFrames, width, height } = useVideoConfig();
-  const { lines } = scene.props;
+  const lines = scene.props.lines.map((line) => ({
+    command: line.command.normalize('NFC'),
+    output: line.output?.normalize('NFC'),
+  }));
 
   // The scene root fills the safe-zone box; fall back to its nominal size scaled to the canvas.
   const boxWidth = Math.min(BOX_WIDTH, width);
@@ -54,8 +63,14 @@ export const Terminal: React.FC<{ scene: TerminalScene }> = ({ scene }) => {
   const rowHeight = fontSize * LINE_HEIGHT;
 
   const timeline = buildTimeline(lines, durationInFrames, fps);
-  const bodyHeight = Math.min(maxInnerHeight, Math.ceil(totalRows(lines, cols) * rowHeight));
-  const scroll = scrollOffset(rowsAtFrame(frame, lines, timeline, cols), rowHeight, bodyHeight);
+  // The window grows with the revealed rows (spring-smoothed) up to the box, then scrolls.
+  const rows = smoothedRows(frame, lines, timeline, cols, fps);
+  const finalBodyHeight = Math.min(maxInnerHeight, Math.ceil(totalRows(lines, cols) * rowHeight));
+  const bodyHeight = Math.min(maxInnerHeight, Math.ceil(rows * rowHeight));
+  const scroll = scrollOffset(rows, rowHeight, bodyHeight);
+  // Top edge is fixed where the fully grown window would be centred, so it only grows downward.
+  const windowHeight = HEADER_HEIGHT + BODY_PADDING * 2 + finalBodyHeight;
+  const topOffset = Math.max(0, (boxHeight - windowHeight) / 2);
 
   const lastIndex = lines.length - 1;
   const lastTl = timeline[lastIndex];
@@ -78,16 +93,54 @@ export const Terminal: React.FC<{ scene: TerminalScene }> = ({ scene }) => {
     />
   );
 
+  const rowStyle: React.CSSProperties = {
+    height: rowHeight,
+    whiteSpace: 'pre',
+    overflow: 'hidden',
+  };
+  const prompt = <span style={{ color: colors.correct, fontWeight: 700 }}>{PROMPT}</span>;
+
+  const renderLine = (index: number): React.ReactNode => {
+    const line = lines[index];
+    const tl = timeline[index];
+    if (!line || !tl || frame < tl.typeStart) return null;
+    const chars = visibleChars(frame, tl, charCount(line.command));
+    const typing = frame < tl.typeEnd;
+    const showOutput = Boolean(line.output) && frame >= tl.outputStart;
+    const showCursor = typing || (!showOutput && !allDone && index === lastIndex);
+    const fade = interpolate(frame, [tl.outputStart, tl.outputStart + 5], [0, 1], {
+      extrapolateLeft: 'clamp',
+      extrapolateRight: 'clamp',
+    });
+    const cmdRows = commandRows(line.command, cols);
+    const shown = typedRowCount(cmdRows, chars);
+    return (
+      <div key={index}>
+        {cmdRows.slice(0, shown).map((row, r) => {
+          const text = Array.from(row.text)
+            .slice(0, Math.max(0, chars - row.start))
+            .join('');
+          return (
+            <div key={r} style={rowStyle}>
+              {r === 0 ? prompt : INDENT}
+              {text}
+              {showCursor && r === shown - 1 ? cursor : null}
+            </div>
+          );
+        })}
+        {showOutput && line.output
+          ? outputRows(line.output, cols).map((row, r) => (
+              <div key={`o${r}`} style={{ ...rowStyle, color: colors.textMuted, opacity: fade }}>
+                <HighlightedOutput text={row.text} />
+              </div>
+            ))
+          : null}
+      </div>
+    );
+  };
+
   return (
-    <div
-      style={{
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-      }}
-    >
+    <div style={{ width: '100%', height: '100%', paddingTop: topOffset, boxSizing: 'border-box' }}>
       <div
         style={{
           background: colors.card,
@@ -122,40 +175,12 @@ export const Terminal: React.FC<{ scene: TerminalScene }> = ({ scene }) => {
               fontSize,
               lineHeight: LINE_HEIGHT,
               color: colors.text,
-              whiteSpace: 'pre-wrap',
-              wordBreak: 'break-all',
-              lineBreak: 'anywhere',
             }}
           >
-            {lines.map((line, index) => {
-              const tl = timeline[index];
-              if (!tl || frame < tl.typeStart) return null;
-              const chars = visibleChars(frame, tl, line.command.length);
-              const typing = frame < tl.typeEnd;
-              const showOutput = Boolean(line.output) && frame >= tl.outputStart;
-              const showCursor = typing || (!showOutput && !allDone && index === lastIndex);
-              const fade = interpolate(frame, [tl.outputStart, tl.outputStart + 5], [0, 1], {
-                extrapolateLeft: 'clamp',
-                extrapolateRight: 'clamp',
-              });
-              return (
-                <div key={index}>
-                  <div>
-                    <span style={{ color: colors.correct, fontWeight: 700 }}>{PROMPT}</span>
-                    {line.command.slice(0, chars)}
-                    {showCursor ? cursor : null}
-                  </div>
-                  {showOutput && line.output ? (
-                    <div style={{ color: colors.textMuted, opacity: fade }}>
-                      <HighlightedOutput text={line.output} />
-                    </div>
-                  ) : null}
-                </div>
-              );
-            })}
+            {lines.map((_, index) => renderLine(index))}
             {allDone ? (
-              <div>
-                <span style={{ color: colors.correct, fontWeight: 700 }}>{PROMPT}</span>
+              <div style={rowStyle}>
+                {prompt}
                 {cursor}
               </div>
             ) : null}

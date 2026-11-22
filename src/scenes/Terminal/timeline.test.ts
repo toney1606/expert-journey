@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { wrapRows } from './wrap';
 import {
   buildTimeline,
   columnsFor,
@@ -6,6 +7,9 @@ import {
   pickFontSize,
   rowsAtFrame,
   scrollOffset,
+  smoothedRows,
+  commandRows,
+  typedRowCount,
   totalRows,
   visibleChars,
   wrappedRows,
@@ -91,5 +95,77 @@ describe('layout helpers', () => {
     expect(rowsAtFrame(239, sample, tl, cols)).toBe(totalRows(sample, cols));
     expect(scrollOffset(2, 40, 500)).toBe(0);
     expect(scrollOffset(20, 40, 500)).toBe(300);
+  });
+});
+
+const texts = (text: string, cols: number): string[] => wrapRows(text, cols).map((r) => r.text);
+
+describe('wrapRows', () => {
+  it('breaks at spaces without splitting words', () => {
+    expect(texts('SELECT * FROM users WHERE id = 1', 14)).toEqual([
+      'SELECT * FROM',
+      'users WHERE id',
+      '= 1',
+    ]);
+  });
+  it('hard-breaks only tokens longer than a row', () => {
+    expect(texts('abcdefghij', 4)).toEqual(['abcd', 'efgh', 'ij']);
+    expect(texts('ab abcdefghij', 4)).toEqual(['ab', 'abcd', 'efgh', 'ij']);
+    for (const row of texts('x'.repeat(95), 20))
+      expect(Array.from(row).length).toBeLessThanOrEqual(20);
+  });
+  it('breaks after punctuation but keeps numbers whole', () => {
+    expect(texts('users.email,idx_name;done', 13)).toEqual(['users.email,', 'idx_name;done']);
+    expect(texts('path/to/file/name', 9)).toEqual(['path/to/', 'file/name']);
+    expect(texts('cost 0.00..1834.00 rows', 14)).toEqual(['cost', '0.00..1834.00', 'rows']);
+    expect(texts('total 1,000,000 ok', 10).join('|')).toContain('1,000,000');
+  });
+  it('handles Vietnamese text', () => {
+    const rows = texts('Tại sao truy vấn chậm khi không có chỉ mục', 16);
+    expect(rows).toEqual(['Tại sao truy vấn', 'chậm khi không', 'có chỉ mục']);
+  });
+  it('keeps empty lines and newlines', () => {
+    expect(texts('', 10)).toEqual(['']);
+    expect(texts('a\n\nb', 10)).toEqual(['a', '', 'b']);
+  });
+  it('fits exactly at the boundary', () => {
+    expect(texts('abcd efgh', 9)).toEqual(['abcd efgh']);
+    expect(texts('abcd efgh', 8)).toEqual(['abcd', 'efgh']);
+    expect(texts('abcd', 4)).toEqual(['abcd']);
+  });
+  it('keeps leading indentation of output', () => {
+    expect(texts('  -> Seq Scan', 20)).toEqual(['  -> Seq Scan']);
+  });
+  it('records source offsets', () => {
+    const rows = wrapRows('ab cd ef', 5);
+    expect(rows).toEqual([
+      { text: 'ab cd', start: 0 },
+      { text: 'ef', start: 6 },
+    ]);
+  });
+});
+
+describe('typed rows and smoothing', () => {
+  it('reveals command rows progressively', () => {
+    const rows = commandRows('aaaa bbbb cccc dddd', 2 + 1 + 9);
+    expect(rows.length).toBeGreaterThan(1);
+    expect(typedRowCount(rows, 0)).toBe(1);
+    expect(typedRowCount(rows, 5)).toBe(1);
+    expect(typedRowCount(rows, 10)).toBe(1);
+    expect(typedRowCount(rows, 11)).toBe(2);
+    expect(typedRowCount(rows, 19)).toBe(rows.length);
+  });
+  it('smoothed rows converge to the target and never overshoot', () => {
+    const tl = buildTimeline(sample, 240, 30);
+    const cols = columnsFor(786, 32);
+    let prev = 0;
+    for (let f = 0; f < 240; f += 1) {
+      const v = smoothedRows(f, sample, tl, cols, 30);
+      const target = rowsAtFrame(f, sample, tl, cols);
+      expect(v).toBeLessThanOrEqual(target + 1e-6);
+      expect(v).toBeGreaterThanOrEqual(prev - 1e-6);
+      prev = v;
+    }
+    expect(smoothedRows(239, sample, tl, cols, 30)).toBeCloseTo(totalRows(sample, cols), 5);
   });
 });

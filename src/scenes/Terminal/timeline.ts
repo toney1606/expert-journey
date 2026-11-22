@@ -1,3 +1,7 @@
+import { spring } from 'remotion';
+import { wrapRows, type WrapRow } from './wrap';
+
+export type { WrapRow };
 export type TerminalLine = { command: string; output?: string };
 
 export type LineTimeline = {
@@ -89,25 +93,39 @@ export const visibleChars = (
 export const cursorVisible = (frame: number, fps: number): boolean =>
   Math.floor(frame / Math.max(1, Math.round(fps / 2))) % 2 === 0;
 
-/** Rows a text occupies when hard-wrapped at `cols` characters (break-all). Empty text is one row. */
-export const wrappedRows = (text: string, cols: number): number =>
-  text
-    .split('\n')
-    .reduce(
-      (sum, row) => sum + Math.max(1, Math.ceil(Array.from(row).length / Math.max(1, cols))),
-      0,
-    );
+/** Rows a text occupies when word-wrapped at `cols`. Empty text is one row. */
+export const wrappedRows = (text: string, cols: number): number => wrapRows(text, cols).length;
 
 export const columnsFor = (innerWidth: number, fontSize: number): number =>
   Math.max(1, Math.floor(innerWidth / (fontSize * CHAR_WIDTH_EM)));
+
+/** Hanging indent of continuation rows of a command (the prompt width). */
+export const HANG_INDENT = PROMPT.length;
+
+/**
+ * Rows of a command (without prompt) given the full row width. The prompt (row 0) and the 2-col
+ * hanging indent (other rows) are drawn by the renderer; one extra column is kept free so the
+ * cursor never clips at the row end.
+ */
+export const commandRows = (command: string, cols: number): WrapRow[] =>
+  wrapRows(command, cols - HANG_INDENT - 1);
+
+export const outputRows = (output: string, cols: number): WrapRow[] => wrapRows(output, cols);
+
+/** Number of code points in a string (the unit of `visibleChars` and `WrapRow.start`). */
+export const charCount = (text: string): number => Array.from(text).length;
+
+/** Rows of a command showing its first `chars` code points (row 0 is always shown). */
+export const typedRowCount = (rows: readonly WrapRow[], chars: number): number =>
+  Math.max(1, rows.filter((row) => row.start < chars).length);
 
 /** Rows of the whole transcript (every command and output shown, plus the trailing prompt). */
 export const totalRows = (lines: readonly TerminalLine[], cols: number): number =>
   lines.reduce(
     (sum, line) =>
       sum +
-      wrappedRows(PROMPT + line.command, cols) +
-      (line.output ? wrappedRows(line.output, cols) : 0),
+      commandRows(line.command, cols).length +
+      (line.output ? outputRows(line.output, cols).length : 0),
     0,
   ) + 1;
 
@@ -139,9 +157,9 @@ export const rowsAtFrame = (
     const line = lines[i];
     const tl = timeline[i];
     if (!line || !tl || frame < tl.typeStart) break;
-    const chars = visibleChars(frame, tl, line.command.length);
-    rows += wrappedRows(PROMPT + line.command.slice(0, chars), cols);
-    if (line.output && frame >= tl.outputStart) rows += wrappedRows(line.output, cols);
+    const chars = visibleChars(frame, tl, charCount(line.command));
+    rows += typedRowCount(commandRows(line.command, cols), chars);
+    if (line.output && frame >= tl.outputStart) rows += outputRows(line.output, cols).length;
   }
   const last = lines.length - 1;
   const lastTl = timeline[last];
@@ -150,6 +168,39 @@ export const rowsAtFrame = (
     rows += 1;
   }
   return Math.max(1, rows);
+};
+
+/** Frames after which a row-count change has fully settled (spring durationInFrames). */
+export const ROW_SPRING_FRAMES = 14;
+
+/**
+ * Fractional rows on screen at a frame: every change of `rowsAtFrame` is eased in by a spring
+ * (superposition of the recent steps), so the window grows smoothly instead of jumping.
+ */
+export const smoothedRows = (
+  frame: number,
+  lines: readonly TerminalLine[],
+  timeline: readonly LineTimeline[],
+  cols: number,
+  fps: number,
+): number => {
+  const from = Math.max(0, frame - ROW_SPRING_FRAMES);
+  let value = rowsAtFrame(from, lines, timeline, cols);
+  let prev = value;
+  for (let f = from + 1; f <= frame; f += 1) {
+    const target = rowsAtFrame(f, lines, timeline, cols);
+    if (target !== prev) {
+      const progress = spring({
+        frame: frame - f,
+        fps,
+        config: { damping: 200 },
+        durationInFrames: ROW_SPRING_FRAMES,
+      });
+      value += (target - prev) * progress;
+      prev = target;
+    }
+  }
+  return value;
 };
 
 /** Upward scroll in px so the newest rows stay visible. */
