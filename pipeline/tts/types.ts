@@ -16,6 +16,8 @@ export type SynthesisResult = {
   durationSec: number;
   /** Optional timing cues (seconds) when the provider reports sentence/word boundaries. */
   cues?: SynthesisCue[];
+  /** Optional per-word timings (seconds from audio start) for word-by-word captions. */
+  words?: SynthesisCue[];
 };
 
 /**

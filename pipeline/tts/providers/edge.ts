@@ -3,6 +3,7 @@ import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'no
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import type { SynthesisCue, SynthesisRequest, SynthesisResult, TtsProvider } from '../types';
+import { alignWords } from './edge-align';
 import { mp3DurationSec } from './mp3';
 
 export const DEFAULT_EDGE_VOICE = 'vi-VN-HoaiMyNeural';
@@ -21,10 +22,10 @@ export type EdgeJob = {
   voice: string;
   rate: string;
   timeoutSec: number;
-  boundary: 'SentenceBoundary' | 'WordBoundary';
 };
 
-export type EdgeRunOutput = { audio: Uint8Array; cues: SynthesisCue[] };
+/** `words` are the raw WordBoundary events (no punctuation); the provider aligns them. */
+export type EdgeRunOutput = { audio: Uint8Array; words: SynthesisCue[] };
 /** One synthesis attempt. Rejects on any failure; retries are the provider's job. */
 export type EdgeRunner = (job: EdgeJob) => Promise<EdgeRunOutput>;
 
@@ -32,7 +33,6 @@ export type EdgeProviderOptions = {
   runner?: EdgeRunner;
   maxAttempts?: number;
   timeoutSec?: number;
-  boundary?: EdgeJob['boundary'];
   /** Backoff sleep, injectable so tests do not wait. */
   sleep?: (ms: number) => Promise<void>;
 };
@@ -72,8 +72,8 @@ export const subprocessRunner: EdgeRunner = async (job) => {
         else fail(new Error(stderr.trim() || `edge-tts exited with ${code ?? signal}`));
       });
     });
-    const result = JSON.parse(readFileSync(resultPath, 'utf8')) as { cues: SynthesisCue[] };
-    return { audio: new Uint8Array(readFileSync(audioPath)), cues: result.cues };
+    const result = JSON.parse(readFileSync(resultPath, 'utf8')) as { words: SynthesisCue[] };
+    return { audio: new Uint8Array(readFileSync(audioPath)), words: result.words };
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }
@@ -90,14 +90,12 @@ export class EdgeTtsProvider implements TtsProvider {
   private readonly runner: EdgeRunner;
   private readonly maxAttempts: number;
   private readonly timeoutSec: number;
-  private readonly boundary: EdgeJob['boundary'];
   private readonly sleep: (ms: number) => Promise<void>;
 
   constructor(options: EdgeProviderOptions = {}) {
     this.runner = options.runner ?? subprocessRunner;
     this.maxAttempts = options.maxAttempts ?? 6;
     this.timeoutSec = options.timeoutSec ?? 60;
-    this.boundary = options.boundary ?? 'SentenceBoundary';
     this.sleep = options.sleep ?? defaultSleep;
   }
 
@@ -107,13 +105,13 @@ export class EdgeTtsProvider implements TtsProvider {
       voice: voice ?? process.env.EDGE_TTS_VOICE ?? DEFAULT_EDGE_VOICE,
       rate: edgeRate(speed),
       timeoutSec: this.timeoutSec,
-      boundary: this.boundary,
     };
     let lastError: unknown;
     for (let attempt = 1; attempt <= this.maxAttempts; attempt += 1) {
       try {
-        const { audio, cues } = await this.runner(job);
-        return { audio, format: 'mp3', durationSec: mp3DurationSec(audio), cues };
+        const { audio, words: raw } = await this.runner(job);
+        const { words, cues } = alignWords(text, raw);
+        return { audio, format: 'mp3', durationSec: mp3DurationSec(audio), cues, words };
       } catch (error) {
         lastError = error;
         if (attempt < this.maxAttempts) await this.sleep(2000 * attempt);

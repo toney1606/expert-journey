@@ -1,4 +1,4 @@
-import type { SynthesisRequest, SynthesisResult, TtsProvider } from '../types';
+import type { SynthesisCue, SynthesisRequest, SynthesisResult, TtsProvider } from '../types';
 import { encodeWav } from '../wav';
 
 const SAMPLE_RATE = 8000;
@@ -11,6 +11,13 @@ export const estimateDurationSec = (text: string, speed = 1): number => {
   return Math.max(MIN_DURATION_SEC, words / WORDS_PER_SECOND / speed);
 };
 
+/** Evenly spaced word timings across `durationSec`, so offline previews can show captions. */
+export const evenWords = (text: string, durationSec: number): SynthesisCue[] => {
+  const tokens = text.split(/\s+/).filter(Boolean);
+  const step = durationSec / Math.max(1, tokens.length);
+  return tokens.map((token, i) => ({ start: i * step, end: (i + 1) * step, text: token }));
+};
+
 /** Offline provider: silent WAV whose length matches the estimated speech time. For dev and tests. */
 export class FakeTtsProvider implements TtsProvider {
   readonly id = 'fake';
@@ -18,6 +25,11 @@ export class FakeTtsProvider implements TtsProvider {
   async synthesize({ text, speed }: SynthesisRequest): Promise<SynthesisResult> {
     const durationSec = estimateDurationSec(text, speed);
     const samples = new Int16Array(Math.round(durationSec * SAMPLE_RATE));
-    return { audio: encodeWav(samples, SAMPLE_RATE), format: 'wav', durationSec };
+    return {
+      audio: encodeWav(samples, SAMPLE_RATE),
+      format: 'wav',
+      durationSec,
+      words: evenWords(text, durationSec),
+    };
   }
 }

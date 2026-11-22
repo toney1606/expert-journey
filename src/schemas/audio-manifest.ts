@@ -19,6 +19,12 @@ export const AudioManifestSchema = z.strictObject({
           z.strictObject({ start: z.number().min(0), end: z.number().min(0), text: z.string() }),
         )
         .optional(),
+      /** Optional per-word timings (seconds from this scene's audio start) for captions. */
+      words: z
+        .array(
+          z.strictObject({ start: z.number().min(0), end: z.number().min(0), text: z.string() }),
+        )
+        .optional(),
     }),
   ),
 });

@@ -49,6 +49,14 @@ describe('FakeTtsProvider', () => {
     expect(result.durationSec).toBeCloseTo(2, 5);
   });
 
+  it('derives evenly spaced word timings that span the duration', async () => {
+    const result = await new FakeTtsProvider().synthesize({ text: 'một hai ba bốn', lang: 'vi' });
+    expect(result.words?.map((w) => w.text)).toEqual(['một', 'hai', 'ba', 'bốn']);
+    expect(result.words?.at(0)?.start).toBe(0);
+    expect(result.words?.at(3)?.end).toBeCloseTo(result.durationSec, 9);
+    expect(result.words?.at(1)?.start).toBeCloseTo(result.words?.at(0)?.end ?? -1, 9);
+  });
+
   it('scales duration with speed and has a floor', () => {
     expect(estimateDurationSec('a b c d e', 2)).toBeCloseTo(1, 5);
     expect(estimateDurationSec('hi')).toBe(0.5);

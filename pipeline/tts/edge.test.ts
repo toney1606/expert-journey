@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { EdgeTtsProvider, edgeRate } from './providers/edge';
+import { alignWords } from './providers/edge-align';
 import type { EdgeJob, EdgeRunner } from './providers/edge';
 import { mp3DurationSec } from './providers/mp3';
 import { createProvider, providerNames } from './registry';
@@ -57,14 +58,18 @@ describe('edgeRate', () => {
 });
 
 describe('EdgeTtsProvider', () => {
-  const cues = [{ start: 0.1, end: 1.9, text: 'Nhưng tại sao?' }];
+  const words = [
+    { start: 0.1, end: 0.5, text: 'Nhưng' },
+    { start: 0.6, end: 0.9, text: 'tại' },
+    { start: 1, end: 1.9, text: 'sao' },
+  ];
   const noSleep = (): Promise<void> => Promise.resolve();
 
   it('returns mp3, exact duration and cues, passing voice and rate to the runner', async () => {
     const jobs: EdgeJob[] = [];
     const runner: EdgeRunner = (job) => {
       jobs.push(job);
-      return Promise.resolve({ audio: fixture, cues });
+      return Promise.resolve({ audio: fixture, words });
     };
     const result = await new EdgeTtsProvider({ runner, sleep: noSleep }).synthesize({
       text: 'Nhưng tại sao?',
@@ -72,7 +77,8 @@ describe('EdgeTtsProvider', () => {
     });
     expect(result.format).toBe('mp3');
     expect(result.durationSec).toBeCloseTo(1.968, 6);
-    expect(result.cues).toEqual(cues);
+    expect(result.words?.map((w) => w.text)).toEqual(['Nhưng', 'tại', 'sao?']);
+    expect(result.cues).toEqual([{ start: 0.1, end: 1.9, text: 'Nhưng tại sao?' }]);
     expect(jobs[0]).toMatchObject({ voice: 'vi-VN-HoaiMyNeural', rate: '-10%', timeoutSec: 60 });
 
     await new EdgeTtsProvider({ runner, sleep: noSleep }).synthesize({
@@ -91,7 +97,7 @@ describe('EdgeTtsProvider', () => {
       calls += 1;
       return calls < 3
         ? Promise.reject(new Error('NoAudioReceived'))
-        : Promise.resolve({ audio: fixture, cues });
+        : Promise.resolve({ audio: fixture, words });
     };
     const provider = new EdgeTtsProvider({
       runner,
@@ -121,6 +127,42 @@ describe('EdgeTtsProvider', () => {
   });
 });
 
+describe('alignWords', () => {
+  const raw = (...texts: string[]) =>
+    texts.map((text, i) => ({ start: i * 0.5, end: i * 0.5 + 0.4, text }));
+
+  it('re-attaches punctuation and splits sentences', () => {
+    const { words, cues } = alignWords(
+      'Xin chào, bạn. Còn 3.5 thì sao? Ok',
+      raw('Xin', 'chào', 'bạn', 'Còn', '3.5', 'thì', 'sao', 'Ok'),
+    );
+    expect(words.map((w) => w.text)).toEqual([
+      'Xin',
+      'chào,',
+      'bạn.',
+      'Còn',
+      '3.5',
+      'thì',
+      'sao?',
+      'Ok',
+    ]);
+    expect(cues.map((c) => c.text)).toEqual(['Xin chào, bạn.', 'Còn 3.5 thì sao?', 'Ok']);
+    expect(cues[0]).toEqual({ start: 0, end: 1.4, text: 'Xin chào, bạn.' });
+  });
+
+  it('keeps unmatched words raw, clamps timings and drops empty text', () => {
+    const { words } = alignWords('abc', [
+      { start: -1, end: -2, text: 'zzz' },
+      { start: 1, end: 2, text: '  ' },
+      { start: 2, end: 3, text: 'abc' },
+    ]);
+    expect(words).toEqual([
+      { start: 0, end: 0, text: 'zzz' },
+      { start: 2, end: 3, text: 'abc' },
+    ]);
+  });
+});
+
 describe('registry', () => {
   it('lists fake and edge', () => {
     expect(providerNames()).toEqual(['fake', 'edge']);
@@ -136,5 +178,6 @@ describe.skipIf(process.env.EDGE_TTS_LIVE !== '1')('EdgeTtsProvider live', () =>
     });
     expect(result.durationSec).toBeGreaterThan(1);
     expect(result.cues?.length).toBeGreaterThan(0);
+    expect(result.words?.length).toBeGreaterThan(5);
   }, 120_000);
 });

@@ -82,6 +82,7 @@ export const synthesizeVideo = async ({
       durationSec: result.durationSec,
       textHash,
       ...(result.cues ? { cues: result.cues } : {}),
+      ...(result.words ? { words: result.words } : {}),
     });
     synthesized.push(scene.id);
   }
