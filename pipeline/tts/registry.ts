@@ -1,8 +1,10 @@
+import { EdgeTtsProvider } from './providers/edge';
 import { FakeTtsProvider } from './providers/fake';
 import type { TtsProvider } from './types';
 
 const PROVIDERS: Record<string, () => TtsProvider> = {
   fake: () => new FakeTtsProvider(),
+  edge: () => new EdgeTtsProvider(),
 };
 
 export const providerNames = (): string[] => Object.keys(PROVIDERS);

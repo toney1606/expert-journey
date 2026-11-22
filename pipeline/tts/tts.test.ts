@@ -58,7 +58,7 @@ describe('FakeTtsProvider', () => {
 describe('createProvider', () => {
   it('resolves fake and rejects unknown names', () => {
     expect(createProvider('fake').id).toBe('fake');
-    expect(() => createProvider('nope')).toThrow(/Available: fake/);
+    expect(() => createProvider('nope')).toThrow(/Available: fake, edge/);
   });
 });
 

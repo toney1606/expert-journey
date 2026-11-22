@@ -7,11 +7,15 @@ export type SynthesisRequest = {
   speed?: number;
 };
 
+export type SynthesisCue = { start: number; end: number; text: string };
+
 export type SynthesisResult = {
   audio: Uint8Array;
   format: AudioFormat;
   /** Providers measure this themselves so callers never need to parse audio files. */
   durationSec: number;
+  /** Optional timing cues (seconds) when the provider reports sentence/word boundaries. */
+  cues?: SynthesisCue[];
 };
 
 /**

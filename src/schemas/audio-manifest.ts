@@ -13,6 +13,12 @@ export const AudioManifestSchema = z.strictObject({
       durationSec: z.number().positive(),
       /** Hash of provider + options + text; used to skip unchanged scenes. */
       textHash: z.string().min(1),
+      /** Optional sentence/word timing cues in seconds (edge provider). */
+      cues: z
+        .array(
+          z.strictObject({ start: z.number().min(0), end: z.number().min(0), text: z.string() }),
+        )
+        .optional(),
     }),
   ),
 });

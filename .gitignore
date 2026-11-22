@@ -8,3 +8,5 @@ public/generated/
 .DS_Store
 .remotion/
 coverage/
+.venv/
+__pycache__/
