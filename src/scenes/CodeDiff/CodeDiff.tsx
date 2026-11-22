@@ -1,18 +1,20 @@
 import { Easing, interpolate, spring, useCurrentFrame, useVideoConfig } from 'remotion';
-import { colors, fontFamily, lineHeight, spacing } from '../../design/tokens';
+import { CONTENT_BOX, colors, fontFamily, lineHeight, spacing } from '../../design/tokens';
 import { springs } from '../../design/springs';
 import { diffLines, splitLines } from './diff';
 import { fitFontSize } from './fit';
-import { buildLayout } from './layout';
+import { buildLayout, type CodeLayout } from './layout';
 import { tokenColors } from './syntax';
 import type { CodeScene } from './schema';
 
-const BOX_WIDTH = 850;
-const BOX_HEIGHT = 1350;
-const CARD_PAD = 28;
-const HEADER_HEIGHT = 84;
-const BADGE_RESERVE = 130;
+const BOX_WIDTH = CONTENT_BOX.width;
+const BOX_HEIGHT = CONTENT_BOX.height;
+const CARD_PAD = 20;
+const HEADER_HEIGHT = 64;
+const BADGE_RESERVE = 96;
 const CODE_LINE_HEIGHT = 1.5;
+const MIN_SCALE = 0.75;
+const SCALE_STEP = 0.02;
 
 /** Phase boundaries as fractions of the scene length. */
 const BEFORE_END = 0.35;
@@ -40,13 +42,30 @@ export const CodeDiff: React.FC<{ scene: CodeScene }> = ({ scene }) => {
   const entries = diffLines(beforeLines, afterLines);
 
   const innerWidth = BOX_WIDTH - CARD_PAD * 2;
-  const { fontSize, maxCols } = fitFontSize([...beforeLines, ...afterLines], innerWidth);
-  const rowHeight = fontSize * CODE_LINE_HEIGHT;
-  const layout = buildLayout(entries, language, maxCols);
-
+  const allLines = [...beforeLines, ...afterLines];
   const maxCodeHeight = BOX_HEIGHT - HEADER_HEIGHT - BADGE_RESERVE - CARD_PAD * 2;
-  const naturalHeight = Math.max(layout.beforeRows, layout.afterRows) * rowHeight;
-  const scale = Math.min(1, maxCodeHeight / naturalHeight);
+  // The code block is drawn at `scale` (<1 when it is too tall); lay it out in a virtual width of
+  // innerWidth / scale so the scaled block still spans the card. Take the largest scale that fits.
+  let chosen: { scale: number; fontSize: number; layout: CodeLayout } | undefined;
+  for (let scale = 1; scale >= MIN_SCALE - 1e-9 && !chosen; scale -= SCALE_STEP) {
+    const fit = fitFontSize(allLines, innerWidth / scale);
+    const layout = buildLayout(entries, language, fit.maxCols);
+    const natural = Math.max(layout.beforeRows, layout.afterRows) * fit.fontSize * CODE_LINE_HEIGHT;
+    if (natural * scale <= maxCodeHeight) chosen = { scale, fontSize: fit.fontSize, layout };
+  }
+  if (!chosen) {
+    const fit = fitFontSize(allLines, innerWidth / MIN_SCALE);
+    const layout = buildLayout(entries, language, fit.maxCols);
+    const natural = Math.max(layout.beforeRows, layout.afterRows) * fit.fontSize * CODE_LINE_HEIGHT;
+    chosen = {
+      scale: Math.min(MIN_SCALE, maxCodeHeight / natural),
+      fontSize: fit.fontSize,
+      layout,
+    };
+  }
+  const { scale, fontSize, layout } = chosen;
+  const rowHeight = fontSize * CODE_LINE_HEIGHT;
+  const virtualWidth = innerWidth / scale;
 
   const morphStart = durationInFrames * BEFORE_END;
   const morphEnd = durationInFrames * MORPH_END;
@@ -100,7 +119,7 @@ export const CodeDiff: React.FC<{ scene: CodeScene }> = ({ scene }) => {
             padding: `0 ${CARD_PAD}px`,
             background: tint(colors.bg, 0.55),
             fontFamily: fontFamily.code,
-            fontSize: 30,
+            fontSize: 26,
             color: colors.textMuted,
           }}
         >
@@ -126,7 +145,7 @@ export const CodeDiff: React.FC<{ scene: CodeScene }> = ({ scene }) => {
                 position: 'absolute',
                 left: 0,
                 top: 0,
-                width: innerWidth,
+                width: virtualWidth,
                 transform: `scale(${scale})`,
                 transformOrigin: 'top left',
               }}
@@ -161,7 +180,7 @@ export const CodeDiff: React.FC<{ scene: CodeScene }> = ({ scene }) => {
                       position: 'absolute',
                       left: 0,
                       top: row * rowHeight,
-                      width: innerWidth,
+                      width: virtualWidth,
                       opacity,
                       transform: `translateX(${dx}px)`,
                       background: tint(tintColor, Math.max(0, tintPct)),
@@ -202,7 +221,7 @@ export const CodeDiff: React.FC<{ scene: CodeScene }> = ({ scene }) => {
           gap: spacing.sm,
           fontFamily: fontFamily.code,
           fontWeight: 700,
-          fontSize: 30,
+          fontSize: 26,
           lineHeight: lineHeight.body,
           color: colors.bg,
           background: colors.correct,

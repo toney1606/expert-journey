@@ -1,13 +1,18 @@
 import { useMemo } from 'react';
 import { interpolate, spring, useCurrentFrame, useVideoConfig } from 'remotion';
-import { colors, fontFamily, lineHeight, safeZone, spacing } from '../../design/tokens';
+import { colors, fontFamily, lineHeight, spacing } from '../../design/tokens';
 import { springs } from '../../design/springs';
-import { safeBox } from '../../lib/safe-zone';
-import { LABEL_INSET, labelSpace, layoutDiagram } from './layout';
+import {
+  DIAGRAM_BOX,
+  DIAGRAM_TITLE_HEIGHT,
+  LABEL_INSET,
+  labelSpace,
+  layoutDiagram,
+} from './layout';
 import type { DiagramLayout, PlacedEdge, PlacedNode } from './layout';
 import type { DiagramScene } from './schema';
 
-const TITLE_HEIGHT = 210;
+const TITLE_HEIGHT = DIAGRAM_TITLE_HEIGHT;
 const EDGE_FONT = 32;
 const STROKE = 5;
 const ARROW_HALF = 12;
@@ -169,11 +174,10 @@ const EdgeLabel: React.FC<{ edge: PlacedEdge; boxWidth: number; opacity: number 
 
 export const Diagram: React.FC<{ scene: DiagramScene }> = ({ scene }) => {
   const frame = useCurrentFrame();
-  const { width, height, fps, durationInFrames } = useVideoConfig();
+  const { fps, durationInFrames } = useVideoConfig();
   const { title, nodes, edges } = scene.props;
 
-  const box = safeBox(safeZone, width, height);
-  const diagramBox = { width: box.width, height: box.height - TITLE_HEIGHT };
+  const diagramBox = DIAGRAM_BOX;
 
   const layout = useMemo(
     () => layoutDiagram(nodes, edges, diagramBox),
@@ -198,7 +202,7 @@ export const Diagram: React.FC<{ scene: DiagramScene }> = ({ scene }) => {
           overflow: 'hidden',
           fontFamily: fontFamily.title,
           fontWeight: 800,
-          fontSize: 64,
+          fontSize: 48,
           lineHeight: lineHeight.title,
           color: colors.text,
           opacity: titleIn,

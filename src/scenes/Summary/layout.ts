@@ -1,4 +1,7 @@
-export const SUMMARY_BOX = { width: 850, height: 1350 } as const;
+import { CONTENT_BOX } from '../../design/tokens';
+
+/** Box the summary is laid out in (kept as an export for pipeline/qa). */
+export const SUMMARY_BOX = CONTENT_BOX;
 
 export type SummaryLayout = {
   fontSize: number;
@@ -9,20 +12,23 @@ export type SummaryLayout = {
   fits: boolean;
 };
 
-const MAX_FONT = 56;
-const MIN_FONT = 30;
+const MAX_FONT = 44;
+export const MIN_FONT = 28;
 const LINE_HEIGHT = 1.4;
 /** Conservative average glyph width in em for Be Vietnam Pro (Vietnamese text, spaces included). */
 const CHAR_EM = 0.58;
 /** Extra lines for word-wrap slack. */
 const WRAP_SLACK = 1.08;
 
-const CHIP_HEIGHT = 84;
-const GAP_AFTER_CHIP = 40;
-const ROW_GAP = 28;
-const LOOP_MARGIN = 20;
-const LOOP_PADDING = 28;
-const CHECK_GAP = 24;
+const CHIP_HEIGHT = 64;
+const GAP_AFTER_CHIP = 24;
+const ROW_GAP = 18;
+const LOOP_MARGIN = 18;
+const LOOP_PADDING = 20;
+const CHECK_GAP = 18;
+
+/** Loop line is slightly smaller than the points but never below the minimum font. */
+const loopFontFor = (fontSize: number): number => Math.max(MIN_FONT, Math.round(fontSize * 0.9));
 
 const linesFor = (chars: number, textWidth: number, fontSize: number): number => {
   const perLine = Math.max(1, Math.floor(textWidth / (fontSize * CHAR_EM)));
@@ -43,7 +49,7 @@ const contentHeight = (
     if (i > 0) height += ROW_GAP;
   });
   if (loopLine) {
-    const loopSize = Math.round(fontSize * 0.9);
+    const loopSize = loopFontFor(fontSize);
     const loopText = box.width - 2 * LOOP_PADDING - 4 - loopSize * 1.2 - CHECK_GAP;
     height +=
       LOOP_MARGIN +
@@ -53,7 +59,7 @@ const contentHeight = (
   return height;
 };
 
-/** Largest font size (56 down to 30, step 2) at which everything fits the box. */
+/** Largest font size (MAX_FONT down to MIN_FONT, step 2) at which everything fits the box. */
 export const summaryLayout = (
   points: readonly string[],
   loopLine?: string,
@@ -70,6 +76,6 @@ export const summaryLayout = (
 const fit = (fontSize: number, fits: boolean): SummaryLayout => ({
   fontSize,
   lineHeight: LINE_HEIGHT,
-  loopFontSize: Math.round(fontSize * 0.9),
+  loopFontSize: loopFontFor(fontSize),
   fits,
 });

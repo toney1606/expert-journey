@@ -79,7 +79,7 @@ export const Summary: React.FC<{ scene: SummaryScene }> = ({ scene }) => {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
-        gap: spacing.md - 4,
+        gap: 18,
       }}
     >
       <div
@@ -88,13 +88,13 @@ export const Summary: React.FC<{ scene: SummaryScene }> = ({ scene }) => {
           alignSelf: 'flex-start',
           fontFamily: fontFamily.code,
           fontWeight: 700,
-          fontSize: 36,
+          fontSize: 32,
           lineHeight: 1.4,
           color: colors.bg,
           background: colors.accent,
           padding: `${spacing.xs}px ${spacing.md}px`,
           borderRadius: 16,
-          marginBottom: spacing.xs,
+          marginBottom: 6,
         }}
       >
         Takeaway
@@ -106,7 +106,7 @@ export const Summary: React.FC<{ scene: SummaryScene }> = ({ scene }) => {
             ...rise(enter(timeline.pointStarts[i] ?? 0)),
             display: 'flex',
             alignItems: 'flex-start',
-            gap: 24,
+            gap: 18,
             fontFamily: fontFamily.title,
             fontWeight: 600,
             fontSize: layout.fontSize,
@@ -128,11 +128,10 @@ export const Summary: React.FC<{ scene: SummaryScene }> = ({ scene }) => {
         <div
           style={{
             ...rise(enter(loopStart)),
-            marginTop: 20,
             display: 'flex',
             alignItems: 'center',
-            gap: 24,
-            padding: 28,
+            gap: 18,
+            padding: 20,
             background: colors.card,
             border: `2px solid ${colors.accent}`,
             borderRadius: 24,

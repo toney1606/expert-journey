@@ -6,9 +6,10 @@ import {
   polylineHitsRect,
   fitNodeText,
   defaultLayoutOptions,
+  DIAGRAM_BOX,
 } from './layout';
 
-const box = { width: 850, height: 1130 };
+const box = DIAGRAM_BOX;
 const n = (...ids: string[]) => ids.map((id) => ({ id, label: id.toUpperCase() }));
 const byId = (layout: ReturnType<typeof layoutDiagram>, id: string) => {
   const found = layout.nodes.find((node) => node.id === id);
@@ -114,11 +115,11 @@ describe('layoutDiagram', () => {
     expect(layoutDiagram([], [], box).nodes).toEqual([]);
   });
 
-  it('keeps six layers inside the box', () => {
-    const ids = ['a', 'b', 'c', 'd', 'e', 'f'];
+  it('keeps five layers inside the box', () => {
+    const ids = ['a', 'b', 'c', 'd', 'e'];
     const edges = ids.slice(1).map((to, i) => ({ from: ids[i] ?? 'a', to }));
     const layout = layoutDiagram(n(...ids), edges, box);
-    expect(layout.layerCount).toBe(6);
+    expect(layout.layerCount).toBe(5);
     expectInside(layout);
     expectNoOverlap(layout);
   });
@@ -177,7 +178,8 @@ describe('layer-skipping edges', () => {
       box,
     );
     expectEdgesAvoidOtherNodes(layout);
-    expectInside(layout);
+    // 5 layers plus a skip edge no longer fit the 780x770 box: reported via fits.
+    expect(layout.fits).toBe(false);
     expectNoOverlap(layout);
   });
 
@@ -218,12 +220,12 @@ describe('layer-skipping edges', () => {
 });
 
 describe('long labels in narrow nodes', () => {
-  const longLabel = 'Một nhãn rất dài cần nhiều dòng trong thẻ hẹp ' + 'x'.repeat(30);
+  const longLabel = 'Một nhãn khá dài cần nhiều dòng trong thẻ hẹp';
   it('shrinks the text and/or grows the layer so the label fits', () => {
-    const ids = ['a', 'b', 'c', 'd', 'e', 'f'];
+    const ids = ['a', 'b', 'c'];
     const nodes = [
       { id: 'root', label: 'Root' },
-      ...ids.map((id, i) => ({ id, label: i === 2 ? longLabel : id })),
+      ...ids.map((id, i) => ({ id, label: i === 1 ? longLabel : id })),
     ];
     const layout = layoutDiagram(
       nodes,
@@ -238,7 +240,7 @@ describe('long labels in narrow nodes', () => {
       expect(node.fontSize).toBeGreaterThanOrEqual(defaultLayoutOptions.nodeFontMin);
       expect(node.fontSize).toBeLessThanOrEqual(defaultLayoutOptions.nodeFontMax);
     }
-    const long = layout.nodes.find((node) => node.id === 'c');
+    const long = layout.nodes.find((node) => node.id === 'b');
     expect(long?.fontSize).toBeLessThan(defaultLayoutOptions.nodeFontMax);
   });
 
@@ -250,12 +252,81 @@ describe('long labels in narrow nodes', () => {
 
 describe('labelSpace', () => {
   it('keeps at least LABEL_INSET from both box edges and picks the roomier side', () => {
-    for (const x of [100, 300, 425, 600, 750]) {
-      const s = labelSpace(x, 850);
-      if (s.placeRight) expect(x + 16 + s.maxWidth).toBeLessThanOrEqual(850 - LABEL_INSET);
+    for (const x of [100, 300, box.width / 2, 600, box.width - 100]) {
+      const s = labelSpace(x, box.width);
+      if (s.placeRight) expect(x + 16 + s.maxWidth).toBeLessThanOrEqual(box.width - LABEL_INSET);
       else expect(x - 16 - s.maxWidth).toBeGreaterThanOrEqual(LABEL_INSET);
     }
-    expect(labelSpace(60, 850).placeRight).toBe(true);
-    expect(labelSpace(800, 850).placeRight).toBe(false);
+    expect(labelSpace(60, box.width).placeRight).toBe(true);
+    expect(labelSpace(box.width - 50, box.width).placeRight).toBe(false);
+  });
+});
+
+describe('fits and limits in the 780x770 content box', () => {
+  const chain = (count: number) => {
+    const ids = Array.from({ length: count }, (_, i) => `n${i}`);
+    const edges = ids.slice(1).map((id, i) => ({ from: ids[i] as string, to: id }));
+    return layoutDiagram(
+      ids.map((id) => ({ id, label: 'Step' })),
+      edges,
+      box,
+    );
+  };
+  const fan = (count: number) => {
+    const kids = Array.from({ length: count }, (_, i) => `k${i}`);
+    return layoutDiagram(
+      [{ id: 'r', label: 'Root' }, ...kids.map((id) => ({ id, label: 'Item' }))],
+      kids.map((id) => ({ from: 'r', to: id })),
+      box,
+    );
+  };
+
+  it('derives its box from CONTENT_BOX', () => {
+    expect(box.width).toBe(780);
+    expect(box.height).toBeLessThan(770);
+  });
+
+  it('fits up to 5 layers with short labels and stays inside the box', () => {
+    for (const count of [1, 3, 5]) {
+      const layout = chain(count);
+      expect(layout.fits).toBe(true);
+      expectInside(layout);
+      expectNoOverlap(layout);
+    }
+  });
+
+  it('does not fit 6 layers', () => {
+    expect(chain(6).fits).toBe(false);
+  });
+
+  it('fits 4 nodes in a layer but not 6', () => {
+    expect(fan(4).fits).toBe(true);
+    expect(fan(6).fits).toBe(false);
+  });
+
+  it('needs wider gaps (so 4 layers at most) when an edge skips layers', () => {
+    const build = (count: number) => {
+      const ids = Array.from({ length: count }, (_, i) => `n${i}`);
+      const edges = ids.slice(1).map((to, i) => ({ from: ids[i] as string, to }));
+      edges.push({ from: 'n0', to: ids[count - 1] as string });
+      return layoutDiagram(
+        ids.map((id) => ({ id, label: 'Step' })),
+        edges,
+        box,
+      );
+    };
+    expect(build(4).fits).toBe(true);
+    expect(build(5).fits).toBe(false);
+  });
+
+  it('does not fit when long labels grow the layers past the height', () => {
+    const label = 'A rather long label that wraps over many lines';
+    const ids = ['a', 'b', 'c', 'd', 'e'];
+    const layout = layoutDiagram(
+      ids.map((id) => ({ id, label })),
+      ids.slice(1).map((id, i) => ({ from: ids[i] as string, to: id })),
+      box,
+    );
+    expect(layout.fits).toBe(false);
   });
 });

@@ -1,5 +1,5 @@
 import { interpolate, spring, useCurrentFrame, useVideoConfig } from 'remotion';
-import { colors, fontFamily, lineHeight } from '../../design/tokens';
+import { CONTENT_BOX, colors, fontFamily, lineHeight } from '../../design/tokens';
 import { springs } from '../../design/springs';
 import {
   CARD_PAD_X,
@@ -15,9 +15,6 @@ import {
 } from './layout';
 import { buildTimeline } from './timeline';
 import type { TradeoffScene } from './schema';
-
-/** Safe-zone content box the scene is designed for (see safeBox). */
-const BOX = { width: 850, height: 1350 } as const;
 
 const CheckIcon: React.FC<{ size: number }> = ({ size }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true">
@@ -49,7 +46,7 @@ export const Tradeoff: React.FC<{ scene: TradeoffScene }> = ({ scene }) => {
   const { fps, durationInFrames } = useVideoConfig();
   const { title, options } = scene.props;
 
-  const layout = chooseLayout(title, options, BOX);
+  const layout = chooseLayout(title, options, CONTENT_BOX);
   const timeline = buildTimeline(
     durationInFrames,
     options.map((option) => option.pros.length + option.cons.length),

@@ -1,29 +1,33 @@
 import { describe, expect, it } from 'vitest';
+import { CONTENT_BOX } from '../../design/tokens';
 import { ADVANCE_EM, fitFontSize, wrapTokens } from './fit';
+
+/** Card inner width in CodeDiff: content box minus 2 x 20px card padding. */
+const W = CONTENT_BOX.width - 40;
 
 describe('fitFontSize', () => {
   it('uses the max size for short lines', () => {
-    expect(fitFontSize(['a = 1'], 794).fontSize).toBe(40);
+    expect(fitFontSize(['a = 1'], W).fontSize).toBe(40);
   });
 
   it('shrinks so the longest line fits', () => {
     const line = 'x'.repeat(40);
-    const fit = fitFontSize([line, 'y'], 794);
+    const fit = fitFontSize([line, 'y'], W);
     expect(fit.fontSize).toBeLessThan(40);
     expect(fit.fontSize).toBeGreaterThanOrEqual(22);
-    expect(40 * ADVANCE_EM * fit.fontSize).toBeLessThanOrEqual(794);
+    expect(40 * ADVANCE_EM * fit.fontSize).toBeLessThanOrEqual(W);
     expect(fit.wraps).toBe(false);
   });
 
   it('clamps to the min size and wraps very long lines', () => {
-    const fit = fitFontSize(['x'.repeat(200)], 794);
+    const fit = fitFontSize(['x'.repeat(200)], W);
     expect(fit.fontSize).toBe(22);
     expect(fit.wraps).toBe(true);
-    expect(fit.maxCols * ADVANCE_EM * fit.fontSize).toBeLessThanOrEqual(794);
+    expect(fit.maxCols * ADVANCE_EM * fit.fontSize).toBeLessThanOrEqual(W);
   });
 
   it('handles empty input', () => {
-    expect(fitFontSize([], 794).fontSize).toBe(40);
+    expect(fitFontSize([], W).fontSize).toBe(40);
   });
 });
 

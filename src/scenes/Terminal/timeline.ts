@@ -21,8 +21,8 @@ const LEAD_IN_SEC = 0.3;
 const PAUSE_BEFORE_OUTPUT_SEC = 0.3;
 const PAUSE_AFTER_OUTPUT_SEC = 0.4;
 
-const MIN_FONT = 28;
-const MAX_FONT = 40;
+const MIN_FONT = 24;
+const MAX_FONT = 36;
 /** JetBrains Mono advance width relative to font size. */
 export const CHAR_WIDTH_EM = 0.6;
 export const LINE_HEIGHT = 1.45;
@@ -130,7 +130,7 @@ export const totalRows = (lines: readonly TerminalLine[], cols: number): number 
   ) + 1;
 
 /**
- * Largest font size in [28, 40] whose full transcript fits `innerHeight`; 28 when none does
+ * Largest font size in [24, 36] whose full transcript fits `innerHeight`; 24 when none does
  * (the body then auto-scrolls).
  */
 export const pickFontSize = (

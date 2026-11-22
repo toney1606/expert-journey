@@ -1,5 +1,5 @@
 import { interpolate, useCurrentFrame, useVideoConfig } from 'remotion';
-import { colors, fontFamily, spacing } from '../../design/tokens';
+import { CONTENT_BOX, colors, fontFamily, spacing } from '../../design/tokens';
 import type { TerminalScene } from './schema';
 import {
   HANG_INDENT,
@@ -19,12 +19,9 @@ import {
   visibleChars,
 } from './timeline';
 
-const HEADER_HEIGHT = 72;
-const BODY_PADDING = spacing.md;
-const DOT_SIZE = 22;
-/** Safe-zone box is 850px wide; used only to size the text before layout is measured. */
-const BOX_WIDTH = 850;
-const BOX_HEIGHT = 1350;
+const HEADER_HEIGHT = 56;
+const BODY_PADDING = spacing.sm + spacing.xs;
+const DOT_SIZE = 18;
 
 const NUMBER_PATTERN = /(\d+(?:[.,]\d+)*)/;
 const INDENT = ' '.repeat(HANG_INDENT);
@@ -53,8 +50,8 @@ export const Terminal: React.FC<{ scene: TerminalScene }> = ({ scene }) => {
   }));
 
   // The scene root fills the safe-zone box; fall back to its nominal size scaled to the canvas.
-  const boxWidth = Math.min(BOX_WIDTH, width);
-  const boxHeight = Math.min(BOX_HEIGHT, height);
+  const boxWidth = Math.min(CONTENT_BOX.width, width);
+  const boxHeight = Math.min(CONTENT_BOX.height, height);
   const innerWidth = boxWidth - BODY_PADDING * 2;
   const maxInnerHeight = boxHeight - HEADER_HEIGHT - BODY_PADDING * 2;
 
@@ -144,7 +141,7 @@ export const Terminal: React.FC<{ scene: TerminalScene }> = ({ scene }) => {
       <div
         style={{
           background: colors.card,
-          borderRadius: 28,
+          borderRadius: 24,
           overflow: 'hidden',
           boxShadow: `0 0 0 3px ${colors.bg}`,
         }}

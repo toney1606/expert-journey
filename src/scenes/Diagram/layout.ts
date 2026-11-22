@@ -1,4 +1,13 @@
 /** Pure layered layout for the Diagram scene. Flows top to bottom. */
+import { CONTENT_BOX } from '../../design/tokens';
+
+/** Title band above the diagram (two lines at 48px). */
+export const DIAGRAM_TITLE_HEIGHT = 136;
+/** Area available to the diagram itself: the scene content box minus the title. */
+export const DIAGRAM_BOX = {
+  width: CONTENT_BOX.width,
+  height: CONTENT_BOX.height - DIAGRAM_TITLE_HEIGHT,
+} as const;
 
 export type LayoutBox = { width: number; height: number };
 
@@ -30,7 +39,7 @@ export const RAIL_INSET = 24;
 export const defaultLayoutOptions: LayoutOptions = {
   maxNodeWidth: 700,
   maxNodeHeight: 160,
-  minNodeHeight: 120,
+  minNodeHeight: 80,
   minLayerGap: 90,
   maxLayerGap: 150,
   columnGap: 28,
@@ -52,7 +61,12 @@ export const MAX_LANES = 3;
 export const LABEL_INSET = 12;
 /** Average glyph width in em for bold Be Vietnam Pro (slightly pessimistic). */
 const NODE_CHAR_EM = 0.62;
-const MIN_GAP = 48;
+/** Smallest vertical space between layers (arrow plus room for a label). */
+export const MIN_GAP = 48;
+/** Smallest gap when a layer-skipping edge runs through lanes: its horizontal runs need clear air beside sibling arrows. */
+export const MIN_GAP_ROUTED = 72;
+/** Narrowest node that still reads; a layer with more nodes than this allows does not fit. */
+export const MIN_NODE_WIDTH = 140;
 
 export type NodeInput = { id: string; label: string };
 export type EdgeInput = { from: string; to: string; label?: string };
@@ -101,6 +115,8 @@ export type DiagramLayout = {
   edges: PlacedEdge[];
   layerCount: number;
   nodeHeight: number;
+  /** False when layers do not fit the height at the minimum sizes, or a layer's nodes get narrower than MIN_NODE_WIDTH. */
+  fits: boolean;
 };
 
 const uniqueNodes = (nodes: readonly NodeInput[]): NodeInput[] => {
@@ -299,7 +315,9 @@ export const layoutDiagram = (
   );
 
   /** Places nodes with `lanes` lanes reserved at the left edge. */
-  const place = (lanes: number): { placed: Map<string, PlacedNode>; gap: number } => {
+  const place = (
+    lanes: number,
+  ): { placed: Map<string, PlacedNode>; gap: number; fits: boolean } => {
     const reserve = lanes > 0 ? LANE_STEP * lanes + 16 : 0;
     const usableWidth = box.width - 2 * opts.pad - (hasBack ? opts.railWidth : 0) - reserve;
     const labelOf = (id: string): string => nodes.find((node) => node.id === id)?.label ?? id;
@@ -314,11 +332,15 @@ export const layoutDiagram = (
       );
     });
     const sum = layerHeights.reduce((a, b) => a + b, 0);
+    const minGap = lanes > 0 ? MIN_GAP_ROUTED : MIN_GAP;
     const gap =
       rows === 1
         ? 0
-        : Math.max(MIN_GAP, Math.min(opts.maxLayerGap, (innerHeight - sum) / (rows - 1)));
+        : Math.max(minGap, Math.min(opts.maxLayerGap, (innerHeight - sum) / (rows - 1)));
     const usedHeight = sum + (rows - 1) * gap;
+    const narrowest = Math.min(...layers.map((layerIds) => widthOf(layerIds.length)));
+    const fits =
+      usedHeight <= innerHeight + 0.5 && (layers.length === 0 || narrowest >= MIN_NODE_WIDTH);
     let y = opts.pad + Math.max(0, (innerHeight - usedHeight) / 2);
     const out = new Map<string, PlacedNode>();
     layers.forEach((layerIds, layer) => {
@@ -342,7 +364,7 @@ export const layoutDiagram = (
       });
       y += height + gap;
     });
-    return { placed: out, gap };
+    return { placed: out, gap, fits };
   };
 
   const forwardPoints = (
@@ -398,7 +420,7 @@ export const layoutDiagram = (
     routedEdges = forward.filter((edge) => again.has(edge));
     result = place(Math.min(MAX_LANES, routedEdges.length));
   }
-  const { placed, gap } = result;
+  const { placed, gap, fits } = result;
   const routed = new Set<EdgeInput>(routedEdges);
   const laneOf = new Map<EdgeInput, number>();
   routedEdges.forEach((edge, i) => laneOf.set(edge, i % MAX_LANES));
@@ -503,5 +525,6 @@ export const layoutDiagram = (
     edges: placedEdges,
     layerCount,
     nodeHeight: baseHeight,
+    fits,
   };
 };

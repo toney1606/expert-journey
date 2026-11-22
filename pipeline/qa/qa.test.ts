@@ -283,6 +283,32 @@ describe('layout', () => {
   });
 });
 
+describe('diagram layout', () => {
+  const diagram = (count: number, label = 'Step'): SceneInput => {
+    const ids = Array.from({ length: count }, (_, i) => `n${i}`);
+    return {
+      id: 'd',
+      type: 'diagram',
+      props: {
+        title: 'T',
+        nodes: ids.map((id) => ({ id, label })),
+        edges: ids.slice(1).map((to, i) => ({ from: ids[i], to })),
+      },
+    };
+  };
+
+  it('passes a diagram that fits', () => {
+    expect(checkLayout(ctxOf(video([diagram(4)])))).toEqual([]);
+  });
+
+  it('errors with a shorten/split message when the diagram does not fit', () => {
+    const issues = checkLayout(ctxOf(video([diagram(8)])));
+    expect(issues[0]).toMatchObject({ severity: 'error', code: 'layout.diagram-overflow' });
+    expect(issues[0]?.message).toContain('shorten');
+    expect(issues[0]?.message).toContain('split');
+  });
+});
+
 describe('terminal', () => {
   const terminal = (count: number): SceneInput => ({
     id: 'term',

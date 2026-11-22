@@ -1,3 +1,4 @@
+import { CONTENT_BOX } from '../../design/tokens';
 import { describe, expect, it } from 'vitest';
 import { wrapRows } from './wrap';
 import {
@@ -19,6 +20,10 @@ const sample = [
   { command: "EXPLAIN SELECT * FROM users WHERE email = 'a@b.com';", output: 'Seq Scan on users' },
   { command: 'CREATE INDEX idx ON users(email);', output: 'CREATE INDEX' },
 ];
+
+/** Terminal body area inside CONTENT_BOX (24px padding, 56px header). */
+const W = CONTENT_BOX.width - 48;
+const H = CONTENT_BOX.height - 56 - 48;
 
 describe('buildTimeline', () => {
   it('is ordered and ends within 85% of the scene', () => {
@@ -72,25 +77,25 @@ describe('layout helpers', () => {
     expect(wrappedRows('a'.repeat(25), 10)).toBe(3);
     expect(wrappedRows('ab\ncd', 10)).toBe(2);
   });
-  it('picks 40 for little content and 28 for lots', () => {
-    expect(pickFontSize([{ command: 'ls' }], 786, 1100)).toBe(40);
+  it('picks 36 for little content and 24 for lots', () => {
+    expect(pickFontSize([{ command: 'ls' }], W, H)).toBe(36);
     const many = Array.from({ length: 12 }, () => ({
       command: 'z'.repeat(100),
       output: 'o'.repeat(200),
     }));
-    expect(pickFontSize(many, 786, 1100)).toBe(28);
+    expect(pickFontSize(many, W, H)).toBe(24);
   });
   it('chosen size fits the height when possible', () => {
-    const size = pickFontSize(sample, 786, 400);
-    expect(size).toBeGreaterThanOrEqual(28);
-    expect(size).toBeLessThanOrEqual(40);
-    if (size > 28) {
-      expect(totalRows(sample, columnsFor(786, size)) * size * 1.45).toBeLessThanOrEqual(400);
+    const size = pickFontSize(sample, W, 400);
+    expect(size).toBeGreaterThanOrEqual(24);
+    expect(size).toBeLessThanOrEqual(36);
+    if (size > 24) {
+      expect(totalRows(sample, columnsFor(W, size)) * size * 1.45).toBeLessThanOrEqual(400);
     }
   });
   it('rows grow over time and scroll is never negative', () => {
     const tl = buildTimeline(sample, 240, 30);
-    const cols = columnsFor(786, 32);
+    const cols = columnsFor(W, 32);
     expect(rowsAtFrame(0, sample, tl, cols)).toBe(1);
     expect(rowsAtFrame(239, sample, tl, cols)).toBe(totalRows(sample, cols));
     expect(scrollOffset(2, 40, 500)).toBe(0);
@@ -157,7 +162,7 @@ describe('typed rows and smoothing', () => {
   });
   it('smoothed rows converge to the target and never overshoot', () => {
     const tl = buildTimeline(sample, 240, 30);
-    const cols = columnsFor(786, 32);
+    const cols = columnsFor(W, 32);
     let prev = 0;
     for (let f = 0; f < 240; f += 1) {
       const v = smoothedRows(f, sample, tl, cols, 30);
