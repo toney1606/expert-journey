@@ -20,7 +20,7 @@
       "type": "hook",
       "voice": "Bảng có mười triệu dòng, query chạy năm giây. Thêm một cái index, còn năm mili giây. Nhưng tại sao?",
       "draft": {
-        "durationSec": 6
+        "durationSec": 9
       },
       "props": {
         "badge": "Junior · Database",
@@ -76,8 +76,8 @@
         "language": "typescript",
         "filename": "lookup.ts",
         "testPath": "content/topics/database-index/code/lookup.test.ts",
-        "before": "export const findByEmail = (users: User[], email: string) => {\n  for (const user of users) {\n    if (user.email === email) return user;\n  }\n  return undefined;\n};",
-        "after": "const index = new Map(users.map((u) => [u.email, u]));\n\nexport const findByEmail = (email: string) =>\n  index.get(email);"
+        "before": "function find(users, email) {\n  for (const u of users) {\n    if (u.email === email) return u;\n  }\n}",
+        "after": "const byEmail = new Map(\n  users.map((u) => [u.email, u]),\n);\n\nconst find = (email) =>\n  byEmail.get(email);"
       }
     },
     {
@@ -132,7 +132,7 @@
       "type": "summary",
       "voice": "Index đổi tốc độ ghi lấy tốc độ đọc. Hãy index theo cách bạn truy vấn, không phải theo cách bạn lưu.",
       "draft": {
-        "durationSec": 6
+        "durationSec": 10
       },
       "props": {
         "points": [
