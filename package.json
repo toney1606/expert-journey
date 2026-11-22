@@ -16,7 +16,10 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "validate": "tsx pipeline/cli.ts validate",
-    "tts": "tsx pipeline/cli.ts tts"
+    "tts": "tsx pipeline/cli.ts tts",
+    "qa": "tsx pipeline/cli.ts qa",
+    "render": "tsx pipeline/cli.ts render",
+    "produce": "tsx pipeline/cli.ts produce"
   },
   "dependencies": {
     "@remotion/cli": "4.0.545",

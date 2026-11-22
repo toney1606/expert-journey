@@ -12,7 +12,8 @@ any Remotion API or `@remotion/*` package. Never write Remotion code from memory
 
 - `pnpm dev` — Remotion Studio (compositions `Video`, `FontTest`)
 - `pnpm lint` / `pnpm typecheck` / `pnpm test` / `pnpm validate` — all must pass
-- `pnpm tts <videoId> [--provider name]` — synthesize scene audio into `public/generated/audio/<id>/` (+ `manifest.json`); default provider `fake` (silent WAV)
+- `pnpm tts <videoId> [--provider fake|edge]` — synthesize scene audio into `public/generated/audio/<id>/` (+ `manifest.json`); default `fake` (silent WAV), `edge` = real Vietnamese voice (needs `.venv`, see README)
+- `pnpm qa <videoId>` — automated QA checks (exit 1 on errors); `pnpm render <videoId>` — MP4 to `out/`; `pnpm produce <videoId>` — validate → tts → qa → render, stops at the first failure
 - `pnpm format` — Prettier
 - `pnpm exec remotion still src/index.ts Video out/x.png --frame=45` — render one frame to check visuals
 
@@ -22,7 +23,12 @@ any Remotion API or `@remotion/*` package. Never write Remotion code from memory
   talk only through JSON files and audio files.
 - Data (`content/*.json`) is separate from UI. The single source of truth for schemas is zod in
   `src/schemas/` (scene schemas live next to their scene in `src/scenes/<Scene>/schema.ts`).
-- Feature-based layout: each scene is a folder with component + schema + test.
+- Feature-based layout, scene folder pattern: `src/scenes/<Scene>/` = component + `schema.ts` (zod) + a pure layout and/or
+  timeline helper (no React) + Vitest tests. Scenes are wired in `src/scenes/registry.tsx`. Scene types: `hook`
+  (HookCard), `diagram`, `code` (CodeDiff), `terminal`, `tradeoff`, `summary`.
+- Reveal timelines are derived from `durationInFrames` (audio length), never hardcoded frame numbers.
+- Content must fit: layout helpers expose a `fits` (or `wraps`) flag and pick the largest font that fits the 850x1350
+  safe-zone box; do not add a scene that overflows silently.
 - Design tokens (colors, spacing, spring presets, safe zone) only in `src/design/`.
   Non-UI logic = pure functions in `src/lib/`, tested with Vitest.
 - TTS sits behind `TtsProvider` (`pipeline/tts/types.ts`); providers are registered in `pipeline/tts/registry.ts` and chosen by `--provider` or `TTS_PROVIDER`. A provider must return `durationSec` itself. Swapping provider must not touch the rest of the pipeline.
@@ -47,4 +53,5 @@ sample composition with the safe-zone outline; README is up to date; changes com
 
 ## Docs
 
-`docs/`: vision, story-arc, design-system, content-guide, qa-checklist.
+`docs/`: vision, story-arc, design-system (tokens, motion), content-guide (scene reference and limits), qa-checklist
+(includes the `remotion still --props` recipe for eyeballing one scene).
