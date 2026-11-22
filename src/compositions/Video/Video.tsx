@@ -16,7 +16,13 @@ export const Video: React.FC<VideoCompositionProps> = ({ video, debugSafeZone })
       <SafeZoneFrame debug={debugSafeZone}>
         <Series>
           {video.scenes.map((scene, index) => (
-            <Series.Sequence key={scene.id} durationInFrames={durations[index] ?? 1}>
+            <Series.Sequence
+              key={scene.id}
+              durationInFrames={durations[index] ?? 1}
+              style={{
+                translate: '3.2px 0px',
+              }}
+            >
               {renderScene(scene)}
             </Series.Sequence>
           ))}

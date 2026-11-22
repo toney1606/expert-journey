@@ -15,7 +15,8 @@
     "format:check": "prettier --check .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "validate": "tsx pipeline/cli.ts validate"
+    "validate": "tsx pipeline/cli.ts validate",
+    "tts": "tsx pipeline/cli.ts tts"
   },
   "dependencies": {
     "@remotion/cli": "4.0.545",

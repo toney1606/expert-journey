@@ -12,6 +12,7 @@ any Remotion API or `@remotion/*` package. Never write Remotion code from memory
 
 - `pnpm dev` — Remotion Studio (compositions `Video`, `FontTest`)
 - `pnpm lint` / `pnpm typecheck` / `pnpm test` / `pnpm validate` — all must pass
+- `pnpm tts <videoId> [--provider name]` — synthesize scene audio into `public/generated/audio/<id>/` (+ `manifest.json`); default provider `fake` (silent WAV)
 - `pnpm format` — Prettier
 - `pnpm exec remotion still src/index.ts Video out/x.png --frame=45` — render one frame to check visuals
 
@@ -24,7 +25,7 @@ any Remotion API or `@remotion/*` package. Never write Remotion code from memory
 - Feature-based layout: each scene is a folder with component + schema + test.
 - Design tokens (colors, spacing, spring presets, safe zone) only in `src/design/`.
   Non-UI logic = pure functions in `src/lib/`, tested with Vitest.
-- TTS sits behind an interface; swapping provider must not touch the pipeline.
+- TTS sits behind `TtsProvider` (`pipeline/tts/types.ts`); providers are registered in `pipeline/tts/registry.ts` and chosen by `--provider` or `TTS_PROVIDER`. A provider must return `durationSec` itself. Swapping provider must not touch the rest of the pipeline.
 
 ## Conventions
 
