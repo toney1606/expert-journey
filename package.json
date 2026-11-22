@@ -1,0 +1,41 @@
+{
+  "name": "expert-journey",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Vertical video channel teaching real-world programming from the interviewer's point of view.",
+  "packageManager": "pnpm@12.14.0",
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "dev": "remotion studio",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "validate": "tsx pipeline/cli.ts validate"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.545",
+    "@remotion/studio": "4.0.545",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "remotion": "4.0.545",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@remotion/eslint-config-flat": "4.0.545",
+    "@types/node": "22.20.5",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "eslint": "10.15.0",
+    "eslint-plugin-react-hooks": "7.1.1",
+    "prettier": "3.10.1",
+    "tsx": "4.23.15",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.73.0",
+    "vitest": "5.1.1"
+  }
+}

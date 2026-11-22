@@ -1,0 +1,10 @@
+node_modules/
+out/
+public/generated/
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+.remotion/
+coverage/
