@@ -1,0 +1,421 @@
+{
+  "level": "fresher",
+  "topics": [
+    {
+      "slug": "oop-encapsulation-private-fields",
+      "title": "Encapsulation là gì, sao không để public hết?",
+      "question": "Encapsulation là gì? Vì sao không nên để tất cả field public mà phải dùng private và getter/setter?",
+      "area": "language",
+      "why": "Kiểm tra bạn hiểu đóng gói để bảo vệ invariant của object chứ không chỉ thuộc lòng định nghĩa OOP.",
+      "sources": [
+        {
+          "title": "MDN: Private elements",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/Private_elements"
+        }
+      ]
+    },
+    {
+      "slug": "oop-composition-over-inheritance",
+      "title": "Inheritance hay Composition?",
+      "question": "Khi nào dùng inheritance, khi nào nên chọn composition? Vì sao người ta hay nói \"prefer composition over inheritance\"?",
+      "area": "architecture",
+      "why": "Phân biệt fresher chỉ biết extends với người biết hierarchy sâu gây coupling và khó đổi.",
+      "sources": [
+        {
+          "title": "Wikipedia: Composition over inheritance",
+          "url": "https://en.wikipedia.org/wiki/Composition_over_inheritance"
+        }
+      ]
+    },
+    {
+      "slug": "oop-overriding-vs-overloading",
+      "title": "Overriding khác Overloading",
+      "question": "Polymorphism là gì? Phân biệt method overriding và overloading, cái nào quyết định lúc runtime?",
+      "area": "language",
+      "why": "Kiểm tra hiểu dynamic dispatch và khác biệt compile-time với runtime.",
+      "sources": [
+        {
+          "title": "Oracle Java Tutorials: Polymorphism",
+          "url": "https://docs.oracle.com/javase/tutorial/java/IandI/polymorphism.html"
+        },
+        {
+          "title": "Oracle Java Tutorials: Overriding and Hiding Methods",
+          "url": "https://docs.oracle.com/javase/tutorial/java/IandI/override.html"
+        }
+      ]
+    },
+    {
+      "slug": "abstract-class-vs-interface",
+      "title": "Abstract class và Interface",
+      "question": "Abstract class khác interface thế nào? Khi nào chọn cái nào?",
+      "area": "language",
+      "why": "Kiểm tra khả năng chọn công cụ trừu tượng hoá đúng chỗ thay vì học thuộc bảng so sánh.",
+      "sources": [
+        {
+          "title": "Oracle Java Tutorials: Abstract Methods and Classes",
+          "url": "https://docs.oracle.com/javase/tutorial/java/IandI/abstract.html"
+        }
+      ]
+    },
+    {
+      "slug": "http-methods-put-vs-patch-idempotent",
+      "title": "GET, POST, PUT, PATCH, DELETE",
+      "question": "Giải thích các HTTP method. PUT khác PATCH thế nào? Idempotent là gì và vì sao quan trọng khi retry?",
+      "area": "backend",
+      "why": "Kiểm tra hiểu ngữ nghĩa HTTP để thiết kế API an toàn khi client retry.",
+      "sources": [
+        {
+          "title": "MDN: HTTP request methods",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods"
+        },
+        {
+          "title": "MDN: Idempotent",
+          "url": "https://developer.mozilla.org/en-US/docs/Glossary/Idempotent"
+        }
+      ]
+    },
+    {
+      "slug": "http-status-codes-401-403-404-500",
+      "title": "Status code: 401, 403, 404, 500",
+      "question": "Khi nào trả 200, 201, 400, 401, 403, 404, 500? 401 khác 403 chỗ nào?",
+      "area": "networking",
+      "why": "Kiểm tra bạn trả đúng status để client xử lý được lỗi thay vì luôn 200 kèm message.",
+      "sources": [
+        {
+          "title": "MDN: HTTP response status codes",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status"
+        }
+      ]
+    },
+    {
+      "slug": "web-app-client-server-mvc",
+      "title": "Web app chia lớp thế nào, MVC là gì?",
+      "question": "Mô tả cách một web app hoạt động giữa client và server. MVC là gì, mỗi phần làm gì?",
+      "area": "architecture",
+      "why": "Kiểm tra bức tranh tổng thể và việc tách trách nhiệm trong code.",
+      "sources": [
+        {
+          "title": "MDN: Client-server overview",
+          "url": "https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Server-side/First_steps/Client-Server_overview"
+        },
+        {
+          "title": "MDN: MVC",
+          "url": "https://developer.mozilla.org/en-US/docs/Glossary/MVC"
+        }
+      ]
+    },
+    {
+      "slug": "rest-api-design-resource-naming",
+      "title": "Thiết kế REST API",
+      "question": "REST là gì? Bạn đặt tên endpoint cho quản lý user và đơn hàng thế nào, stateless nghĩa là gì?",
+      "area": "backend",
+      "why": "Kiểm tra tư duy resource và stateless, tránh endpoint kiểu động từ như /getUser.",
+      "sources": [
+        {
+          "title": "MDN: REST",
+          "url": "https://developer.mozilla.org/en-US/docs/Glossary/REST"
+        },
+        {
+          "title": "MDN: HTTP request methods",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods"
+        }
+      ]
+    },
+    {
+      "slug": "sql-inner-vs-left-join",
+      "title": "INNER JOIN và LEFT JOIN",
+      "question": "INNER JOIN khác LEFT JOIN thế nào? Cho 2 bảng users và orders, lấy tất cả user kể cả chưa có đơn.",
+      "area": "database",
+      "why": "Câu SQL phổ biến nhất ở vòng fresher, kiểm tra tư duy tập hợp và NULL.",
+      "sources": [
+        {
+          "title": "PostgreSQL: Joins Between Tables",
+          "url": "https://www.postgresql.org/docs/current/tutorial-join.html"
+        },
+        {
+          "title": "PostgreSQL: Table Expressions",
+          "url": "https://www.postgresql.org/docs/current/queries-table-expressions.html"
+        }
+      ]
+    },
+    {
+      "slug": "sql-subquery-vs-join-in-exists",
+      "title": "Subquery hay JOIN?",
+      "question": "Subquery khác JOIN thế nào? Lấy user có ít nhất một đơn hàng bằng IN, EXISTS hay JOIN, cái nào nên dùng?",
+      "area": "database",
+      "why": "Kiểm tra bạn viết cùng một yêu cầu bằng nhiều cách SQL và hiểu khi nào subquery gọn hơn JOIN.",
+      "sources": [
+        {
+          "title": "PostgreSQL: Subquery Expressions",
+          "url": "https://www.postgresql.org/docs/current/functions-subquery.html"
+        },
+        {
+          "title": "PostgreSQL: Table Expressions",
+          "url": "https://www.postgresql.org/docs/current/queries-table-expressions.html"
+        }
+      ]
+    },
+    {
+      "slug": "primary-key-vs-foreign-key-constraints",
+      "title": "Primary key và Foreign key",
+      "question": "Primary key, foreign key, unique khác nhau thế nào? Foreign key đảm bảo điều gì khi xoá bản ghi cha?",
+      "area": "database",
+      "why": "Kiểm tra hiểu ràng buộc toàn vẹn dữ liệu thay vì chỉ lưu bảng rời rạc.",
+      "sources": [
+        {
+          "title": "PostgreSQL: Constraints",
+          "url": "https://www.postgresql.org/docs/current/ddl-constraints.html"
+        }
+      ]
+    },
+    {
+      "slug": "database-normalization-1nf-3nf",
+      "title": "Normalization 1NF đến 3NF",
+      "question": "Normalization là gì? Giải thích 1NF, 2NF, 3NF bằng ví dụ. Khi nào nên denormalize?",
+      "area": "database",
+      "why": "Kiểm tra khả năng thiết kế bảng bớt dư thừa và biết trade-off thực tế.",
+      "sources": [
+        {
+          "title": "Wikipedia: Database normalization",
+          "url": "https://en.wikipedia.org/wiki/Database_normalization"
+        }
+      ]
+    },
+    {
+      "slug": "array-vs-linked-list-complexity",
+      "title": "Array và Linked list",
+      "question": "Array khác linked list thế nào? So sánh độ phức tạp truy cập, chèn và xoá.",
+      "area": "algorithms",
+      "why": "Câu cấu trúc dữ liệu kinh điển, kiểm tra Big-O và hiểu bộ nhớ liên tục.",
+      "sources": [
+        {
+          "title": "Wikipedia: Linked list",
+          "url": "https://en.wikipedia.org/wiki/Linked_list"
+        }
+      ]
+    },
+    {
+      "slug": "hash-table-collision-handling",
+      "title": "Hash table hoạt động thế nào",
+      "question": "Hash table hoạt động ra sao? Collision là gì và xử lý thế nào? Vì sao lookup trung bình O(1)?",
+      "area": "algorithms",
+      "why": "Kiểm tra hiểu thứ nằm sau object/Map/dict mà bạn dùng hằng ngày.",
+      "sources": [
+        {
+          "title": "Wikipedia: Hash table",
+          "url": "https://en.wikipedia.org/wiki/Hash_table"
+        },
+        {
+          "title": "MDN: Map",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map"
+        }
+      ]
+    },
+    {
+      "slug": "stack-vs-queue-real-use-cases",
+      "title": "Stack và Queue",
+      "question": "Stack và queue khác nhau thế nào? Cho ví dụ thực tế (undo, call stack, job queue).",
+      "area": "algorithms",
+      "why": "Kiểm tra bạn gắn LIFO/FIFO với bài toán thật chứ không chỉ định nghĩa.",
+      "sources": [
+        {
+          "title": "Wikipedia: Stack (abstract data type)",
+          "url": "https://en.wikipedia.org/wiki/Stack_(abstract_data_type)"
+        },
+        {
+          "title": "Wikipedia: Queue (abstract data type)",
+          "url": "https://en.wikipedia.org/wiki/Queue_(abstract_data_type)"
+        }
+      ]
+    },
+    {
+      "slug": "binary-search-and-sorting-complexity",
+      "title": "Binary search và độ phức tạp sort",
+      "question": "Binary search chạy thế nào, điều kiện gì, độ phức tạp bao nhiêu? So sánh bubble sort với merge sort.",
+      "area": "algorithms",
+      "why": "Kiểm tra tư duy chia đôi và so sánh O(n^2) với O(n log n).",
+      "sources": [
+        {
+          "title": "Wikipedia: Binary search",
+          "url": "https://en.wikipedia.org/wiki/Binary_search"
+        },
+        {
+          "title": "Wikipedia: Sorting algorithm",
+          "url": "https://en.wikipedia.org/wiki/Sorting_algorithm"
+        }
+      ]
+    },
+    {
+      "slug": "callback-vs-promise-callback-hell",
+      "title": "Callback và Promise",
+      "question": "Callback hell là gì? Promise giải quyết nó thế nào? Ba trạng thái của Promise?",
+      "area": "language",
+      "why": "Kiểm tra nền tảng bất đồng bộ trong JS trước khi dùng async/await.",
+      "sources": [
+        {
+          "title": "MDN: Callback function",
+          "url": "https://developer.mozilla.org/en-US/docs/Glossary/Callback_function"
+        },
+        {
+          "title": "MDN: Promise",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
+        }
+      ]
+    },
+    {
+      "slug": "js-event-loop-microtask-vs-timer",
+      "title": "Event loop trong JavaScript",
+      "question": "JavaScript đơn luồng mà sao xử lý bất đồng bộ được? Đoán thứ tự output của setTimeout 0 và Promise.then.",
+      "area": "language",
+      "why": "Kiểm tra hiểu call stack, task queue và microtask, câu đoán output rất hay gặp ở vòng fresher.",
+      "sources": [
+        {
+          "title": "MDN: JavaScript execution model",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Event_loop"
+        },
+        {
+          "title": "MDN: Using promises",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises"
+        }
+      ]
+    },
+    {
+      "slug": "js-closure-loop-var-vs-let",
+      "title": "Closure trong JavaScript",
+      "question": "Closure là gì? Vì sao vòng for với var và setTimeout in ra toàn số giống nhau, còn let thì không?",
+      "area": "language",
+      "why": "Gotcha JS kinh điển, kiểm tra hiểu lexical scope và biến được closure giữ lại.",
+      "sources": [
+        {
+          "title": "MDN: Closures",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Closures"
+        }
+      ]
+    },
+    {
+      "slug": "dom-event-bubbling-delegation",
+      "title": "Event bubbling và delegation",
+      "question": "Event bubbling là gì? Event delegation giúp gì khi danh sách có 1000 item? target khác currentTarget thế nào?",
+      "area": "frontend",
+      "why": "Kiểm tra hiểu cơ chế sự kiện DOM và cách giảm số listener.",
+      "sources": [
+        {
+          "title": "MDN: Event bubbling",
+          "url": "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Scripting/Event_bubbling"
+        }
+      ]
+    },
+    {
+      "slug": "tdd-red-green-refactor",
+      "title": "TDD: red, green, refactor",
+      "question": "TDD là gì? Giải thích chu trình red-green-refactor và lợi ích so với viết test sau.",
+      "area": "testing",
+      "why": "Kiểm tra bạn hiểu viết test trước dẫn dắt thiết kế và có biết giới hạn của TDD.",
+      "sources": [
+        {
+          "title": "Martin Fowler: Test Driven Development",
+          "url": "https://martinfowler.com/bliki/TestDrivenDevelopment.html"
+        }
+      ]
+    },
+    {
+      "slug": "good-unit-test-arrange-act-assert-naming",
+      "title": "Unit test tốt trông thế nào",
+      "question": "Một unit test tốt cần đặc điểm gì? Giải thích Arrange-Act-Assert và bạn đặt tên test ra sao?",
+      "area": "testing",
+      "why": "Kiểm tra khả năng viết test dễ đọc, nhanh, độc lập chứ không chỉ chạy cho xanh.",
+      "sources": [
+        {
+          "title": "Microsoft Learn: Best practices for writing unit tests",
+          "url": "https://learn.microsoft.com/en-us/dotnet/core/testing/unit-testing-best-practices"
+        }
+      ]
+    },
+    {
+      "slug": "git-merge-vs-rebase-fresher",
+      "title": "Git merge và rebase",
+      "question": "git merge khác git rebase thế nào? Khi nào không nên rebase?",
+      "area": "tooling",
+      "why": "Kiểm tra hiểu lịch sử commit và quy tắc không rebase nhánh đã chia sẻ.",
+      "sources": [
+        {
+          "title": "Pro Git: Rebasing",
+          "url": "https://git-scm.com/book/en/v2/Git-Branching-Rebasing"
+        }
+      ]
+    },
+    {
+      "slug": "git-reset-vs-revert-undo-commit",
+      "title": "Git reset và revert",
+      "question": "Lỡ commit sai, dùng git reset hay git revert? Khác nhau thế nào, nếu đã push thì sao?",
+      "area": "tooling",
+      "why": "Kiểm tra bạn hoàn tác an toàn trên nhánh dùng chung.",
+      "sources": [
+        {
+          "title": "git-scm: git-reset",
+          "url": "https://git-scm.com/docs/git-reset"
+        },
+        {
+          "title": "git-scm: git-revert",
+          "url": "https://git-scm.com/docs/git-revert"
+        }
+      ]
+    },
+    {
+      "slug": "cookie-vs-session-vs-localstorage",
+      "title": "Cookie, Session, localStorage",
+      "question": "Cookie khác session khác localStorage thế nào? HttpOnly và SameSite để làm gì?",
+      "area": "backend",
+      "why": "Kiểm tra hiểu cách server nhớ người dùng qua HTTP stateless.",
+      "sources": [
+        {
+          "title": "MDN: Using HTTP cookies",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Cookies"
+        },
+        {
+          "title": "OWASP: Session Management Cheat Sheet",
+          "url": "https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html"
+        }
+      ]
+    },
+    {
+      "slug": "password-hashing-salt-bcrypt",
+      "title": "Lưu mật khẩu thế nào cho đúng",
+      "question": "Có nên lưu password dạng plain text hay mã hoá? Hashing, salt và bcrypt là gì?",
+      "area": "security",
+      "why": "Kiểm tra nhận thức bảo mật tối thiểu: hash chứ không encrypt, có salt.",
+      "sources": [
+        {
+          "title": "OWASP: Password Storage Cheat Sheet",
+          "url": "https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html"
+        }
+      ]
+    },
+    {
+      "slug": "cors-same-origin-preflight",
+      "title": "CORS là gì, sao bị chặn",
+      "question": "Vì sao frontend gọi API bị lỗi CORS? Same-origin policy và preflight request là gì? Sửa ở đâu?",
+      "area": "networking",
+      "why": "Lỗi gặp hằng ngày của fullstack; kiểm tra hiểu browser chặn chứ không phải server.",
+      "sources": [
+        {
+          "title": "MDN: CORS",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS"
+        }
+      ]
+    },
+    {
+      "slug": "sql-injection-parameterized-query",
+      "title": "SQL injection và parameterized query",
+      "question": "SQL injection là gì? Cho ví dụ và cách phòng bằng prepared statement.",
+      "area": "security",
+      "why": "Câu bảo mật số một cho dev backend, kiểm tra không ghép chuỗi vào câu SQL.",
+      "sources": [
+        {
+          "title": "OWASP: SQL Injection Prevention Cheat Sheet",
+          "url": "https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html"
+        }
+      ]
+    }
+  ]
+}

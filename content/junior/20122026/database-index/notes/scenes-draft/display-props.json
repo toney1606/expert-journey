@@ -1,0 +1,83 @@
+{
+  "hook": {
+    "type": "hook",
+    "props": {
+      "badge": "Junior · Database",
+      "headline": "Tìm một email trong bảng users, vì sao có index lại nhanh hơn?",
+      "subline": "Câu hỏi phỏng vấn kinh điển"
+    }
+  },
+  "mental-model-scan": {
+    "type": "diagram",
+    "props": {
+      "title": "Tìm một email trong mười triệu dòng (giả định)",
+      "nodes": [
+        { "id": "query", "label": "WHERE email = ?" },
+        { "id": "scan", "label": "Full table scan: O(n)" },
+        { "id": "lookup", "label": "Index lookup: O(log n)" }
+      ],
+      "edges": [
+        { "from": "query", "to": "scan", "label": "không index" },
+        { "from": "query", "to": "lookup", "label": "có index" }
+      ]
+    }
+  },
+  "mental-model-btree": {
+    "type": "diagram",
+    "props": {
+      "title": "B-tree: đi xuống từng tầng",
+      "nodes": [
+        { "id": "root", "label": "Root page" },
+        { "id": "internal-a", "label": "Internal A" },
+        { "id": "internal-b", "label": "Internal B" },
+        { "id": "leaf-a", "label": "Leaf page" },
+        { "id": "leaf-b", "label": "Leaf page" },
+        { "id": "row", "label": "Dòng dữ liệu" }
+      ],
+      "edges": [
+        { "from": "root", "to": "internal-a", "label": "chọn nhánh" },
+        { "from": "root", "to": "internal-b", "label": "chọn nhánh" },
+        { "from": "internal-a", "to": "leaf-a" },
+        { "from": "internal-b", "to": "leaf-b" },
+        { "from": "leaf-b", "to": "row", "label": "trỏ tới dòng" }
+      ]
+    }
+  },
+  "rehook-all-columns": {
+    "type": "hook",
+    "props": {
+      "badge": "Junior · Database",
+      "headline": "Index nhanh vậy, sao không index hết mọi cột?",
+      "subline": "Câu hỏi nối tiếp của nhà tuyển dụng"
+    }
+  },
+  "trade-offs": {
+    "type": "tradeoff",
+    "props": {
+      "title": "Thêm index: được gì, mất gì?",
+      "options": [
+        {
+          "name": "Có index",
+          "pros": ["Đọc nhanh hơn", "Hỗ trợ ORDER BY, JOIN"],
+          "cons": ["Ghi chậm hơn", "Tốn dung lượng"]
+        },
+        {
+          "name": "Không index",
+          "pros": ["Ghi nhanh", "Nhỏ gọn"],
+          "cons": ["Đọc phải quét cả bảng"]
+        }
+      ]
+    }
+  },
+  "takeaway": {
+    "type": "summary",
+    "props": {
+      "points": [
+        "Index giúp tìm nhanh, thay vì quét cả bảng",
+        "Mỗi index làm ghi chậm hơn và tốn dung lượng",
+        "Chỉ index cột hay nằm trong WHERE, JOIN, ORDER BY"
+      ],
+      "loopLine": "Vậy sao không index hết mọi cột?"
+    }
+  }
+}

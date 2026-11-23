@@ -1,0 +1,449 @@
+{
+  "level": "junior",
+  "topics": [
+    {
+      "slug": "database-index",
+      "title": "Tại sao cần index?",
+      "question": "Database index là gì và khi nào không nên thêm index?",
+      "area": "database",
+      "why": "Kiểm tra ứng viên hiểu index đánh đổi đọc nhanh lấy ghi chậm và dung lượng, thay vì index mọi cột.",
+      "sources": [
+        {
+          "title": "PostgreSQL Documentation: Indexes (Introduction)",
+          "url": "https://www.postgresql.org/docs/current/indexes-intro.html"
+        },
+        {
+          "title": "PostgreSQL Documentation: Index Types",
+          "url": "https://www.postgresql.org/docs/current/indexes-types.html"
+        },
+        {
+          "title": "Use The Index, Luke: The Search Tree",
+          "url": "https://use-the-index-luke.com/sql/anatomy/the-tree"
+        }
+      ]
+    },
+    {
+      "slug": "composite-index-column-order",
+      "title": "Composite index và thứ tự cột",
+      "question": "Composite index (a, b) có giúp query WHERE b = ? không, và em chọn thứ tự cột thế nào?",
+      "area": "database",
+      "why": "Kiểm tra hiểu quy tắc leftmost-prefix và cách chọn thứ tự cột theo pattern truy vấn.",
+      "sources": [
+        {
+          "title": "PostgreSQL Documentation: Multicolumn Indexes",
+          "url": "https://www.postgresql.org/docs/current/indexes-multicolumn.html"
+        },
+        {
+          "title": "MySQL 8.0 Reference: Multiple-Column Indexes",
+          "url": "https://dev.mysql.com/doc/refman/8.0/en/multiple-column-indexes.html"
+        }
+      ]
+    },
+    {
+      "slug": "transaction-acid-bank-transfer",
+      "title": "Transaction và ACID",
+      "question": "Transaction là gì? Giải thích ACID qua ví dụ chuyển tiền giữa hai tài khoản.",
+      "area": "database",
+      "why": "Kiểm tra ứng viên biết khi nào phải gom nhiều câu lệnh vào một transaction và ACID bảo đảm điều gì.",
+      "sources": [
+        {
+          "title": "PostgreSQL Documentation: Transactions (Tutorial)",
+          "url": "https://www.postgresql.org/docs/current/tutorial-transactions.html"
+        },
+        {
+          "title": "MySQL 8.0 Reference: InnoDB and the ACID Model",
+          "url": "https://dev.mysql.com/doc/refman/8.0/en/mysql-acid.html"
+        }
+      ]
+    },
+    {
+      "slug": "database-deadlock-lock-ordering",
+      "title": "Deadlock và cách tránh",
+      "question": "Deadlock trong database là gì? Vì sao hai transaction chờ nhau và em tránh nó thế nào?",
+      "area": "database",
+      "why": "Kiểm tra hiểu locking cơ bản, lỗi đồng thời hay gặp khi nhiều request ghi cùng dòng, và thói quen khóa theo thứ tự nhất quán.",
+      "sources": [
+        {
+          "title": "PostgreSQL Documentation: Explicit Locking (Deadlocks)",
+          "url": "https://www.postgresql.org/docs/current/explicit-locking.html"
+        },
+        {
+          "title": "MySQL 8.0 Reference: InnoDB Deadlocks",
+          "url": "https://dev.mysql.com/doc/refman/8.0/en/innodb-deadlocks.html"
+        }
+      ]
+    },
+    {
+      "slug": "cache-aside-invalidation-ttl",
+      "title": "Cache-aside và invalidation",
+      "question": "Em dùng Redis cache cho API đọc nhiều thế nào? Khi dữ liệu đổi thì xử lý cache ra sao?",
+      "area": "backend",
+      "why": "Kiểm tra hiểu pattern cache-aside, TTL và thứ tự ghi DB rồi xóa cache để tránh dữ liệu cũ.",
+      "sources": [
+        {
+          "title": "Azure Architecture Center: Cache-Aside Pattern",
+          "url": "https://learn.microsoft.com/en-us/azure/architecture/patterns/cache-aside"
+        },
+        {
+          "title": "AWS ElastiCache: Caching strategies",
+          "url": "https://docs.aws.amazon.com/whitepapers/latest/database-caching-strategies-using-redis/caching-patterns.html"
+        }
+      ]
+    },
+    {
+      "slug": "http-cache-control-etag",
+      "title": "HTTP caching: Cache-Control và ETag",
+      "question": "Cache-Control, ETag và 304 Not Modified hoạt động thế nào? Khi nào dùng no-cache và no-store?",
+      "area": "networking",
+      "why": "Kiểm tra hiểu cache phía trình duyệt/CDN và cơ chế validation, thay vì chỉ nghĩ cache là Redis.",
+      "sources": [
+        {
+          "title": "MDN: HTTP caching",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching"
+        }
+      ]
+    },
+    {
+      "slug": "http-methods-safe-idempotent",
+      "title": "Safe và idempotent trong HTTP",
+      "question": "GET, PUT, DELETE, POST khác nhau thế nào về safe và idempotent? Vì sao điều đó quan trọng khi client retry?",
+      "area": "backend",
+      "why": "Kiểm tra hiểu ngữ nghĩa HTTP để thiết kế API và retry an toàn.",
+      "sources": [
+        {
+          "title": "RFC 9110: HTTP Semantics (Common Method Properties)",
+          "url": "https://www.rfc-editor.org/rfc/rfc9110.html#name-common-method-properties"
+        },
+        {
+          "title": "MDN: Idempotent",
+          "url": "https://developer.mozilla.org/en-US/docs/Glossary/Idempotent"
+        }
+      ]
+    },
+    {
+      "slug": "idempotency-key-payment-retry",
+      "title": "Idempotency key cho API thanh toán",
+      "question": "Client timeout khi gọi API tạo thanh toán rồi retry, làm sao tránh trừ tiền hai lần?",
+      "area": "backend",
+      "why": "Kiểm tra khả năng thiết kế POST an toàn khi retry bằng idempotency key trong tình huống tiền thật.",
+      "sources": [
+        {
+          "title": "Stripe API: Idempotent requests",
+          "url": "https://docs.stripe.com/api/idempotent_requests"
+        },
+        {
+          "title": "MDN: Idempotent",
+          "url": "https://developer.mozilla.org/en-US/docs/Glossary/Idempotent"
+        }
+      ]
+    },
+    {
+      "slug": "rest-pagination-offset-vs-cursor",
+      "title": "Phân trang: offset hay cursor",
+      "question": "API danh sách hàng triệu bản ghi: phân trang offset và cursor khác nhau thế nào, vì sao OFFSET lớn thì chậm?",
+      "area": "backend",
+      "why": "Kiểm tra hiểu chi phí của OFFSET và khi nào dùng keyset/cursor pagination.",
+      "sources": [
+        {
+          "title": "Use The Index, Luke: We need tool support for keyset pagination",
+          "url": "https://use-the-index-luke.com/no-offset"
+        },
+        {
+          "title": "Stripe API: Pagination",
+          "url": "https://docs.stripe.com/api/pagination"
+        }
+      ]
+    },
+    {
+      "slug": "n-plus-one-query-orm",
+      "title": "N+1 query với ORM",
+      "question": "N+1 query là gì? Làm sao phát hiện và sửa khi dùng ORM?",
+      "area": "backend",
+      "why": "Kiểm tra ứng viên nhận ra lỗi hiệu năng phổ biến nhất của ORM và biết eager loading/join.",
+      "sources": [
+        {
+          "title": "Rails Guides: Active Record Query Interface (Eager Loading)",
+          "url": "https://guides.rubyonrails.org/active_record_querying.html#eager-loading-associations"
+        }
+      ]
+    },
+    {
+      "slug": "session-vs-jwt-authentication",
+      "title": "Session và JWT",
+      "question": "Session cookie và JWT khác nhau thế nào? Khi nào chọn cái nào?",
+      "area": "security",
+      "why": "Kiểm tra hiểu stateful và stateless auth cùng đánh đổi về thu hồi, bảo mật và mở rộng.",
+      "sources": [
+        {
+          "title": "OWASP Cheat Sheet: Session Management",
+          "url": "https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html"
+        },
+        {
+          "title": "RFC 7519: JSON Web Token (JWT)",
+          "url": "https://www.rfc-editor.org/rfc/rfc7519"
+        }
+      ]
+    },
+    {
+      "slug": "jwt-refresh-token-revocation",
+      "title": "JWT: refresh token và thu hồi",
+      "question": "Access token JWT hết hạn ngắn, refresh token để đâu cho an toàn? Làm sao logout hoặc thu hồi token bị lộ?",
+      "area": "security",
+      "why": "Kiểm tra hiểu điểm yếu thực tế của JWT: lưu trữ, rotation và revocation.",
+      "sources": [
+        {
+          "title": "RFC 8725: JSON Web Token Best Current Practices",
+          "url": "https://www.rfc-editor.org/rfc/rfc8725"
+        },
+        {
+          "title": "OWASP Cheat Sheet: Session Management",
+          "url": "https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html"
+        }
+      ]
+    },
+    {
+      "slug": "xss-stored-reflected-prevention",
+      "title": "XSS và cách phòng chống",
+      "question": "XSS là gì? Stored, reflected, DOM-based khác nhau thế nào và em phòng chống ra sao?",
+      "area": "security",
+      "why": "Kiểm tra hiểu output encoding, CSP và vì sao không tin dữ liệu người dùng.",
+      "sources": [
+        {
+          "title": "OWASP Cheat Sheet: Cross Site Scripting Prevention",
+          "url": "https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html"
+        }
+      ]
+    },
+    {
+      "slug": "csrf-samesite-token",
+      "title": "CSRF và SameSite cookie",
+      "question": "CSRF là gì? CSRF token và SameSite cookie bảo vệ thế nào?",
+      "area": "security",
+      "why": "Kiểm tra hiểu vì sao cookie tự gửi kèm request và cách chặn request giả mạo.",
+      "sources": [
+        {
+          "title": "OWASP Cheat Sheet: Cross-Site Request Forgery Prevention",
+          "url": "https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html"
+        }
+      ]
+    },
+    {
+      "slug": "server-side-input-validation-allowlist",
+      "title": "Validate input ở server",
+      "question": "Đã validate ở frontend rồi, vì sao backend vẫn phải validate lại? Allowlist khác blocklist thế nào?",
+      "area": "security",
+      "why": "Kiểm tra ứng viên không tin client: validate cú pháp và ngữ nghĩa ở server, ưu tiên allowlist.",
+      "sources": [
+        {
+          "title": "OWASP Cheat Sheet: Input Validation",
+          "url": "https://cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html"
+        }
+      ]
+    },
+    {
+      "slug": "dependency-vulnerabilities-npm-audit-lockfile",
+      "title": "Lỗ hổng trong dependency",
+      "question": "npm audit báo lỗ hổng trong thư viện bên thứ ba thì em xử lý thế nào? Lockfile giúp gì?",
+      "area": "security",
+      "why": "Kiểm tra thói quen quản lý dependency thực tế: đọc advisory, nâng phiên bản, ghim lockfile, đánh giá mức ảnh hưởng.",
+      "sources": [
+        {
+          "title": "OWASP Cheat Sheet: Vulnerable Dependency Management",
+          "url": "https://cheatsheetseries.owasp.org/cheatsheets/Vulnerable_Dependency_Management_Cheat_Sheet.html"
+        },
+        {
+          "title": "npm Docs: npm audit",
+          "url": "https://docs.npmjs.com/cli/v10/commands/npm-audit"
+        }
+      ]
+    },
+    {
+      "slug": "async-await-sequential-vs-parallel",
+      "title": "async/await: tuần tự hay song song",
+      "question": "Ba lệnh await liên tiếp có chạy song song không? Khi nào dùng Promise.all?",
+      "area": "language",
+      "why": "Kiểm tra hiểu event loop và lỗi hiệu năng hay gặp: await tuần tự các việc độc lập.",
+      "sources": [
+        {
+          "title": "MDN: async function",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function"
+        },
+        {
+          "title": "MDN: Promise.all()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all"
+        }
+      ]
+    },
+    {
+      "slug": "promise-error-handling-unhandled-rejection",
+      "title": "Xử lý lỗi async và unhandled rejection",
+      "question": "Quên try/catch hoặc await trong code async thì chuyện gì xảy ra? Unhandled promise rejection là gì?",
+      "area": "language",
+      "why": "Kiểm tra hiểu lỗi async bị nuốt hoặc làm sập process và cách xử lý đúng.",
+      "sources": [
+        {
+          "title": "Node.js: process event unhandledRejection",
+          "url": "https://nodejs.org/api/process.html#event-unhandledrejection"
+        },
+        {
+          "title": "MDN: async function",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function"
+        }
+      ]
+    },
+    {
+      "slug": "frontend-local-vs-global-state",
+      "title": "State: local hay global",
+      "question": "Khi nào để state trong component, khi nào lift state up hoặc dùng global store như Redux/Context?",
+      "area": "frontend",
+      "why": "Kiểm tra khả năng đặt state đúng chỗ, tránh prop drilling và state thừa.",
+      "sources": [
+        {
+          "title": "React Docs: Managing State",
+          "url": "https://react.dev/learn/managing-state"
+        },
+        {
+          "title": "React Docs: Choosing the State Structure",
+          "url": "https://react.dev/learn/choosing-the-state-structure"
+        }
+      ]
+    },
+    {
+      "slug": "web-accessibility-semantic-html-aria",
+      "title": "Accessibility cơ bản",
+      "question": "Làm sao để web dùng được với screen reader và bàn phím? Semantic HTML và ARIA khác nhau thế nào?",
+      "area": "frontend",
+      "why": "Kiểm tra ý thức accessibility trong công việc hằng ngày: semantic HTML, focus, alt, label.",
+      "sources": [
+        {
+          "title": "MDN: HTML: A good basis for accessibility",
+          "url": "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Accessibility/HTML"
+        },
+        {
+          "title": "MDN: What is accessibility?",
+          "url": "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Accessibility/What_is_accessibility"
+        }
+      ]
+    },
+    {
+      "slug": "unit-vs-integration-test-pyramid",
+      "title": "Unit test và integration test",
+      "question": "Unit test và integration test khác nhau thế nào? Em cân bằng chúng ra sao (test pyramid)?",
+      "area": "testing",
+      "why": "Kiểm tra hiểu phạm vi, tốc độ và độ tin cậy của từng loại test để chọn đúng.",
+      "sources": [
+        {
+          "title": "Martin Fowler: The Practical Test Pyramid",
+          "url": "https://martinfowler.com/articles/practical-test-pyramid.html"
+        }
+      ]
+    },
+    {
+      "slug": "test-doubles-mock-vs-stub-fake",
+      "title": "Mock, stub và fake",
+      "question": "Mock, stub, fake khác nhau thế nào? Khi nào không nên mock?",
+      "area": "testing",
+      "why": "Kiểm tra hiểu test double và nguy cơ test gắn chặt vào implementation.",
+      "sources": [
+        {
+          "title": "Martin Fowler: Mocks Aren't Stubs",
+          "url": "https://martinfowler.com/articles/mocksArentStubs.html"
+        }
+      ]
+    },
+    {
+      "slug": "code-review-what-to-check",
+      "title": "Review code em kiểm tra gì",
+      "question": "Khi review pull request của đồng nghiệp, em xem những gì? Em nhận comment gay gắt thì phản ứng thế nào?",
+      "area": "soft-skills",
+      "why": "Kiểm tra tư duy review: đúng đắn, thiết kế, test, dễ đọc, và cách góp ý chuyên nghiệp.",
+      "sources": [
+        {
+          "title": "Google Engineering Practices: What to look for in a code review",
+          "url": "https://google.github.io/eng-practices/review/reviewer/looking-for.html"
+        },
+        {
+          "title": "Google Engineering Practices: Small CLs",
+          "url": "https://google.github.io/eng-practices/review/developer/small-cls.html"
+        }
+      ]
+    },
+    {
+      "slug": "solid-in-practice-srp-dip",
+      "title": "SOLID trong thực tế",
+      "question": "Em áp dụng Single Responsibility và Dependency Inversion vào code thật thế nào? Cho ví dụ.",
+      "area": "architecture",
+      "why": "Kiểm tra ứng viên gắn nguyên lý SOLID với code thật thay vì đọc thuộc định nghĩa.",
+      "sources": [
+        {
+          "title": "Wikipedia: SOLID",
+          "url": "https://en.wikipedia.org/wiki/SOLID"
+        }
+      ]
+    },
+    {
+      "slug": "docker-image-layers-build-cache",
+      "title": "Docker image, layer và build cache",
+      "question": "Image và container khác nhau thế nào? Vì sao thứ tự lệnh trong Dockerfile ảnh hưởng tốc độ build?",
+      "area": "devops",
+      "why": "Kiểm tra hiểu layer caching và cách viết Dockerfile gọn, build nhanh.",
+      "sources": [
+        {
+          "title": "Docker Docs: Building best practices",
+          "url": "https://docs.docker.com/build/building/best-practices/"
+        },
+        {
+          "title": "Docker Docs: Build cache",
+          "url": "https://docs.docker.com/build/cache/"
+        }
+      ]
+    },
+    {
+      "slug": "ci-pipeline-basics-failing-build",
+      "title": "CI pipeline cơ bản",
+      "question": "CI pipeline gồm những bước nào? Build đỏ trên main thì em làm gì?",
+      "area": "devops",
+      "why": "Kiểm tra hiểu mục đích CI: tích hợp thường xuyên, test tự động, giữ main luôn xanh.",
+      "sources": [
+        {
+          "title": "Martin Fowler: Continuous Integration",
+          "url": "https://martinfowler.com/articles/continuousIntegration.html"
+        }
+      ]
+    },
+    {
+      "slug": "production-logging-structured-debugging",
+      "title": "Log và debug trên production",
+      "question": "Production lỗi mà không có debugger, em dùng log thế nào? Structured logging và log level dùng ra sao?",
+      "area": "devops",
+      "why": "Kiểm tra khả năng điều tra sự cố bằng log, correlation id và tránh log dữ liệu nhạy cảm.",
+      "sources": [
+        {
+          "title": "The Twelve-Factor App: Logs",
+          "url": "https://12factor.net/logs"
+        },
+        {
+          "title": "OWASP Cheat Sheet: Logging",
+          "url": "https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html"
+        }
+      ]
+    },
+    {
+      "slug": "sql-explain-analyze-slow-query",
+      "title": "Đọc EXPLAIN ANALYZE",
+      "question": "Query chậm trên production: em đọc EXPLAIN ANALYZE thế nào để tìm nguyên nhân?",
+      "area": "database",
+      "why": "Kiểm tra kỹ năng chẩn đoán query chậm: Seq Scan, estimated vs actual rows, cost.",
+      "sources": [
+        {
+          "title": "PostgreSQL Documentation: Using EXPLAIN",
+          "url": "https://www.postgresql.org/docs/current/using-explain.html"
+        },
+        {
+          "title": "PostgreSQL Documentation: EXPLAIN",
+          "url": "https://www.postgresql.org/docs/current/sql-explain.html"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "startDate": "2026-11-22",
+  "slots": ["11:30", "19:30"],
+  "daysPerLevel": 14,
+  "levels": ["intern", "fresher", "junior", "middle", "senior", "expert"]
+}

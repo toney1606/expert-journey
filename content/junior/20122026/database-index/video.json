@@ -1,0 +1,389 @@
+{
+  "meta": {
+    "id": "20122026-database-index",
+    "title": "Tại sao cần index?",
+    "topic": "database-index",
+    "level": "junior",
+    "question": "Database index là gì và khi nào không nên thêm index?",
+    "status": "draft",
+    "aiVoiceLabel": true,
+    "visibility": "private"
+  },
+  "sources": [
+    {
+      "title": "PostgreSQL Documentation: Indexes (Introduction)",
+      "url": "https://www.postgresql.org/docs/current/indexes-intro.html"
+    },
+    {
+      "title": "PostgreSQL Documentation: Indexes on Expressions",
+      "url": "https://www.postgresql.org/docs/current/indexes-expressional.html"
+    },
+    {
+      "title": "SQLite: Query Planning",
+      "url": "https://www.sqlite.org/queryplanner.html"
+    },
+    {
+      "title": "SQLite: EXPLAIN QUERY PLAN",
+      "url": "https://www.sqlite.org/eqp.html"
+    },
+    {
+      "title": "Use The Index, Luke: The Search Tree",
+      "url": "https://use-the-index-luke.com/sql/anatomy/the-tree"
+    },
+    {
+      "title": "Use The Index, Luke: Case-Insensitive Search",
+      "url": "https://use-the-index-luke.com/sql/where-clause/functions/case-insensitive-search"
+    },
+    {
+      "title": "Use The Index, Luke: Insert, Update and Delete",
+      "url": "https://use-the-index-luke.com/sql/dml"
+    },
+    {
+      "title": "PostgreSQL Documentation: Using EXPLAIN",
+      "url": "https://www.postgresql.org/docs/current/using-explain.html"
+    }
+  ],
+  "scenes": [
+    {
+      "id": "hook",
+      "type": "hook",
+      "voice": "Một index, query nhanh hơn mười nghìn lần. Vậy sao không index hết mọi cột?",
+      "draft": {
+        "durationSec": 7
+      },
+      "mood": "problem",
+      "props": {
+        "badge": "SQLite · 1.000.000 dòng · đo thật",
+        "headline": "Một index. {accent|Nhanh hơn 10.000 lần.}",
+        "subline": "Vậy sao không index hết mọi cột?",
+        "atSubline": "Vậy sao"
+      }
+    },
+    {
+      "id": "stakes-scan",
+      "type": "terminal",
+      "voice": "Bảng users có một triệu dòng. Không có index, kế hoạch ghi là SCAN: đọc từng dòng. Kết quả: hơn hai mươi hai mili giây.",
+      "draft": {
+        "durationSec": 18
+      },
+      "mood": "problem",
+      "props": {
+        "lines": [
+          {
+            "command": "EXPLAIN QUERY PLAN SELECT * FROM users WHERE email = 'minh@gmail.com';",
+            "output": "SCAN users",
+            "at": "Không có index"
+          },
+          {
+            "command": "SELECT * FROM users WHERE email = 'minh@gmail.com';",
+            "output": "1 row, 22.7 ms (1000000 rows)",
+            "at": "Kết quả"
+          }
+        ]
+      }
+    },
+    {
+      "id": "analogy",
+      "type": "compare",
+      "voice": "Hãy nghĩ tới một cuốn sách dày. Không có mục lục, bạn phải lật từng trang. Có mục lục, bạn mở thẳng tới đúng chương. Index chính là mục lục của bảng.",
+      "draft": {
+        "durationSec": 13
+      },
+      "mood": "concept",
+      "props": {
+        "title": "Tìm một chương trong sách dày",
+        "left": {
+          "label": "Lật từng trang",
+          "caption": "Full table scan",
+          "icon": "pages",
+          "tone": "bad",
+          "at": "lật từng trang"
+        },
+        "right": {
+          "label": "Mở mục lục",
+          "caption": "Index",
+          "icon": "book",
+          "tone": "good",
+          "at": "mở thẳng"
+        },
+        "verdict": "INDEX = {accent|mục lục} của bảng",
+        "verdictAt": "Index chính là"
+      }
+    },
+    {
+      "id": "numbers",
+      "type": "stat",
+      "voice": "Không index, một triệu dòng nghĩa là tối đa một triệu phép so sánh. Tìm nhị phân trên dữ liệu đã sắp xếp chỉ cần khoảng hai mươi bước. Một tỷ dòng? Vẫn chỉ khoảng ba mươi bước.",
+      "draft": {
+        "durationSec": 16
+      },
+      "mood": "problem",
+      "props": {
+        "title": "Số bước để tìm một dòng",
+        "items": [
+          {
+            "label": "1.000.000 dòng, quét hết",
+            "value": 1000000,
+            "unit": "phép so sánh",
+            "caption": "tối đa",
+            "tone": "bad",
+            "at": "tối đa một triệu"
+          },
+          {
+            "label": "1.000.000 dòng, tìm nhị phân",
+            "value": 20,
+            "unit": "bước",
+            "caption": "log₂(1.000.000) ≈ 20",
+            "tone": "good",
+            "at": "khoảng hai mươi bước"
+          },
+          {
+            "label": "1.000.000.000 dòng, tìm nhị phân",
+            "value": 30,
+            "unit": "bước",
+            "caption": "log₂(1.000.000.000) ≈ 30",
+            "tone": "good",
+            "at": "Một tỷ dòng"
+          }
+        ],
+        "footnote": "Phép tính log₂, không phải số đo"
+      }
+    },
+    {
+      "id": "btree",
+      "type": "diagram",
+      "voice": "Index thường là cây B-tree: nút gốc, nút giữa, nút lá, rồi dòng dữ liệu. Giờ đi tìm một email. Mỗi bước xuống, bạn bỏ cả nhánh lớn. Một triệu dòng cũng chỉ vài tầng.",
+      "draft": {
+        "durationSec": 16
+      },
+      "mood": "concept",
+      "props": {
+        "title": "B-tree: đi xuống từng tầng",
+        "nodes": [
+          {
+            "id": "root",
+            "label": "Nút gốc",
+            "at": "nút gốc"
+          },
+          {
+            "id": "internal-a",
+            "label": "Nút giữa",
+            "at": "nút giữa"
+          },
+          {
+            "id": "internal-b",
+            "label": "Nút giữa",
+            "at": "nút giữa"
+          },
+          {
+            "id": "leaf-a",
+            "label": "Nút lá",
+            "at": "nút lá"
+          },
+          {
+            "id": "leaf-b",
+            "label": "Nút lá",
+            "at": "nút lá"
+          },
+          {
+            "id": "row",
+            "label": "Dòng dữ liệu",
+            "at": "dòng dữ liệu"
+          }
+        ],
+        "edges": [
+          {
+            "from": "root",
+            "to": "internal-a"
+          },
+          {
+            "from": "root",
+            "to": "internal-b"
+          },
+          {
+            "from": "internal-a",
+            "to": "leaf-a"
+          },
+          {
+            "from": "internal-b",
+            "to": "leaf-b"
+          },
+          {
+            "from": "leaf-a",
+            "to": "row",
+            "label": "trỏ tới dòng"
+          }
+        ],
+        "path": ["root", "internal-a", "leaf-a", "row"],
+        "pathAt": "Giờ đi tìm",
+        "stepLabel": "Bước {k}/{n}",
+        "emphasis": "row"
+      }
+    },
+    {
+      "id": "myth",
+      "type": "callout",
+      "voice": "Có index chưa chắc nhanh hơn. Bảng nhỏ, hoặc điều kiện khớp quá nhiều dòng, thì quét cả bảng có thể rẻ hơn. Đừng đoán, hãy kiểm chứng bằng EXPLAIN.",
+      "draft": {
+        "durationSec": 14
+      },
+      "mood": "warning",
+      "props": {
+        "kind": "myth",
+        "kicker": "MYTH BUSTER",
+        "statement": "INDEX ≠ {accent|LUÔN} NHANH HƠN",
+        "explanation": "Bảng nhỏ hoặc khớp nhiều dòng: planner có thể chọn quét cả bảng. Kiểm chứng bằng EXPLAIN.",
+        "statementAt": "Có index chưa chắc",
+        "explanationAt": "Bảng nhỏ"
+      }
+    },
+    {
+      "id": "live-refactor",
+      "type": "code",
+      "voice": "Trong code cũng vậy. Thay vì lặp cả mảng, mình dựng sẵn một bảng tra theo email. Dựng một lần, tìm rẻ mãi.",
+      "draft": {
+        "durationSec": 12
+      },
+      "mood": "solution",
+      "props": {
+        "language": "typescript",
+        "filename": "lookup.ts",
+        "before": "// scan every row: O(n)\nconst user =\n  findByEmailScan(users, email);",
+        "after": "// index built once: O(1)\nconst index =\n  buildEmailIndex(users);\nconst user =\n  findByEmailIndexed(index, email);",
+        "testPath": "content/junior/20122026/database-index/code/lookup.test.ts",
+        "morphAt": "dựng sẵn",
+        "testedAt": "tìm rẻ"
+      }
+    },
+    {
+      "id": "explain-proof",
+      "type": "terminal",
+      "voice": "Tạo index mất khoảng bốn trăm mili giây. Kế hoạch đổi từ SCAN thành SEARCH USING INDEX. Còn khoảng hai phần nghìn mili giây: trong bài thử của mình, nhanh hơn mười nghìn lần.",
+      "draft": {
+        "durationSec": 15
+      },
+      "mood": "solution",
+      "props": {
+        "lines": [
+          {
+            "command": "CREATE INDEX idx_users_email ON users(email);",
+            "output": "done in 398 ms",
+            "at": "Tạo index mất"
+          },
+          {
+            "command": "EXPLAIN QUERY PLAN SELECT * FROM users WHERE email = 'minh@gmail.com';",
+            "output": "SEARCH users USING INDEX idx_users_email (email=?)",
+            "at": "Kế hoạch đổi"
+          },
+          {
+            "command": "SELECT * FROM users WHERE email = 'minh@gmail.com';",
+            "output": "1 row, 0.002 ms",
+            "at": "Còn khoảng"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rehook-all-columns",
+      "type": "hook",
+      "voice": "Vậy index mọi cột cho chắc? Nghe an toàn, nhưng đó là câu trả lời yếu. Cái giá của nó là gì?",
+      "draft": {
+        "durationSec": 8
+      },
+      "mood": "problem",
+      "props": {
+        "badge": "Câu hỏi nối tiếp",
+        "headline": "Index mọi cột cho chắc? {accent|Nghe an toàn.}",
+        "subline": "Cái giá của nó là gì?",
+        "atSubline": "Cái giá"
+      }
+    },
+    {
+      "id": "trade-offs",
+      "type": "tradeoff",
+      "voice": "Đọc nhanh hơn, nhưng ghi chậm hơn: trong bài thử của mình, SQLite, ba index làm INSERT chậm khoảng hai lần. Và tốn chỗ: index theo email nặng gần bằng nửa cái bảng. Còn không index? Ghi nhanh, nhẹ, nhưng mỗi lần đọc là quét cả bảng.",
+      "draft": {
+        "durationSec": 24
+      },
+      "mood": "warning",
+      "props": {
+        "title": "Thêm index: được gì, mất gì?",
+        "options": [
+          {
+            "name": "Có index",
+            "pros": ["Đọc nhanh hơn"],
+            "cons": ["3 index: INSERT chậm ~2 lần", "Index email ≈ 45% cái bảng"],
+            "at": "Đọc nhanh hơn",
+            "cueAt": ["Đọc nhanh hơn", "ba index làm", "nặng gần bằng"]
+          },
+          {
+            "name": "Không index",
+            "pros": ["Ghi nhanh", "Nhẹ"],
+            "cons": ["Đọc phải quét cả bảng"],
+            "at": "Còn không index",
+            "cueAt": ["Ghi nhanh", "nhẹ", "quét cả bảng"]
+          }
+        ]
+      }
+    },
+    {
+      "id": "pitfall-lower",
+      "type": "terminal",
+      "voice": "Còn một cái bẫy. Email có index, nhưng bọc trong hàm lower thì kế hoạch vẫn là SCAN. Index lưu email gốc, không lưu kết quả của hàm. Hãy tạo index trên chính biểu thức đó.",
+      "draft": {
+        "durationSec": 18
+      },
+      "mood": "warning",
+      "props": {
+        "lines": [
+          {
+            "command": "EXPLAIN QUERY PLAN SELECT * FROM users WHERE lower(email) = 'minh@gmail.com';",
+            "output": "SCAN users",
+            "at": "bọc trong hàm"
+          },
+          {
+            "command": "CREATE INDEX idx_users_lower_email ON users(lower(email));",
+            "at": "Hãy tạo index"
+          },
+          {
+            "command": "EXPLAIN QUERY PLAN SELECT * FROM users WHERE lower(email) = 'minh@gmail.com';",
+            "output": "SEARCH users USING INDEX idx_users_lower_email (<expr>=?)"
+          }
+        ]
+      }
+    },
+    {
+      "id": "takeaway",
+      "type": "summary",
+      "voice": "Tóm lại: index giúp đọc nhanh. Đổi lại, ghi chậm hơn và tốn dung lượng. Hãy index theo query thật, rồi kiểm chứng bằng EXPLAIN.",
+      "draft": {
+        "durationSec": 16
+      },
+      "mood": "solution",
+      "props": {
+        "points": [
+          "Index: đọc nhanh nhờ B-tree",
+          "Đổi lại: ghi chậm, tốn dung lượng",
+          "Index theo query thật, kiểm chứng bằng EXPLAIN"
+        ],
+        "pointsAt": ["Tóm lại", "Đổi lại", "Hãy index theo"]
+      }
+    },
+    {
+      "id": "endcard",
+      "type": "endcard",
+      "voice": "Đừng đoán, hãy đo. Giờ bạn trả lời được chưa: sao không index hết mọi cột?",
+      "draft": {
+        "durationSec": 9
+      },
+      "mood": "concept",
+      "props": {
+        "headline": "Đừng đoán. {accent|Hãy đo.}",
+        "subline": "Index theo query thật, kiểm chứng bằng EXPLAIN",
+        "cta": "Theo dõi để xem câu hỏi tiếp theo",
+        "brand": "Expert Journey",
+        "loopLine": "Một index nhanh hơn 10.000 lần. Vậy sao không index hết mọi cột?"
+      }
+    }
+  ]
+}

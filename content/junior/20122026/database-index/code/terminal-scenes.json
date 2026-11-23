@@ -1,0 +1,39 @@
+{
+  "stakes-scan": [
+    {
+      "command": "EXPLAIN QUERY PLAN SELECT * FROM users WHERE email = 'minh@gmail.com';",
+      "output": "SCAN users"
+    },
+    {
+      "command": "SELECT * FROM users WHERE email = 'minh@gmail.com';",
+      "output": "1 row, 22.7 ms (1000000 rows)"
+    }
+  ],
+  "explain-proof": [
+    {
+      "command": "CREATE INDEX idx_users_email ON users(email);",
+      "output": "done in 398 ms"
+    },
+    {
+      "command": "EXPLAIN QUERY PLAN SELECT * FROM users WHERE email = 'minh@gmail.com';",
+      "output": "SEARCH users USING INDEX idx_users_email (email=?)"
+    },
+    {
+      "command": "SELECT * FROM users WHERE email = 'minh@gmail.com';",
+      "output": "1 row, 0.002 ms"
+    }
+  ],
+  "pitfall-lower": [
+    {
+      "command": "EXPLAIN QUERY PLAN SELECT * FROM users WHERE lower(email) = 'minh@gmail.com';",
+      "output": "SCAN users"
+    },
+    {
+      "command": "CREATE INDEX idx_users_lower_email ON users(lower(email));"
+    },
+    {
+      "command": "EXPLAIN QUERY PLAN SELECT * FROM users WHERE lower(email) = 'minh@gmail.com';",
+      "output": "SEARCH users USING INDEX idx_users_lower_email (<expr>=?)"
+    }
+  ]
+}

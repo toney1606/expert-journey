@@ -1,0 +1,485 @@
+{
+  "level": "senior",
+  "topics": [
+    {
+      "slug": "load-balancer-l4-vs-l7-health-checks",
+      "title": "Load balancer L4 và L7",
+      "question": "Bạn chọn load balancer L4 hay L7 cho hệ thống này, thuật toán nào, và health check cấu hình ra sao để không đẩy traffic vào instance chết?",
+      "area": "networking",
+      "why": "Kiểm tra bạn hiểu tầng hoạt động, thuật toán phân tải và failure detection của load balancer.",
+      "sources": [
+        {
+          "title": "AWS: How Elastic Load Balancing works",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/how-elastic-load-balancing-works.html"
+        },
+        {
+          "title": "Google SRE Book: Load Balancing in the Datacenter",
+          "url": "https://sre.google/sre-book/load-balancing-datacenter/"
+        }
+      ]
+    },
+    {
+      "slug": "capacity-planning-traffic-10x",
+      "title": "Chịu tải gấp 10 lần",
+      "question": "Sale lớn sắp tới, traffic dự kiến tăng 10 lần. Bạn lập kế hoạch capacity thế nào: đo gì, tìm bottleneck ở đâu, load test ra sao?",
+      "area": "architecture",
+      "why": "Kiểm tra tư duy ước lượng tải, tìm điểm nghẽn và scale có căn cứ thay vì đoán.",
+      "sources": [
+        {
+          "title": "Azure Well-Architected: Capacity planning",
+          "url": "https://learn.microsoft.com/en-us/azure/well-architected/performance-efficiency/capacity-planning"
+        },
+        {
+          "title": "Google SRE Book: Handling Overload",
+          "url": "https://sre.google/sre-book/handling-overload/"
+        }
+      ]
+    },
+    {
+      "slug": "multi-layer-caching-cdn-edge-app-db",
+      "title": "Cache nhiều tầng",
+      "question": "Bạn thiết kế caching nhiều tầng cho trang sản phẩm toàn cầu: browser, CDN/edge, cache ứng dụng, cache database. Mỗi tầng cache gì, TTL ra sao, và purge khi dữ liệu đổi thế nào?",
+      "area": "architecture",
+      "why": "Kiểm tra bạn phối hợp nhiều tầng cache với chính sách TTL và invalidation nhất quán.",
+      "sources": [
+        {
+          "title": "MDN: HTTP caching",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Caching"
+        },
+        {
+          "title": "Azure Architecture Center: Caching guidance",
+          "url": "https://learn.microsoft.com/en-us/azure/architecture/best-practices/caching"
+        }
+      ]
+    },
+    {
+      "slug": "cache-warming-cold-start-at-scale",
+      "title": "Cache warming và cold start",
+      "question": "Bạn deploy cache cluster mới hoặc failover làm cache trống, database sắp quá tải. Bạn làm ấm cache (cache warming) thế nào và giữ nhất quán dữ liệu khi quy mô lớn?",
+      "area": "backend",
+      "why": "Kiểm tra bạn lên kế hoạch cho cold cache khi vận hành: warming, ramp-up traffic, nhất quán.",
+      "sources": [
+        {
+          "title": "Azure Architecture Center: Caching guidance",
+          "url": "https://learn.microsoft.com/en-us/azure/architecture/best-practices/caching"
+        },
+        {
+          "title": "Azure Architecture Center: Cache-Aside pattern",
+          "url": "https://learn.microsoft.com/en-us/azure/architecture/patterns/cache-aside"
+        }
+      ]
+    },
+    {
+      "slug": "read-replica-lag-read-your-writes",
+      "title": "Replication lag và read replica",
+      "question": "Bạn thêm read replica nhưng user vừa lưu xong tải lại thì thấy dữ liệu cũ. Nguyên nhân là gì và bạn đảm bảo read-your-writes thế nào?",
+      "area": "database",
+      "why": "Kiểm tra bạn hiểu replication bất đồng bộ và các cách định tuyến đọc ghi an toàn.",
+      "sources": [
+        {
+          "title": "PostgreSQL docs: Hot Standby",
+          "url": "https://www.postgresql.org/docs/current/hot-standby.html"
+        },
+        {
+          "title": "Werner Vogels: Eventually Consistent - Revisited",
+          "url": "https://www.allthingsdistributed.com/2008/12/eventually_consistent.html"
+        }
+      ]
+    },
+    {
+      "slug": "partition-table-billion-rows",
+      "title": "Bảng một tỷ dòng",
+      "question": "Bảng events đã một tỷ dòng, query và xoá dữ liệu cũ rất chậm. Bạn xử lý thế nào: partitioning, archiving hay sharding, và chọn dựa trên gì?",
+      "area": "database",
+      "why": "Kiểm tra bạn biết leo thang đúng thứ tự trước khi sharding, và hiểu partition pruning.",
+      "sources": [
+        {
+          "title": "PostgreSQL docs: Table Partitioning",
+          "url": "https://www.postgresql.org/docs/current/ddl-partitioning.html"
+        },
+        {
+          "title": "Azure Well-Architected: Data partitioning",
+          "url": "https://learn.microsoft.com/en-us/azure/well-architected/design-guides/partition-data"
+        }
+      ]
+    },
+    {
+      "slug": "shard-key-selection-hot-shard",
+      "title": "Chọn shard key",
+      "question": "Bạn cần shard database người dùng. Chọn shard key thế nào, và làm sao tránh hot shard hoặc query phải đi qua nhiều shard?",
+      "area": "database",
+      "why": "Kiểm tra bạn hiểu shard key là quyết định khó đảo ngược, ảnh hưởng tải và query pattern.",
+      "sources": [
+        {
+          "title": "Azure Architecture Center: Sharding pattern",
+          "url": "https://learn.microsoft.com/en-us/azure/architecture/patterns/sharding"
+        },
+        {
+          "title": "Azure Well-Architected: Data partitioning",
+          "url": "https://learn.microsoft.com/en-us/azure/well-architected/design-guides/partition-data"
+        }
+      ]
+    },
+    {
+      "slug": "resharding-consistent-hashing-online",
+      "title": "Resharding không downtime",
+      "question": "Hệ thống đã shard 4 node, giờ cần lên 8 node mà không được downtime. Consistent hashing và quy trình di chuyển dữ liệu online ra sao?",
+      "area": "database",
+      "why": "Kiểm tra bạn biết mapping ảo, di chuyển dữ liệu online và kiểm chứng trước khi cutover.",
+      "sources": [
+        {
+          "title": "Azure Architecture Center: Sharding pattern",
+          "url": "https://learn.microsoft.com/en-us/azure/architecture/patterns/sharding"
+        },
+        {
+          "title": "Azure Well-Architected: Data partitioning",
+          "url": "https://learn.microsoft.com/en-us/azure/well-architected/design-guides/partition-data"
+        }
+      ]
+    },
+    {
+      "slug": "cap-pacelc-in-practice",
+      "title": "CAP và PACELC thực tế",
+      "question": "CAP theorem nói gì, và PACELC bổ sung điều gì? Hãy chọn mức consistency cho một hệ thống đặt vé đa region và giải thích đánh đổi.",
+      "area": "architecture",
+      "why": "Kiểm tra bạn áp dụng lý thuyết consistency/availability/latency vào quyết định thật, không chỉ đọc thuộc.",
+      "sources": [
+        {
+          "title": "Azure Cosmos DB: Consistency level choices (PACELC)",
+          "url": "https://learn.microsoft.com/en-us/azure/cosmos-db/consistency-levels"
+        },
+        {
+          "title": "Werner Vogels: Eventually Consistent - Revisited",
+          "url": "https://www.allthingsdistributed.com/2008/12/eventually_consistent.html"
+        }
+      ]
+    },
+    {
+      "slug": "eventual-consistency-user-experience",
+      "title": "Eventual consistency trong UX",
+      "question": "Dữ liệu của bạn eventually consistent. Bạn thiết kế trải nghiệm người dùng và API thế nào để việc trễ đồng bộ không gây lỗi nghiệp vụ?",
+      "area": "architecture",
+      "why": "Kiểm tra bạn biết biến đánh đổi consistency thành quyết định sản phẩm và kỹ thuật cụ thể.",
+      "sources": [
+        {
+          "title": "Werner Vogels: Eventually Consistent - Revisited",
+          "url": "https://www.allthingsdistributed.com/2008/12/eventually_consistent.html"
+        },
+        {
+          "title": "Azure Cosmos DB: Consistency level choices (PACELC)",
+          "url": "https://learn.microsoft.com/en-us/azure/cosmos-db/consistency-levels"
+        }
+      ]
+    },
+    {
+      "slug": "rate-limiter-design-distributed",
+      "title": "Thiết kế rate limiter",
+      "question": "Thiết kế rate limiter cho public API chạy nhiều instance: thuật toán nào, lưu counter ở đâu, trả mã lỗi gì khi vượt ngưỡng?",
+      "area": "backend",
+      "why": "Kiểm tra bạn so sánh token bucket, sliding window và xử lý trạng thái phân tán.",
+      "sources": [
+        {
+          "title": "Stripe Engineering: Scaling your API with rate limiters",
+          "url": "https://stripe.com/blog/rate-limiters"
+        },
+        {
+          "title": "Azure Architecture Center: Rate Limiting pattern",
+          "url": "https://learn.microsoft.com/en-us/azure/architecture/patterns/rate-limiting-pattern"
+        }
+      ]
+    },
+    {
+      "slug": "load-shedding-overload-protection",
+      "title": "Load shedding khi quá tải",
+      "question": "Dịch vụ bị quá tải thật sự, scale chưa kịp. Bạn chủ động từ chối request nào, theo tiêu chí gì, để hệ thống vẫn phục vụ được phần quan trọng?",
+      "area": "architecture",
+      "why": "Kiểm tra bạn biết ưu tiên request và bảo vệ goodput thay vì để sập toàn bộ.",
+      "sources": [
+        {
+          "title": "AWS Builders Library: Using load shedding to avoid overload",
+          "url": "https://builder.aws.com/content/3Eun1EEyX6p2e3VYNyRLSJzLuMV/using-load-shedding-to-avoid-overload"
+        },
+        {
+          "title": "Google SRE Book: Handling Overload",
+          "url": "https://sre.google/sre-book/handling-overload/"
+        }
+      ]
+    },
+    {
+      "slug": "timeout-deadline-propagation-microservices",
+      "title": "Timeout và deadline propagation",
+      "question": "Request đi qua 5 service. Bạn đặt timeout ở từng tầng thế nào, và deadline propagation giúp tránh làm việc thừa khi client đã bỏ đi ra sao?",
+      "area": "backend",
+      "why": "Kiểm tra bạn hiểu ngân sách thời gian end-to-end và cách chặn công việc vô ích trong chuỗi gọi.",
+      "sources": [
+        {
+          "title": "gRPC docs: Deadlines",
+          "url": "https://grpc.io/docs/guides/deadlines/"
+        },
+        {
+          "title": "Google SRE Book: Addressing Cascading Failures",
+          "url": "https://sre.google/sre-book/addressing-cascading-failures/"
+        }
+      ]
+    },
+    {
+      "slug": "payment-ledger-reconciliation-double-entry",
+      "title": "Ledger và đối soát thanh toán",
+      "question": "Bạn thiết kế sổ cái (ledger) cho ví điện tử để tiền không bao giờ lệch, và quy trình đối soát (reconciliation) với đối tác thanh toán khi có sai khác ra sao?",
+      "area": "architecture",
+      "why": "Kiểm tra bạn thiết kế dữ liệu tài chính bất biến, double-entry và phát hiện sai lệch với hệ thống ngoài.",
+      "sources": [
+        {
+          "title": "Martin Fowler: Accounting Transaction",
+          "url": "https://martinfowler.com/eaaDev/AccountingTransaction.html"
+        },
+        {
+          "title": "Stripe docs: The Payment Intents API",
+          "url": "https://docs.stripe.com/payments/payment-intents"
+        }
+      ]
+    },
+    {
+      "slug": "graceful-degradation-fallback-design",
+      "title": "Graceful degradation và fallback",
+      "question": "Dịch vụ gợi ý bị sập, bạn không muốn trang chủ lỗi. Thiết kế graceful degradation và fallback thế nào, và khi nào fallback lại nguy hiểm?",
+      "area": "architecture",
+      "why": "Kiểm tra bạn biết hạ cấp chức năng có chủ đích và tránh fallback tạo lỗi dây chuyền.",
+      "sources": [
+        {
+          "title": "AWS Builders Library: Avoiding fallback in distributed systems",
+          "url": "https://builder.aws.com/content/3EuS9Sakq7L3VLQIF3qzfMfke1Y/avoiding-fallback-in-distributed-systems"
+        },
+        {
+          "title": "Google SRE Book: Addressing Cascading Failures",
+          "url": "https://sre.google/sre-book/addressing-cascading-failures/"
+        }
+      ]
+    },
+    {
+      "slug": "backpressure-queue-sizing-backlog",
+      "title": "Backpressure và kích thước queue",
+      "question": "Producer đẩy nhanh hơn consumer xử lý, queue phình to và độ trễ tăng. Bạn áp dụng backpressure, chọn kích thước queue và xử lý backlog thế nào?",
+      "area": "architecture",
+      "why": "Kiểm tra bạn hiểu queue chỉ che giấu quá tải và cách giới hạn, đo, và xả backlog an toàn.",
+      "sources": [
+        {
+          "title": "AWS Builders Library: Avoiding insurmountable queue backlogs",
+          "url": "https://builder.aws.com/content/3EuRcgkTP1MI0c7zM8W6HL3WIqA/avoiding-insurmountable-queue-backlogs"
+        },
+        {
+          "title": "Azure Architecture Center: Queue-Based Load Leveling pattern",
+          "url": "https://learn.microsoft.com/en-us/azure/architecture/patterns/queue-based-load-leveling"
+        }
+      ]
+    },
+    {
+      "slug": "event-schema-evolution-compatibility",
+      "title": "Tiến hoá schema của event",
+      "question": "Nhiều consumer đang đọc một event topic. Bạn đổi cấu trúc event mà không làm vỡ consumer cũ thế nào: backward/forward compatibility, schema registry?",
+      "area": "architecture",
+      "why": "Kiểm tra bạn quản lý hợp đồng dữ liệu giữa các service bất đồng bộ qua thời gian.",
+      "sources": [
+        {
+          "title": "Confluent docs: Schema Evolution and Compatibility",
+          "url": "https://docs.confluent.io/platform/current/schema-registry/fundamentals/schema-evolution.html"
+        },
+        {
+          "title": "microservices.io: Saga pattern",
+          "url": "https://microservices.io/patterns/data/saga.html"
+        }
+      ]
+    },
+    {
+      "slug": "saga-order-payment-inventory",
+      "title": "Saga cho đơn hàng",
+      "question": "Đơn hàng đi qua service order, payment, inventory, mỗi service một database. Làm sao đảm bảo nhất quán khi một bước thất bại: saga choreography hay orchestration?",
+      "area": "architecture",
+      "why": "Kiểm tra bạn thiết kế giao dịch phân tán bằng compensating transaction thay vì 2PC.",
+      "sources": [
+        {
+          "title": "microservices.io: Saga pattern",
+          "url": "https://microservices.io/patterns/data/saga.html"
+        },
+        {
+          "title": "microservices.io: Transactional outbox",
+          "url": "https://microservices.io/patterns/data/transactional-outbox.html"
+        }
+      ]
+    },
+    {
+      "slug": "modular-monolith-vs-microservices",
+      "title": "Modular monolith hay microservices",
+      "question": "Team 15 người, sản phẩm đang là monolith. Bạn nên tách microservices hay giữ modular monolith, và quyết định dựa trên tiêu chí nào?",
+      "area": "architecture",
+      "why": "Kiểm tra bạn cân nhắc chi phí vận hành, ranh giới domain và tổ chức team, không chạy theo trào lưu.",
+      "sources": [
+        {
+          "title": "Martin Fowler: Monolith First",
+          "url": "https://martinfowler.com/bliki/MonolithFirst.html"
+        },
+        {
+          "title": "Azure Architecture Center: Strangler Fig pattern",
+          "url": "https://learn.microsoft.com/en-us/azure/architecture/patterns/strangler-fig"
+        }
+      ]
+    },
+    {
+      "slug": "multi-tenant-data-isolation-saas",
+      "title": "Cô lập dữ liệu multi-tenant",
+      "question": "Thiết kế SaaS cho hàng nghìn tenant: shared schema, schema riêng hay database riêng, và đảm bảo tenant A không bao giờ thấy dữ liệu tenant B ra sao?",
+      "area": "security",
+      "why": "Kiểm tra bạn cân bằng chi phí, noisy neighbor và cô lập dữ liệu như row-level security.",
+      "sources": [
+        {
+          "title": "Azure Architecture Center: Architect multitenant solutions",
+          "url": "https://learn.microsoft.com/en-us/azure/architecture/guide/multitenant/overview"
+        },
+        {
+          "title": "PostgreSQL docs: Row Security Policies",
+          "url": "https://www.postgresql.org/docs/current/ddl-rowsecurity.html"
+        }
+      ]
+    },
+    {
+      "slug": "zero-downtime-database-migration-expand-contract",
+      "title": "Migration database không downtime",
+      "question": "Cần đổi tên một cột trong bảng lớn đang chạy production mà không downtime. Bạn làm theo quy trình expand-contract thế nào?",
+      "area": "database",
+      "why": "Kiểm tra bạn biết tách thay đổi schema khỏi deploy code để rollback được an toàn.",
+      "sources": [
+        {
+          "title": "Martin Fowler: Parallel Change",
+          "url": "https://martinfowler.com/bliki/ParallelChange.html"
+        },
+        {
+          "title": "Azure Architecture Center: Strangler Fig pattern",
+          "url": "https://learn.microsoft.com/en-us/azure/architecture/patterns/strangler-fig"
+        }
+      ]
+    },
+    {
+      "slug": "canary-blue-green-feature-flag-rollout",
+      "title": "Canary, blue-green, feature flag",
+      "question": "Bạn cần release tính năng rủi ro cao cho hàng triệu user. So sánh blue-green, canary và feature flag, và khi nào tự động rollback?",
+      "area": "devops",
+      "why": "Kiểm tra bạn chọn chiến lược release theo rủi ro và gắn với tín hiệu quan sát được.",
+      "sources": [
+        {
+          "title": "Martin Fowler: Canary Release",
+          "url": "https://martinfowler.com/bliki/CanaryRelease.html"
+        },
+        {
+          "title": "Martin Fowler: Blue Green Deployment",
+          "url": "https://martinfowler.com/bliki/BlueGreenDeployment.html"
+        },
+        {
+          "title": "Martin Fowler: Feature Toggles",
+          "url": "https://martinfowler.com/articles/feature-toggles.html"
+        }
+      ]
+    },
+    {
+      "slug": "slo-sli-error-budget",
+      "title": "SLO, SLI và error budget",
+      "question": "Bạn chọn SLI và SLO cho dịch vụ thanh toán thế nào, error budget dùng để ra quyết định gì khi sắp cạn?",
+      "area": "devops",
+      "why": "Kiểm tra bạn biến độ tin cậy thành con số và dùng nó để cân bằng tốc độ ra tính năng.",
+      "sources": [
+        {
+          "title": "Google SRE Book: Service Level Objectives",
+          "url": "https://sre.google/sre-book/service-level-objectives/"
+        },
+        {
+          "title": "Google SRE Book: Embracing Risk",
+          "url": "https://sre.google/sre-book/embracing-risk/"
+        }
+      ]
+    },
+    {
+      "slug": "distributed-tracing-p99-latency",
+      "title": "Tracing điều tra p99 latency",
+      "question": "p99 latency của API tăng gấp ba nhưng p50 vẫn bình thường, qua nhiều service. Bạn dùng distributed tracing và metrics để tìm nguyên nhân thế nào?",
+      "area": "devops",
+      "why": "Kiểm tra bạn biết quan sát hệ thống phân tán: trace, span, context propagation, tail latency.",
+      "sources": [
+        {
+          "title": "OpenTelemetry docs: Traces",
+          "url": "https://opentelemetry.io/docs/concepts/signals/traces/"
+        },
+        {
+          "title": "Google SRE Book: Monitoring Distributed Systems",
+          "url": "https://sre.google/sre-book/monitoring-distributed-systems/"
+        }
+      ]
+    },
+    {
+      "slug": "production-incident-first-30-minutes",
+      "title": "30 phút đầu của sự cố",
+      "question": "03:00 sáng có alert hệ thống thanh toán lỗi hàng loạt. Bạn làm gì trong 30 phút đầu, phân vai incident commander ra sao?",
+      "area": "devops",
+      "why": "Kiểm tra bạn ưu tiên giảm thiểu thiệt hại trước tìm nguyên nhân, và biết điều phối con người.",
+      "sources": [
+        {
+          "title": "Google SRE Book: Managing Incidents",
+          "url": "https://sre.google/sre-book/managing-incidents/"
+        },
+        {
+          "title": "Google SRE Book: Monitoring Distributed Systems",
+          "url": "https://sre.google/sre-book/monitoring-distributed-systems/"
+        }
+      ]
+    },
+    {
+      "slug": "blameless-postmortem-write",
+      "title": "Postmortem không đổ lỗi",
+      "question": "Sau sự cố lớn, bạn viết và dẫn dắt buổi postmortem không đổ lỗi thế nào để rút ra action item thật sự giảm tái diễn?",
+      "area": "soft-skills",
+      "why": "Kiểm tra văn hoá học từ lỗi và khả năng biến sự cố thành cải tiến hệ thống.",
+      "sources": [
+        {
+          "title": "Google SRE Book: Postmortem Culture",
+          "url": "https://sre.google/sre-book/postmortem-culture/"
+        },
+        {
+          "title": "Google SRE Book: Managing Incidents",
+          "url": "https://sre.google/sre-book/managing-incidents/"
+        }
+      ]
+    },
+    {
+      "slug": "technical-debt-prioritization-adr",
+      "title": "Nợ kỹ thuật và ADR",
+      "question": "Product muốn ra tính năng liên tục còn team than nợ kỹ thuật. Bạn thuyết phục và ưu tiên trả nợ thế nào, và ghi quyết định bằng ADR ra sao?",
+      "area": "soft-skills",
+      "why": "Kiểm tra bạn nói chuyện đánh đổi với product bằng số liệu và lưu lại lý do quyết định.",
+      "sources": [
+        {
+          "title": "Martin Fowler: Technical Debt",
+          "url": "https://martinfowler.com/bliki/TechnicalDebt.html"
+        },
+        {
+          "title": "ADR GitHub organization: Architectural Decision Records",
+          "url": "https://adr.github.io/"
+        }
+      ]
+    },
+    {
+      "slug": "lead-code-review-mentoring-juniors",
+      "title": "Lead code review và mentoring",
+      "question": "Bạn là tech lead, PR của junior liên tục có vấn đề thiết kế. Bạn review và mentor thế nào để họ tiến bộ mà team không chậm lại?",
+      "area": "soft-skills",
+      "why": "Kiểm tra khả năng dẫn dắt con người: tiêu chuẩn review, phản hồi mang tính xây dựng.",
+      "sources": [
+        {
+          "title": "Google Engineering Practices: How to do a code review",
+          "url": "https://google.github.io/eng-practices/review/reviewer/"
+        },
+        {
+          "title": "Google Engineering Practices: The Standard of Code Review",
+          "url": "https://google.github.io/eng-practices/review/reviewer/standard.html"
+        }
+      ]
+    }
+  ]
+}

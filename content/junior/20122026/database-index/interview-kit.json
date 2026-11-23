@@ -1,0 +1,96 @@
+{
+  "topic": "database-index",
+  "title": "Database index",
+  "level": "junior",
+  "question": "Database index là gì và khi nào không nên thêm index?",
+  "followUps": [
+    "Tại sao tra cứu bằng B-tree là O(log n) và vì sao vài tầng đã đủ cho hàng triệu dòng?",
+    "Composite index (a, b): query WHERE b = ? có dùng được không? Thứ tự cột nên chọn thế nào?",
+    "Vì sao WHERE lower(email) = ? không dùng index trên email, và sửa thế nào?",
+    "Vì sao LIKE '%abc' chậm còn LIKE 'abc%' thì nhanh?",
+    "Index trên cột boolean có ích không? Partial index giải quyết gì?",
+    "Mỗi index tốn gì cho INSERT/UPDATE/DELETE và dung lượng? Làm sao biết một index thừa?",
+    "Có index rồi mà planner vẫn chọn full scan, vì sao? Em kiểm tra bằng gì?"
+  ],
+  "keyPoints": [
+    "Không có index thì full table scan, chi phí O(n); B-tree cho tra cứu O(log n)",
+    "B-tree có fan-out hàng trăm entry mỗi node nên chỉ vài tầng là phủ hàng triệu dòng",
+    "Đánh đổi: đọc nhanh hơn, mỗi INSERT/UPDATE/DELETE phải cập nhật thêm index, tốn dung lượng",
+    "Chọn cột theo pattern truy vấn thật (WHERE/JOIN/ORDER BY), cột có độ phân biệt cao; chứng minh bằng EXPLAIN (Seq Scan sang Index Scan)",
+    "Composite index theo leftmost-prefix: cột lọc bằng đứng trước, không bỏ qua cột đầu",
+    "Biết khi nào index không được dùng: hàm bọc cột, LIKE '%x', bảng nhỏ, giá trị khớp quá nhiều dòng"
+  ],
+  "weakAnswer": "Index giống mục lục sách nên giúp query nhanh hơn. Em sẽ thêm index cho tất cả các cột để chắc chắn query nào cũng nhanh. Nếu vẫn chậm thì thêm index nữa.",
+  "strongAnswer": "Không có index thì database phải quét toàn bộ bảng, O(n). Index là một B-tree riêng, tra cứu O(log n), và vì mỗi node chứa hàng trăm entry nên vài tầng là đủ cho hàng triệu dòng. Cái giá là mỗi INSERT/UPDATE/DELETE phải cập nhật thêm index và tốn dung lượng, nên em chỉ index theo pattern truy vấn thật trong WHERE/JOIN/ORDER BY, ưu tiên cột có độ phân biệt cao, và chứng minh bằng EXPLAIN: từ Seq Scan sang Index Scan. Em cũng biết các bẫy: bọc hàm quanh cột như lower(col) thì phải tạo expression index, LIKE '%x' không dùng được B-tree, composite index (a, b) không giúp WHERE b = ? vì leftmost-prefix, và với bảng nhỏ hoặc giá trị khớp quá nhiều dòng thì planner vẫn chọn full scan.",
+  "pitfalls": [
+    "Index mọi cột: mỗi index làm chậm ghi và tốn dung lượng; index không dùng nên drop",
+    "Index cột độ phân biệt thấp (boolean) thường không được dùng; cân nhắc partial index",
+    "Bọc hàm quanh cột trong WHERE (lower(col)) làm index thường không dùng được; cần expression index",
+    "LIKE với wildcard đứng đầu ('%x') không dùng được B-tree; LIKE 'x%' thì được",
+    "Composite index sai thứ tự cột: WHERE chỉ có cột sau thì không dùng được (trừ skip scan ở vài engine)",
+    "Thử trên bảng quá nhỏ rồi kết luận: planner chọn seq scan vì rẻ hơn, không có nghĩa index vô dụng",
+    "Chỉ đoán mà không chạy EXPLAIN; EXPLAIN ANALYZE thực sự chạy query nên với UPDATE/DELETE phải bọc transaction rồi ROLLBACK"
+  ],
+  "sources": [
+    {
+      "title": "PostgreSQL Documentation: Indexes (Introduction)",
+      "url": "https://www.postgresql.org/docs/current/indexes-intro.html"
+    },
+    {
+      "title": "PostgreSQL Documentation: Index Types",
+      "url": "https://www.postgresql.org/docs/current/indexes-types.html"
+    },
+    {
+      "title": "PostgreSQL Documentation: Multicolumn Indexes",
+      "url": "https://www.postgresql.org/docs/current/indexes-multicolumn.html"
+    },
+    {
+      "title": "PostgreSQL Documentation: Indexes on Expressions",
+      "url": "https://www.postgresql.org/docs/current/indexes-expressional.html"
+    },
+    {
+      "title": "PostgreSQL Documentation: Partial Indexes",
+      "url": "https://www.postgresql.org/docs/current/indexes-partial.html"
+    },
+    {
+      "title": "PostgreSQL Documentation: Using EXPLAIN",
+      "url": "https://www.postgresql.org/docs/current/using-explain.html"
+    },
+    {
+      "title": "SQLite: Query Planning",
+      "url": "https://www.sqlite.org/queryplanner.html"
+    },
+    {
+      "title": "SQLite: EXPLAIN QUERY PLAN",
+      "url": "https://www.sqlite.org/eqp.html"
+    },
+    {
+      "title": "SQLite: Query Optimizer Overview",
+      "url": "https://www.sqlite.org/optoverview.html"
+    },
+    {
+      "title": "MySQL 8.0 Reference: Clustered and Secondary Indexes",
+      "url": "https://dev.mysql.com/doc/refman/8.0/en/innodb-index-types.html"
+    },
+    {
+      "title": "MySQL 8.0 Reference: Multiple-Column Indexes",
+      "url": "https://dev.mysql.com/doc/refman/8.0/en/multiple-column-indexes.html"
+    },
+    {
+      "title": "Use The Index, Luke: The Search Tree",
+      "url": "https://use-the-index-luke.com/sql/anatomy/the-tree"
+    },
+    {
+      "title": "Use The Index, Luke: Case-Insensitive Search",
+      "url": "https://use-the-index-luke.com/sql/where-clause/functions/case-insensitive-search"
+    },
+    {
+      "title": "Use The Index, Luke: Tuning SQL LIKE",
+      "url": "https://use-the-index-luke.com/sql/where-clause/searching-for-ranges/like-performance-tuning"
+    },
+    {
+      "title": "Use The Index, Luke: Insert, Update and Delete",
+      "url": "https://use-the-index-luke.com/sql/dml"
+    }
+  ]
+}

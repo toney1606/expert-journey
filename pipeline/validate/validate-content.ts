@@ -1,8 +1,17 @@
-import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { ZodType } from 'zod';
 import { InterviewKitSchema } from '../../src/schemas/interview-kit';
 import { VideoSchema } from '../../src/schemas/video';
+import { scheduleFor, dayFolderName } from '../content/paths';
+import {
+  discoverSamples,
+  discoverTopicFolders,
+  levelTopicSlugs,
+  loadCurriculum,
+  parseDayFolder,
+} from '../content/discover';
+import { validateCurriculum } from './validate-curriculum';
 
 export type ValidationIssue = { file: string; message: string };
 
@@ -44,67 +53,123 @@ const checkFile = (
   return parsed.data;
 };
 
-const listDir = (dir: string): string[] => (existsSync(dir) ? readdirSync(dir).sort() : []);
+type KitLike = { topic: string; level: string };
+type VideoLike = {
+  meta: { id: string; topic: string; level: string };
+  scenes: { id: string; type: string; props: unknown }[];
+};
 
-/** Validate everything under `<root>/content` against the zod schemas. */
+const checkVideo = (
+  root: string,
+  dir: string,
+  rel: string,
+  result: ValidationResult,
+): VideoLike | undefined => {
+  const file = join(dir, 'video.json');
+  if (!existsSync(file)) return undefined;
+  const video = checkFile(file, `${rel}/video.json`, VideoSchema, result) as VideoLike | undefined;
+  if (!video) return undefined;
+  for (const scene of video.scenes) {
+    const testPath =
+      scene.type === 'code' ? (scene.props as { testPath: string }).testPath : undefined;
+    if (testPath && !existsSync(join(root, testPath))) {
+      result.issues.push({
+        file: `${rel}/video.json`,
+        message: `scene "${scene.id}": testPath "${testPath}" does not exist`,
+      });
+    }
+  }
+  return video;
+};
+
+/** Validate everything under `<root>/content` against the zod schemas and the folder layout. */
 export const validateContent = (root: string): ValidationResult => {
   const result: ValidationResult = { checked: [], issues: [] };
-  const content = join(root, 'content');
+  const config = loadCurriculum(root);
+  const slugCache = new Map<string, string[] | undefined>();
 
-  const topics = new Set<string>();
-  for (const topic of listDir(join(content, 'topics'))) {
-    const dir = join(content, 'topics', topic);
-    const kitRel = `content/topics/${topic}/interview-kit.json`;
-    const kit = checkFile(join(dir, 'interview-kit.json'), kitRel, InterviewKitSchema, result) as
-      { topic: string } | undefined;
+  for (const folder of discoverTopicFolders(root)) {
+    const { level, day, topic, dir, rel } = folder;
+    const issue = (file: string, message: string) => result.issues.push({ file, message });
+
+    const iso = parseDayFolder(day);
+    if (!iso) {
+      issue(`content/${level}/${day}`, 'day folder must be a valid date named ddmmyyyy (8 digits)');
+    }
+
+    const kitFile = join(dir, 'interview-kit.json');
+    const kit = existsSync(kitFile)
+      ? (checkFile(kitFile, `${rel}/interview-kit.json`, InterviewKitSchema, result) as
+          KitLike | undefined)
+      : undefined;
     if (kit && kit.topic !== topic) {
-      result.issues.push({
-        file: kitRel,
-        message: `topic "${kit.topic}" does not match folder name "${topic}"`,
-      });
+      issue(
+        `${rel}/interview-kit.json`,
+        `topic "${kit.topic}" does not match folder name "${topic}"`,
+      );
     }
-    if (!existsSync(join(dir, 'research.md'))) {
-      result.issues.push({
-        file: `content/topics/${topic}`,
-        message: 'missing research.md',
-      });
+    if (kit && kit.level !== level) {
+      issue(
+        `${rel}/interview-kit.json`,
+        `level "${kit.level}" does not match level folder "${level}"`,
+      );
     }
-    topics.add(topic);
-  }
 
-  for (const file of listDir(join(content, 'videos'))) {
-    if (!file.endsWith('.json')) continue;
-    const rel = `content/videos/${file}`;
-    const video = checkFile(join(content, 'videos', file), rel, VideoSchema, result) as
-      | {
-          meta: { id: string; topic: string };
-          scenes: { id: string; type: string; props: unknown }[];
-        }
-      | undefined;
-    if (!video) continue;
-    if (`${video.meta.id}.json` !== file) {
-      result.issues.push({
-        file: rel,
-        message: `meta.id "${video.meta.id}" does not match file name`,
-      });
-    }
-    for (const scene of video.scenes) {
-      const testPath =
-        scene.type === 'code' ? (scene.props as { testPath: string }).testPath : undefined;
-      if (testPath && !existsSync(join(root, testPath))) {
-        result.issues.push({
-          file: rel,
-          message: `scene "${scene.id}": testPath "${testPath}" does not exist`,
-        });
+    const video = checkVideo(root, dir, rel, result);
+    if (video) {
+      const file = `${rel}/video.json`;
+      if (video.meta.id !== `${day}-${topic}`) {
+        issue(file, `meta.id "${video.meta.id}" must equal "${day}-${topic}"`);
+      }
+      if (video.meta.topic !== topic) {
+        issue(file, `meta.topic "${video.meta.topic}" does not match folder name "${topic}"`);
+      }
+      if (video.meta.level !== level) {
+        issue(file, `meta.level "${video.meta.level}" does not match level folder "${level}"`);
       }
     }
-    if (!topics.has(video.meta.topic)) {
+
+    if (
+      (kit || existsSync(kitFile) || existsSync(join(dir, 'video.json'))) &&
+      !existsSync(join(dir, 'research.md'))
+    ) {
+      issue(rel, 'missing research.md');
+    }
+
+    if (iso && config) {
+      if (!slugCache.has(level)) slugCache.set(level, levelTopicSlugs(root, level));
+      const index = slugCache.get(level)?.indexOf(topic) ?? -1;
+      if (index !== -1) {
+        try {
+          const expected = scheduleFor(config, level, index).date;
+          if (expected !== iso) {
+            issue(
+              rel,
+              `folder date ${day} does not match the date ${dayFolderName(expected)} derived from position ${index} in content/${level}/topics.json`,
+            );
+          }
+        } catch {
+          // position outside the level's range: validateCurriculum reports it
+        }
+      }
+    }
+  }
+
+  for (const sample of discoverSamples(root)) {
+    const video = checkVideo(root, sample.dir, sample.rel, result);
+    if (!existsSync(join(sample.dir, 'video.json'))) {
+      result.issues.push({ file: sample.rel, message: 'missing video.json' });
+    } else if (video && video.meta.id !== sample.id) {
       result.issues.push({
-        file: rel,
-        message: `meta.topic "${video.meta.topic}" has no folder in content/topics/`,
+        file: `${sample.rel}/video.json`,
+        message: `meta.id "${video.meta.id}" does not match folder name "${sample.id}"`,
       });
     }
   }
+
+  const curriculum = validateCurriculum(root);
+  result.checked.push(...curriculum.checked);
+  result.issues.push(...curriculum.issues);
 
   return result;
 };

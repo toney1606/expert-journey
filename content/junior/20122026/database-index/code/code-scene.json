@@ -1,0 +1,7 @@
+{
+  "language": "typescript",
+  "filename": "lookup.ts",
+  "before": "// scan every row: O(n)\nconst user =\n  findByEmailScan(users, email);",
+  "after": "// index built once: O(1)\nconst index =\n  buildEmailIndex(users);\nconst user =\n  findByEmailIndexed(index, email);",
+  "testPath": "content/junior/20122026/database-index/code/lookup.test.ts"
+}

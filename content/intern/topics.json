@@ -1,0 +1,429 @@
+{
+  "level": "intern",
+  "topics": [
+    {
+      "slug": "primitive-vs-reference-types",
+      "title": "Primitive vs reference type",
+      "question": "Trong JavaScript, kiểu nguyên thủy (primitive) và kiểu tham chiếu (reference) khác nhau thế nào? Gán một object cho biến khác thì chuyện gì xảy ra?",
+      "area": "language",
+      "why": "Kiểm tra bạn có hiểu bộ nhớ ở mức cơ bản: copy giá trị khác với copy tham chiếu.",
+      "sources": [
+        {
+          "title": "MDN: JavaScript data types and data structures",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Data_structures"
+        }
+      ]
+    },
+    {
+      "slug": "js-double-vs-triple-equals",
+      "title": "== và === trong JavaScript",
+      "question": "`==` và `===` khác nhau thế nào? Tại sao `0 == \"0\"` là true còn `0 === \"0\"` là false?",
+      "area": "language",
+      "why": "Phân biệt người hiểu type coercion với người chỉ học thuộc cú pháp.",
+      "sources": [
+        {
+          "title": "MDN: Equality comparisons and sameness",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Equality_comparisons_and_sameness"
+        }
+      ]
+    },
+    {
+      "slug": "fizzbuzz-loop-condition",
+      "title": "FizzBuzz",
+      "question": "Viết chương trình in số từ 1 đến 100, bội của 3 in Fizz, bội của 5 in Buzz, bội của cả hai in FizzBuzz.",
+      "area": "algorithms",
+      "why": "Câu lọc kinh điển: xem bạn có viết được vòng lặp và điều kiện, và nhớ thứ tự kiểm tra case chung trước.",
+      "sources": [
+        {
+          "title": "MDN: Control flow and error handling",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Control_flow_and_error_handling"
+        },
+        {
+          "title": "Wikipedia: Fizz buzz",
+          "url": "https://en.wikipedia.org/wiki/Fizz_buzz"
+        }
+      ]
+    },
+    {
+      "slug": "for-vs-while-off-by-one",
+      "title": "for, while và lỗi off-by-one",
+      "question": "Khi nào dùng vòng lặp for, khi nào dùng while? Lỗi off-by-one là gì và bạn tránh nó thế nào?",
+      "area": "language",
+      "why": "Thử khả năng chọn đúng cấu trúc lặp và nhận ra lỗi biên phổ biến nhất của người mới.",
+      "sources": [
+        {
+          "title": "MDN: Loops and iteration",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Loops_and_iteration"
+        }
+      ]
+    },
+    {
+      "slug": "pure-function-side-effects",
+      "title": "Pure function và side effect",
+      "question": "Hàm thuần (pure function) là gì? Cho ví dụ hàm có side effect và nói vì sao nên hạn chế.",
+      "area": "language",
+      "why": "Xem bạn có tư duy viết hàm dễ đoán, dễ test ngay từ đầu.",
+      "sources": [
+        {
+          "title": "Wikipedia: Pure function",
+          "url": "https://en.wikipedia.org/wiki/Pure_function"
+        },
+        {
+          "title": "MDN: JavaScript Functions guide",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions"
+        }
+      ]
+    },
+    {
+      "slug": "var-let-const-scope",
+      "title": "var, let, const và scope",
+      "question": "Khác nhau giữa var, let và const là gì? Scope của biến là gì? In ra gì khi dùng var trong vòng for rồi gọi trong setTimeout?",
+      "area": "language",
+      "why": "Câu JS rất hay hỏi để kiểm tra scope, hoisting và quy tắc khai báo biến hiện đại.",
+      "sources": [
+        {
+          "title": "MDN: let statement",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/let"
+        },
+        {
+          "title": "MDN: Scope (glossary)",
+          "url": "https://developer.mozilla.org/en-US/docs/Glossary/Scope"
+        }
+      ]
+    },
+    {
+      "slug": "recursion-base-case-factorial",
+      "title": "Đệ quy và base case",
+      "question": "Đệ quy là gì? Viết hàm tính giai thừa bằng đệ quy và giải thích base case.",
+      "area": "algorithms",
+      "why": "Xem bạn có hiểu một hàm tự gọi chính nó phải dừng ở đâu.",
+      "sources": [
+        {
+          "title": "MDN: Recursion (glossary)",
+          "url": "https://developer.mozilla.org/en-US/docs/Glossary/Recursion"
+        },
+        {
+          "title": "MDN: JavaScript Functions guide",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions"
+        }
+      ]
+    },
+    {
+      "slug": "recursion-vs-loop-stack-overflow",
+      "title": "Đệ quy vs vòng lặp, stack overflow",
+      "question": "Điều gì xảy ra nếu hàm đệ quy thiếu base case? Khi nào nên dùng vòng lặp thay cho đệ quy?",
+      "area": "algorithms",
+      "why": "Câu hỏi nối tiếp để biết bạn hiểu call stack và chi phí của đệ quy.",
+      "sources": [
+        {
+          "title": "MDN: RangeError/InternalError too much recursion",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Too_much_recursion"
+        }
+      ]
+    },
+    {
+      "slug": "reverse-string-palindrome",
+      "title": "Đảo chuỗi và palindrome",
+      "question": "Kiểm tra một chuỗi có phải palindrome không (ví dụ \"level\"). Bạn làm bằng cách nào, có cách nào không cần tạo chuỗi mới?",
+      "area": "algorithms",
+      "why": "Bài chuỗi kinh điển cho intern: xem bạn thao tác chuỗi, hai con trỏ và xử lý edge case.",
+      "sources": [
+        {
+          "title": "Wikipedia: Palindrome",
+          "url": "https://en.wikipedia.org/wiki/Palindrome"
+        },
+        {
+          "title": "MDN: String.prototype.split()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/split"
+        }
+      ]
+    },
+    {
+      "slug": "find-duplicates-in-array",
+      "title": "Tìm phần tử trùng trong mảng",
+      "question": "Cho một mảng số, kiểm tra xem có phần tử nào xuất hiện hai lần không. Có cách nhanh hơn hai vòng for lồng nhau không?",
+      "area": "algorithms",
+      "why": "Dẫn người học từ brute force sang dùng Set, nền tảng của tư duy tối ưu.",
+      "sources": [
+        {
+          "title": "MDN: Set",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set"
+        }
+      ]
+    },
+    {
+      "slug": "big-o-notation-basics",
+      "title": "Big-O là gì",
+      "question": "Big-O là gì? Hãy cho biết độ phức tạp của vòng for đơn, hai vòng for lồng nhau và tra cứu trong hash map.",
+      "area": "algorithms",
+      "why": "Xem bạn có ngôn ngữ chung để nói về hiệu năng thay vì \"chạy nhanh/chậm\".",
+      "sources": [
+        {
+          "title": "Wikipedia: Big O notation",
+          "url": "https://en.wikipedia.org/wiki/Big_O_notation"
+        }
+      ]
+    },
+    {
+      "slug": "two-sum-hash-map",
+      "title": "Two Sum bằng hash map",
+      "question": "Cho mảng số và target, trả về chỉ số của hai số cộng lại bằng target. Làm sao đạt O(n)?",
+      "area": "algorithms",
+      "why": "Bài phỏng vấn nổi tiếng nhất: brute force O(n^2) rồi tối ưu bằng hash map.",
+      "sources": [
+        {
+          "title": "MDN: Map",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map"
+        },
+        {
+          "title": "Wikipedia: Hash table",
+          "url": "https://en.wikipedia.org/wiki/Hash_table"
+        }
+      ]
+    },
+    {
+      "slug": "debug-code-step-by-step",
+      "title": "Bạn debug code thế nào",
+      "question": "Chương trình của bạn chạy ra kết quả sai. Bạn sẽ debug theo các bước nào?",
+      "area": "tooling",
+      "why": "Nhà tuyển dụng muốn thấy quy trình có hệ thống (tái hiện, thu hẹp, giả thuyết) chứ không phải đoán mò.",
+      "sources": [
+        {
+          "title": "MDN: What went wrong? Troubleshooting JavaScript",
+          "url": "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Scripting/What_went_wrong"
+        },
+        {
+          "title": "Chrome DevTools: Debug JavaScript",
+          "url": "https://developer.chrome.com/docs/devtools/javascript"
+        }
+      ]
+    },
+    {
+      "slug": "unit-test-what-and-why",
+      "title": "Unit test là gì",
+      "question": "Unit test là gì? Vì sao cần viết test? Viết một test đơn giản cho hàm cộng hai số.",
+      "area": "testing",
+      "why": "Xem bạn có biết code chạy được chưa đủ, và biết cấu trúc một test cơ bản.",
+      "sources": [
+        {
+          "title": "Node.js: Test runner",
+          "url": "https://nodejs.org/api/test.html"
+        }
+      ]
+    },
+    {
+      "slug": "git-vs-github-commit-branch",
+      "title": "Git là gì, commit và branch",
+      "question": "Git là gì, khác GitHub chỗ nào? Commit và branch dùng để làm gì?",
+      "area": "tooling",
+      "why": "Câu mở đầu về Git: biết version control là gì và quy trình làm việc nhóm cơ bản.",
+      "sources": [
+        {
+          "title": "Pro Git: What is Git?",
+          "url": "https://git-scm.com/book/en/v2/Getting-Started-What-is-Git%3F"
+        },
+        {
+          "title": "Pro Git: Basic Branching and Merging",
+          "url": "https://git-scm.com/book/en/v2/Git-Branching-Basic-Branching-and-Merging"
+        }
+      ]
+    },
+    {
+      "slug": "git-merge-conflict-resolve",
+      "title": "Xử lý merge conflict",
+      "question": "Merge conflict là gì? Khi gặp conflict bạn xử lý thế nào?",
+      "area": "tooling",
+      "why": "Tình huống thật khi làm nhóm: xem bạn có bình tĩnh đọc marker và quyết định đúng.",
+      "sources": [
+        {
+          "title": "Pro Git: Basic Merge Conflicts",
+          "url": "https://git-scm.com/book/en/v2/Git-Branching-Basic-Branching-and-Merging"
+        }
+      ]
+    },
+    {
+      "slug": "terminal-basic-commands",
+      "title": "Các lệnh terminal cơ bản",
+      "question": "Kể các lệnh terminal bạn dùng hằng ngày: đổi thư mục, liệt kê file, tạo, xoá, xem nội dung file.",
+      "area": "tooling",
+      "why": "Xem bạn có thoải mái với command line, kỹ năng nền tảng của mọi dev.",
+      "sources": [
+        {
+          "title": "MDN: Command line crash course",
+          "url": "https://developer.mozilla.org/en-US/docs/Learn_web_development/Getting_started/Environment_setup/Command_line"
+        }
+      ]
+    },
+    {
+      "slug": "env-variables-secrets-not-in-git",
+      "title": "Biến môi trường và bí mật",
+      "question": "Vì sao không được commit password hay API key lên Git? Nếu lỡ commit thì làm gì?",
+      "area": "security",
+      "why": "Kiểm tra ý thức bảo mật cơ bản mà intern hay mắc nhất.",
+      "sources": [
+        {
+          "title": "The Twelve-Factor App: Config",
+          "url": "https://12factor.net/config"
+        },
+        {
+          "title": "GitHub Docs: Removing sensitive data from a repository",
+          "url": "https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/removing-sensitive-data-from-a-repository"
+        }
+      ]
+    },
+    {
+      "slug": "what-happens-when-you-type-a-url",
+      "title": "Gõ URL điều gì xảy ra",
+      "question": "Chuyện gì xảy ra từ lúc bạn gõ một URL vào trình duyệt đến khi trang hiện ra?",
+      "area": "networking",
+      "why": "Câu kinh điển: xem bạn hình dung được DNS, TCP, HTTP, render ở mức tổng quan.",
+      "sources": [
+        {
+          "title": "MDN: How the Web works",
+          "url": "https://developer.mozilla.org/en-US/docs/Learn_web_development/Getting_started/Web_standards/How_the_Web_works"
+        },
+        {
+          "title": "MDN: Overview of HTTP",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Overview"
+        }
+      ]
+    },
+    {
+      "slug": "http-get-vs-post-status-codes",
+      "title": "GET vs POST và status code",
+      "question": "GET và POST khác nhau thế nào? 200, 301, 404, 500 nghĩa là gì?",
+      "area": "networking",
+      "why": "Nền tảng HTTP mà mọi dev web phải nắm trước khi làm API.",
+      "sources": [
+        {
+          "title": "MDN: HTTP request methods",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods"
+        },
+        {
+          "title": "MDN: HTTP response status codes",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status"
+        }
+      ]
+    },
+    {
+      "slug": "html-semantic-elements",
+      "title": "HTML semantic",
+      "question": "HTML semantic là gì? Vì sao dùng header, nav, main thay vì chỉ dùng div?",
+      "area": "frontend",
+      "why": "Xem bạn hiểu HTML là cấu trúc và ý nghĩa, liên quan đến accessibility và SEO.",
+      "sources": [
+        {
+          "title": "MDN: Document and website structure",
+          "url": "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Structuring_content/Document_and_website_structure"
+        }
+      ]
+    },
+    {
+      "slug": "css-box-model",
+      "title": "CSS box model",
+      "question": "CSS box model là gì? Phân biệt content, padding, border, margin và box-sizing.",
+      "area": "frontend",
+      "why": "Câu CSS cơ bản nhất, quyết định bạn có tự canh layout được không.",
+      "sources": [
+        {
+          "title": "MDN: Introduction to the CSS box model",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_box_model/Introduction_to_the_CSS_box_model"
+        }
+      ]
+    },
+    {
+      "slug": "what-is-an-api-rest-basics",
+      "title": "API là gì",
+      "question": "API là gì? Giải thích cho người không biết lập trình, và REST API khác gì với hàm bình thường?",
+      "area": "backend",
+      "why": "Xem bạn giải thích được khái niệm trừu tượng bằng lời đơn giản.",
+      "sources": [
+        {
+          "title": "MDN: API (glossary)",
+          "url": "https://developer.mozilla.org/en-US/docs/Glossary/API"
+        },
+        {
+          "title": "MDN: REST (glossary)",
+          "url": "https://developer.mozilla.org/en-US/docs/Glossary/REST"
+        }
+      ]
+    },
+    {
+      "slug": "json-vs-javascript-object",
+      "title": "JSON là gì",
+      "question": "JSON là gì? Khác gì object JavaScript? JSON.parse và JSON.stringify dùng để làm gì?",
+      "area": "backend",
+      "why": "Định dạng trao đổi dữ liệu mà intern sẽ gặp mỗi ngày khi gọi API.",
+      "sources": [
+        {
+          "title": "MDN: JSON",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON"
+        },
+        {
+          "title": "json.org: Introducing JSON",
+          "url": "https://www.json.org/json-en.html"
+        }
+      ]
+    },
+    {
+      "slug": "sql-select-where-order-by",
+      "title": "SELECT, WHERE, ORDER BY",
+      "question": "Viết câu SQL lấy tên và lương nhân viên có lương trên 1000, sắp xếp giảm dần theo lương.",
+      "area": "database",
+      "why": "Bài SQL đầu tiên của mọi buổi phỏng vấn intern.",
+      "sources": [
+        {
+          "title": "PostgreSQL docs: Querying a Table",
+          "url": "https://www.postgresql.org/docs/current/tutorial-select.html"
+        },
+        {
+          "title": "PostgreSQL docs: Sorting Rows",
+          "url": "https://www.postgresql.org/docs/current/queries-order.html"
+        }
+      ]
+    },
+    {
+      "slug": "sql-group-by-vs-where-having",
+      "title": "GROUP BY, WHERE và HAVING",
+      "question": "GROUP BY dùng để làm gì? WHERE và HAVING khác nhau thế nào?",
+      "area": "database",
+      "why": "Câu SQL phân loại người chỉ biết SELECT với người hiểu aggregate.",
+      "sources": [
+        {
+          "title": "PostgreSQL docs: Aggregate Functions",
+          "url": "https://www.postgresql.org/docs/current/tutorial-agg.html"
+        }
+      ]
+    },
+    {
+      "slug": "tell-me-about-yourself-intern",
+      "title": "Giới thiệu bản thân",
+      "question": "Hãy giới thiệu về bản thân bạn.",
+      "area": "soft-skills",
+      "why": "Câu mở màn của mọi buổi phỏng vấn: xem khả năng giao tiếp ngắn gọn và định hướng.",
+      "sources": [
+        {
+          "title": "Penn Career Services: How to answer \"Tell me about yourself\"",
+          "url": "https://careerservices.upenn.edu/blog/2026/04/02/how-to-answer-tell-me-about-yourself/"
+        },
+        {
+          "title": "Robert Half: How to answer \"Tell me about yourself\"",
+          "url": "https://www.roberthalf.com/us/en/insights/landing-job/tell-me-about-yourself-how-to-answer-this-tricky-interview-question"
+        }
+      ]
+    },
+    {
+      "slug": "dont-know-the-answer-interview",
+      "title": "Không biết câu trả lời thì sao",
+      "question": "Nếu tôi hỏi một câu bạn không biết, bạn sẽ làm gì?",
+      "area": "soft-skills",
+      "why": "Nhà tuyển dụng đánh giá sự trung thực và cách suy luận hơn là kiến thức thuộc lòng.",
+      "sources": [
+        {
+          "title": "The Architect's Notebook: How to recover when you don't know the answer",
+          "url": "https://thearchitectsnotebook.substack.com/p/interview-insight-how-to-recover"
+        }
+      ]
+    }
+  ]
+}

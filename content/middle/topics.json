@@ -1,0 +1,409 @@
+{
+  "level": "middle",
+  "topics": [
+    {
+      "slug": "middle-consumer-driven-contract-testing",
+      "title": "Contract testing giữa các service",
+      "question": "Hai team sở hữu hai microservice hay làm vỡ API của nhau dù test riêng đều xanh. Contract testing (consumer-driven) giải quyết gì, và khi nào nên dùng thay vì E2E?",
+      "area": "testing",
+      "why": "Kiểm tra khả năng chọn chiến lược test cho tích hợp nhiều service thay vì dựa hết vào E2E chậm.",
+      "sources": [
+        {
+          "title": "Martin Fowler: Contract Test",
+          "url": "https://martinfowler.com/bliki/ContractTest.html"
+        },
+        {
+          "title": "Pact docs: Introduction",
+          "url": "https://docs.pact.io/"
+        }
+      ]
+    },
+    {
+      "slug": "middle-flaky-tests-root-causes",
+      "title": "Flaky test: tìm và xử lý",
+      "question": "CI thỉnh thoảng đỏ rồi chạy lại thì xanh. Bạn xử lý flaky test thế nào: nguyên nhân thường gặp, quarantine hay sửa ngay?",
+      "area": "testing",
+      "why": "Phân biệt người chỉ re-run CI với người tìm ra nguyên nhân gốc (async, thời gian, dữ liệu dùng chung).",
+      "sources": [
+        {
+          "title": "Martin Fowler: Eradicating Non-Determinism in Tests",
+          "url": "https://martinfowler.com/articles/nonDeterminism.html"
+        }
+      ]
+    },
+    {
+      "slug": "middle-core-web-vitals-diagnose",
+      "title": "Core Web Vitals: LCP, INP, CLS",
+      "question": "Trang sản phẩm có LCP 4 giây và INP cao trên mobile. Bạn đo và cải thiện Core Web Vitals theo thứ tự nào?",
+      "area": "frontend",
+      "why": "Kiểm tra việc dùng số liệu thực (field data) để ưu tiên tối ưu thay vì đoán.",
+      "sources": [
+        {
+          "title": "web.dev: Web Vitals",
+          "url": "https://web.dev/articles/vitals"
+        }
+      ]
+    },
+    {
+      "slug": "middle-csr-ssr-ssg-choice",
+      "title": "Chọn CSR, SSR hay SSG",
+      "question": "Khi nào bạn chọn CSR, SSR, SSG hoặc hydration cho một trang web, và mỗi lựa chọn ảnh hưởng gì đến TTFB, LCP và SEO?",
+      "area": "frontend",
+      "why": "Đánh giá trade-off kiến trúc rendering theo loại trang và yêu cầu SEO/hiệu năng.",
+      "sources": [
+        {
+          "title": "web.dev: Rendering on the Web",
+          "url": "https://web.dev/articles/rendering-on-the-web"
+        }
+      ]
+    },
+    {
+      "slug": "middle-estimate-and-slice-feature",
+      "title": "Ước lượng và chia nhỏ feature",
+      "question": "Sếp hỏi feature lớn mất bao lâu. Bạn ước lượng thế nào, chia nhỏ thành các lát giao được từng phần, và nói gì khi deadline không khả thi?",
+      "area": "soft-skills",
+      "why": "Kiểm tra giao tiếp kỹ thuật: ước lượng có khoảng bất định, chia việc theo giá trị và thương lượng phạm vi.",
+      "sources": [
+        {
+          "title": "Martin Fowler: Purpose of Estimation",
+          "url": "https://martinfowler.com/bliki/PurposeOfEstimation.html"
+        }
+      ]
+    },
+    {
+      "slug": "middle-code-review-pushback",
+      "title": "Review bị phản đối thì sao",
+      "question": "Tác giả PR phản đối góp ý của bạn và nói bạn quá khắt khe. Bạn xử lý thế nào để vừa giữ chất lượng code vừa giữ quan hệ trong team?",
+      "area": "soft-skills",
+      "why": "Kiểm tra kỹ năng giao tiếp kỹ thuật và mentoring khi bất đồng.",
+      "sources": [
+        {
+          "title": "Google Engineering Practices: Handling pushback in code reviews",
+          "url": "https://google.github.io/eng-practices/review/reviewer/pushback.html"
+        }
+      ]
+    },
+    {
+      "slug": "middle-webhook-delivery-signature-retries",
+      "title": "Thiết kế webhook cho đối tác",
+      "question": "Bạn thiết kế webhook gửi sự kiện cho khách hàng bên ngoài. Làm sao xác thực chữ ký, xử lý retry, trùng event và sai thứ tự?",
+      "area": "backend",
+      "why": "Kiểm tra thiết kế tích hợp bất đồng bộ đáng tin cậy: signature, replay, retry, idempotency phía nhận.",
+      "sources": [
+        {
+          "title": "Stripe docs: Receive Stripe events in your webhook endpoint",
+          "url": "https://docs.stripe.com/webhooks"
+        }
+      ]
+    },
+    {
+      "slug": "middle-api-versioning-breaking-change",
+      "title": "Versioning API không phá client",
+      "question": "Bạn cần đổi cấu trúc response mà mobile app cũ vẫn đang chạy. Bạn versioning API và deprecate thế nào?",
+      "area": "backend",
+      "why": "Kiểm tra cách quản lý breaking change và khả năng tương thích ngược ở quy mô nhiều client.",
+      "sources": [
+        {
+          "title": "Stripe: APIs as infrastructure, future-proofing with versioning",
+          "url": "https://stripe.com/blog/api-versioning"
+        }
+      ]
+    },
+    {
+      "slug": "middle-redis-eviction-policy-lru-lfu",
+      "title": "Redis eviction: LRU hay LFU",
+      "question": "Redis cache đầy bộ nhớ và hit rate giảm. maxmemory-policy nào phù hợp (allkeys-lru, allkeys-lfu, volatile-ttl) và bạn đo để chọn thế nào?",
+      "area": "backend",
+      "why": "Kiểm tra hiểu về eviction, kích thước cache và cách đọc hit rate để chọn policy theo access pattern.",
+      "sources": [
+        {
+          "title": "Redis docs: Key eviction",
+          "url": "https://redis.io/docs/latest/develop/reference/eviction/"
+        }
+      ]
+    },
+    {
+      "slug": "middle-cache-stampede-hot-key",
+      "title": "Cache stampede khi key hot hết hạn",
+      "question": "Một key cache nóng hết hạn lúc cao điểm và database sập vì hàng nghìn request cùng tính lại. Bạn phòng tránh thế nào?",
+      "area": "backend",
+      "why": "Kiểm tra kinh nghiệm vận hành cache dưới tải: lock, jitter TTL, refresh sớm.",
+      "sources": [
+        {
+          "title": "Wikipedia: Cache stampede",
+          "url": "https://en.wikipedia.org/wiki/Cache_stampede"
+        },
+        {
+          "title": "Azure Architecture Center: Cache-Aside pattern",
+          "url": "https://learn.microsoft.com/en-us/azure/architecture/patterns/cache-aside"
+        }
+      ]
+    },
+    {
+      "slug": "middle-backfill-large-table-in-batches",
+      "title": "Backfill bảng lớn an toàn",
+      "question": "Bạn cần điền giá trị cho cột mới trên bảng 300 triệu dòng đang chạy production. Làm sao backfill theo batch mà không khoá bảng hay làm replica lag?",
+      "area": "database",
+      "why": "Kiểm tra cách chạy data migration lớn: batch, throttle, resume được, theo dõi tải.",
+      "sources": [
+        {
+          "title": "GitLab docs: Batched background migrations",
+          "url": "https://docs.gitlab.com/development/database/batched_background_migrations/"
+        }
+      ]
+    },
+    {
+      "slug": "middle-create-index-concurrently-large-table",
+      "title": "Tạo index trên bảng lớn đang chạy",
+      "question": "Bạn cần thêm index trên bảng 200 triệu dòng ở production mà không khoá ghi. Bạn làm thế nào và rủi ro là gì?",
+      "area": "database",
+      "why": "Kiểm tra hiểu về lock khi DDL và đánh đổi của tạo index concurrently.",
+      "sources": [
+        {
+          "title": "PostgreSQL docs: CREATE INDEX (Building Indexes Concurrently)",
+          "url": "https://www.postgresql.org/docs/current/sql-createindex.html"
+        }
+      ]
+    },
+    {
+      "slug": "middle-rbac-vs-abac-authorization-design",
+      "title": "RBAC hay ABAC cho phân quyền",
+      "question": "Hệ thống có nhiều vai trò và quy tắc như 'chỉ sửa đơn của chi nhánh mình dưới 10 triệu'. Bạn chọn RBAC, ABAC hay kết hợp, và đặt kiểm tra quyền ở đâu?",
+      "area": "security",
+      "why": "Kiểm tra thiết kế phân quyền có thể mở rộng thay vì rải if-role khắp code.",
+      "sources": [
+        {
+          "title": "OWASP Cheat Sheet: Authorization",
+          "url": "https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html"
+        }
+      ]
+    },
+    {
+      "slug": "middle-idor-broken-access-control",
+      "title": "IDOR và Broken Access Control",
+      "question": "User A đổi id trên URL và xem được đơn hàng của user B. Lỗi này là gì và bạn thiết kế kiểm tra quyền thế nào để hệ thống không dính lại?",
+      "area": "security",
+      "why": "Kiểm tra hiểu về lỗi số một OWASP và việc kiểm tra quyền phía server theo từng object.",
+      "sources": [
+        {
+          "title": "OWASP Top 10 2021: A01 Broken Access Control",
+          "url": "https://top10.owasp.org/A01_2021-Broken_Access_Control"
+        }
+      ]
+    },
+    {
+      "slug": "middle-k8s-configmap-secret-config",
+      "title": "ConfigMap và Secret trong Kubernetes",
+      "question": "Cùng một image chạy ở dev, staging, prod với cấu hình khác nhau. Bạn dùng ConfigMap và Secret thế nào, và Secret của Kubernetes có thực sự an toàn không?",
+      "area": "devops",
+      "why": "Kiểm tra tách cấu hình khỏi image và hiểu giới hạn bảo mật của Secret.",
+      "sources": [
+        {
+          "title": "Kubernetes docs: ConfigMaps",
+          "url": "https://kubernetes.io/docs/concepts/configuration/configmap/"
+        },
+        {
+          "title": "Kubernetes docs: Secrets",
+          "url": "https://kubernetes.io/docs/concepts/configuration/secret/"
+        }
+      ]
+    },
+    {
+      "slug": "middle-k8s-liveness-readiness-probes",
+      "title": "Liveness và readiness probe",
+      "question": "Pod khởi động chậm bị Kubernetes restart liên tục, hoặc nhận traffic khi chưa sẵn sàng. Liveness, readiness, startup probe khác nhau và cấu hình thế nào?",
+      "area": "devops",
+      "why": "Kiểm tra hiểu về vòng đời Pod và lỗi cấu hình probe gây sự cố dây chuyền.",
+      "sources": [
+        {
+          "title": "Kubernetes docs: Liveness, Readiness and Startup Probes",
+          "url": "https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/"
+        }
+      ]
+    },
+    {
+      "slug": "middle-logs-metrics-traces-when-to-use",
+      "title": "Logs, metrics, traces dùng khi nào",
+      "question": "Khách báo checkout chậm thất thường. Bạn dùng logs, metrics, traces theo thứ tự nào để khoanh vùng, và mỗi loại trả lời câu hỏi gì?",
+      "area": "devops",
+      "why": "Kiểm tra khả năng chọn đúng công cụ observability để điều tra sự cố.",
+      "sources": [
+        {
+          "title": "OpenTelemetry: Observability primer",
+          "url": "https://opentelemetry.io/docs/concepts/observability-primer/"
+        }
+      ]
+    },
+    {
+      "slug": "middle-alert-on-symptoms-slo",
+      "title": "Alert theo triệu chứng và SLO",
+      "question": "On-call bị page 30 lần mỗi đêm vì CPU cao. Bạn thiết kế alert thế nào để chỉ page khi người dùng thực sự bị ảnh hưởng?",
+      "area": "devops",
+      "why": "Kiểm tra tư duy SLO, error budget và giảm alert fatigue.",
+      "sources": [
+        {
+          "title": "Google SRE Workbook: Alerting on SLOs",
+          "url": "https://sre.google/workbook/alerting-on-slos/"
+        },
+        {
+          "title": "Google SRE Book: Monitoring Distributed Systems",
+          "url": "https://sre.google/sre-book/monitoring-distributed-systems/"
+        }
+      ]
+    },
+    {
+      "slug": "middle-flame-graph-cpu-profiling",
+      "title": "Flame graph tìm điểm nghẽn CPU",
+      "question": "Service Node/Go dùng CPU 90% sau một lần release. Bạn profile và đọc flame graph để tìm nguyên nhân như thế nào?",
+      "area": "backend",
+      "why": "Kiểm tra quy trình đo trước khi tối ưu và kỹ năng đọc profile.",
+      "sources": [
+        {
+          "title": "Brendan Gregg: Flame Graphs",
+          "url": "https://www.brendangregg.com/flamegraphs.html"
+        }
+      ]
+    },
+    {
+      "slug": "middle-memory-leak-heap-snapshot-diagnosis",
+      "title": "Chẩn đoán memory leak",
+      "question": "Service Node tăng RAM dần rồi bị OOM kill sau vài ngày. Bạn xác định có leak không và tìm nguồn bằng heap snapshot như thế nào?",
+      "area": "backend",
+      "why": "Kiểm tra quy trình chẩn đoán memory leak thực tế: so sánh snapshot, tìm retainer, nguyên nhân hay gặp.",
+      "sources": [
+        {
+          "title": "Node.js Learn: Using Heap Snapshot",
+          "url": "https://nodejs.org/en/learn/diagnostics/memory/using-heap-snapshot"
+        }
+      ]
+    },
+    {
+      "slug": "middle-isolation-levels-anomalies",
+      "title": "Isolation level và các anomaly",
+      "question": "Hai giao dịch chuyển tiền đồng thời cho kết quả sai. Các isolation level khác nhau ngăn dirty read, non-repeatable read, phantom, write skew thế nào, bạn chọn mức nào?",
+      "area": "database",
+      "why": "Kiểm tra hiểu sâu về transaction isolation và đánh đổi giữa nhất quán và hiệu năng.",
+      "sources": [
+        {
+          "title": "PostgreSQL docs: Transaction Isolation",
+          "url": "https://www.postgresql.org/docs/current/transaction-iso.html"
+        }
+      ]
+    },
+    {
+      "slug": "middle-optimistic-vs-pessimistic-locking",
+      "title": "Optimistic hay pessimistic locking",
+      "question": "Hai admin cùng sửa một đơn hàng, hoặc hai request cùng trừ tồn kho. Khi nào dùng optimistic locking (version), khi nào SELECT FOR UPDATE?",
+      "area": "database",
+      "why": "Kiểm tra cách xử lý lost update và race condition ở tầng database theo mức tranh chấp.",
+      "sources": [
+        {
+          "title": "PostgreSQL docs: Explicit Locking",
+          "url": "https://www.postgresql.org/docs/current/explicit-locking.html"
+        },
+        {
+          "title": "PostgreSQL docs: Transaction Isolation",
+          "url": "https://www.postgresql.org/docs/current/transaction-iso.html"
+        }
+      ]
+    },
+    {
+      "slug": "middle-at-least-once-idempotent-consumer",
+      "title": "At-least-once và idempotent consumer",
+      "question": "Message queue giao at-least-once nên consumer nhận trùng message và trừ tiền hai lần. Bạn thiết kế consumer idempotent thế nào?",
+      "area": "architecture",
+      "why": "Kiểm tra hiểu về delivery semantics và cách xử lý message trùng trong thực tế.",
+      "sources": [
+        {
+          "title": "RabbitMQ docs: Reliability Guide",
+          "url": "https://www.rabbitmq.com/docs/reliability"
+        },
+        {
+          "title": "microservices.io: Idempotent Consumer",
+          "url": "https://microservices.io/patterns/communication-style/idempotent-consumer.html"
+        }
+      ]
+    },
+    {
+      "slug": "middle-transactional-outbox-dual-write",
+      "title": "Outbox pattern và dual write",
+      "question": "Service lưu đơn vào DB rồi publish event lên queue, đôi khi DB commit nhưng event mất. Làm sao đảm bảo cả hai cùng xảy ra?",
+      "area": "architecture",
+      "why": "Kiểm tra hiểu về vấn đề dual write và giải pháp transactional outbox.",
+      "sources": [
+        {
+          "title": "microservices.io: Transactional outbox",
+          "url": "https://microservices.io/patterns/data/transactional-outbox.html"
+        }
+      ]
+    },
+    {
+      "slug": "middle-retry-backoff-jitter-idempotency-key",
+      "title": "Retry với backoff, jitter, idempotency key",
+      "question": "Service gọi API thanh toán bị timeout. Bạn retry thế nào để không tạo retry storm và không charge khách hai lần?",
+      "area": "architecture",
+      "why": "Kiểm tra thiết kế retry an toàn: exponential backoff, jitter, giới hạn và idempotency key.",
+      "sources": [
+        {
+          "title": "AWS Builders' Library: Timeouts, retries, and backoff with jitter",
+          "url": "https://builder.aws.com/content/3EumjoZascWd1oZiEgL8ORlv3qE/timeouts-retries-and-backoff-with-jitter"
+        },
+        {
+          "title": "Stripe API: Idempotent requests",
+          "url": "https://docs.stripe.com/api/idempotent_requests"
+        }
+      ]
+    },
+    {
+      "slug": "middle-circuit-breaker-cascading-failure",
+      "title": "Circuit breaker chống lỗi dây chuyền",
+      "question": "Một service phụ chậm làm toàn bộ hệ thống treo thread. Circuit breaker, timeout, bulkhead giải quyết thế nào và khi nào chúng gây hại?",
+      "area": "architecture",
+      "why": "Kiểm tra tư duy resilience và hiểu các cơ chế chống cascading failure.",
+      "sources": [
+        {
+          "title": "Martin Fowler: Circuit Breaker",
+          "url": "https://martinfowler.com/bliki/CircuitBreaker.html"
+        },
+        {
+          "title": "AWS Builders' Library: Timeouts, retries, and backoff with jitter",
+          "url": "https://builder.aws.com/content/3EumjoZascWd1oZiEgL8ORlv3qE/timeouts-retries-and-backoff-with-jitter"
+        }
+      ]
+    },
+    {
+      "slug": "middle-oauth2-code-flow-pkce",
+      "title": "OAuth2 Authorization Code và PKCE",
+      "question": "Mobile app và SPA đăng nhập bằng Google: vì sao dùng Authorization Code với PKCE thay vì Implicit, và PKCE chống tấn công gì?",
+      "area": "security",
+      "why": "Kiểm tra hiểu luồng OAuth2 hiện đại và các tấn công chặn authorization code.",
+      "sources": [
+        {
+          "title": "RFC 7636: Proof Key for Code Exchange (PKCE)",
+          "url": "https://datatracker.ietf.org/doc/html/rfc7636"
+        },
+        {
+          "title": "RFC 9700: Best Current Practice for OAuth 2.0 Security",
+          "url": "https://datatracker.ietf.org/doc/html/rfc9700"
+        }
+      ]
+    },
+    {
+      "slug": "middle-oauth2-vs-oidc-token-handling",
+      "title": "OAuth2 khác OIDC, lưu token ở đâu",
+      "question": "OAuth2 và OpenID Connect khác nhau thế nào, access token, id token, refresh token dùng cho việc gì và nên lưu ở đâu, xoay vòng ra sao?",
+      "area": "security",
+      "why": "Phân biệt authorization với authentication và cách xử lý token an toàn.",
+      "sources": [
+        {
+          "title": "OpenID Connect Core 1.0",
+          "url": "https://openid.net/specs/openid-connect-core-1_0.html"
+        },
+        {
+          "title": "RFC 9700: Best Current Practice for OAuth 2.0 Security",
+          "url": "https://datatracker.ietf.org/doc/html/rfc9700"
+        }
+      ]
+    }
+  ]
+}

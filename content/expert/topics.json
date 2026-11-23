@@ -1,0 +1,501 @@
+{
+  "level": "expert",
+  "topics": [
+    {
+      "slug": "tail-latency-p99-fan-out",
+      "title": "Tail latency và p99",
+      "question": "Service của bạn có p50 là 20ms nhưng p99 là 2 giây. Vì sao tail latency tệ hơn khi fan-out nhiều backend, và bạn giảm nó thế nào?",
+      "area": "backend",
+      "why": "Kiểm tra hiểu biết về tail at scale; câu sai phổ biến là chỉ nhìn average latency và quên rằng fan-out khuếch đại p99.",
+      "sources": [
+        {
+          "title": "The Tail at Scale (Dean, Barroso)",
+          "url": "https://research.google/pubs/the-tail-at-scale/"
+        },
+        {
+          "title": "wrk2 README: constant-throughput load generator",
+          "url": "https://github.com/giltene/wrk2"
+        }
+      ]
+    },
+    {
+      "slug": "coordinated-omission-load-test",
+      "title": "Coordinated omission",
+      "question": "Kết quả load test cho thấy p99 rất đẹp, nhưng production vẫn chậm. Coordinated omission là gì và nó làm sai số liệu ra sao?",
+      "area": "testing",
+      "why": "Phân biệt người đo latency đúng với người tin công cụ; câu sai phổ biến là đo thời gian từ lúc gửi thay vì từ lúc lẽ ra phải gửi.",
+      "sources": [
+        {
+          "title": "wrk2: Coordinated Omission and intended send time",
+          "url": "https://github.com/giltene/wrk2"
+        },
+        {
+          "title": "HdrHistogram (recording latency without coordinated omission)",
+          "url": "http://hdrhistogram.org/"
+        }
+      ]
+    },
+    {
+      "slug": "tls13-handshake-1-rtt",
+      "title": "TLS 1.3 handshake",
+      "question": "Giải thích TLS 1.3 handshake từ ClientHello đến dữ liệu ứng dụng. Nó khác TLS 1.2 ở đâu và 0-RTT có rủi ro gì?",
+      "area": "networking",
+      "why": "Tách người thuộc lòng sơ đồ với người hiểu key exchange, forward secrecy và replay của 0-RTT.",
+      "sources": [
+        {
+          "title": "RFC 8446: TLS 1.3",
+          "url": "https://www.rfc-editor.org/rfc/rfc8446"
+        },
+        {
+          "title": "The Illustrated TLS 1.3 Connection (xargs.org)",
+          "url": "https://tls13.xargs.org/"
+        }
+      ]
+    },
+    {
+      "slug": "pki-revocation-certificate-transparency",
+      "title": "PKI, revocation và CT",
+      "question": "Làm sao trình duyệt biết một certificate đã bị thu hồi hay bị cấp trái phép? CRL, OCSP và Certificate Transparency khác nhau thế nào?",
+      "area": "security",
+      "why": "Kiểm tra hiểu PKI thật; câu sai phổ biến là tin rằng revocation luôn được kiểm tra và hoạt động.",
+      "sources": [
+        {
+          "title": "RFC 5280: X.509 PKI Certificate and CRL Profile",
+          "url": "https://www.rfc-editor.org/rfc/rfc5280"
+        },
+        {
+          "title": "RFC 9162: Certificate Transparency 2.0",
+          "url": "https://www.rfc-editor.org/rfc/rfc9162"
+        }
+      ]
+    },
+    {
+      "slug": "epoll-vs-select-c10k",
+      "title": "epoll và C10K",
+      "question": "Vì sao epoll scale tốt hơn select/poll, và level-triggered khác edge-triggered thế nào? Bug nào hay gặp với edge-triggered?",
+      "area": "backend",
+      "why": "Kiểm tra mô hình I/O của OS dưới Node.js, nginx, Netty; câu sai phổ biến là nghĩ epoll làm I/O nhanh hơn thay vì giảm chi phí theo số fd.",
+      "sources": [
+        {
+          "title": "epoll(7) Linux man page",
+          "url": "https://man7.org/linux/man-pages/man7/epoll.7.html"
+        },
+        {
+          "title": "The C10K problem (Dan Kegel)",
+          "url": "http://www.kegel.com/c10k.html"
+        }
+      ]
+    },
+    {
+      "slug": "virtual-memory-demand-paging-oom-killer",
+      "title": "Virtual memory và OOM",
+      "question": "Process dùng 8GB virtual nhưng chỉ 1GB RSS, rồi container bị OOM killed. Virtual memory, demand paging và overcommit giải thích chuyện này thế nào?",
+      "area": "devops",
+      "why": "Phân biệt virtual, resident, cache và cgroup limit khi debug production; câu sai phổ biến là đọc VSZ như mức dùng RAM.",
+      "sources": [
+        {
+          "title": "Linux kernel docs: Concepts overview (memory management)",
+          "url": "https://docs.kernel.org/admin-guide/mm/concepts.html"
+        },
+        {
+          "title": "Linux kernel docs: Overcommit Accounting",
+          "url": "https://docs.kernel.org/mm/overcommit-accounting.html"
+        }
+      ]
+    },
+    {
+      "slug": "gc-pause-generational-vs-concurrent",
+      "title": "GC pause và concurrent GC",
+      "question": "Chọn garbage collector cho service latency-sensitive: generational, G1, ZGC hay GC của Go khác nhau thế nào về pause và throughput?",
+      "area": "language",
+      "why": "Kiểm tra hiểu trade-off pause, throughput, footprint; câu sai phổ biến là nghĩ GC concurrent thì không còn stop-the-world.",
+      "sources": [
+        {
+          "title": "A Guide to the Go Garbage Collector",
+          "url": "https://go.dev/doc/gc-guide"
+        },
+        {
+          "title": "Java SE 21 GC Tuning Guide: choosing a collector",
+          "url": "https://docs.oracle.com/en/java/javase/21/gctuning/available-collectors.html"
+        }
+      ]
+    },
+    {
+      "slug": "jit-tiered-compilation-deoptimization",
+      "title": "JIT, tiering và deopt",
+      "question": "JIT hoạt động thế nào, vì sao code chạy chậm ở những giây đầu và vì sao một hàm đã tối ưu lại bị deoptimize?",
+      "area": "language",
+      "why": "Kiểm tra hiểu warmup, speculative optimization và benchmark đúng; câu sai phổ biến là coi JIT như compiler chạy một lần.",
+      "sources": [
+        {
+          "title": "V8: Sparkplug, a non-optimizing JavaScript compiler",
+          "url": "https://v8.dev/blog/sparkplug"
+        },
+        {
+          "title": "V8: Launching Ignition and TurboFan",
+          "url": "https://v8.dev/blog/launching-ignition-and-turbofan"
+        }
+      ]
+    },
+    {
+      "slug": "postgres-mvcc-vacuum-bloat",
+      "title": "MVCC, vacuum và bloat",
+      "question": "Trong PostgreSQL, UPDATE một dòng thực sự làm gì? Vì sao bảng bị bloat và một transaction chạy lâu phá vacuum thế nào?",
+      "area": "database",
+      "why": "Kiểm tra hiểu MVCC thật; câu sai phổ biến là nghĩ UPDATE ghi đè tại chỗ và DELETE giải phóng đĩa ngay.",
+      "sources": [
+        {
+          "title": "PostgreSQL docs: Concurrency Control, MVCC introduction",
+          "url": "https://www.postgresql.org/docs/current/mvcc-intro.html"
+        },
+        {
+          "title": "PostgreSQL docs: Routine Vacuuming",
+          "url": "https://www.postgresql.org/docs/current/routine-vacuuming.html"
+        }
+      ]
+    },
+    {
+      "slug": "wal-fsync-crash-recovery",
+      "title": "WAL, fsync và crash recovery",
+      "question": "Database đảm bảo durability thế nào khi mất điện giữa chừng? Write-ahead log và fsync làm gì, và fsync fail thì sao?",
+      "area": "database",
+      "why": "Kiểm tra hiểu durability tới tầng OS; câu sai phổ biến là tin write() thành công nghĩa là dữ liệu đã an toàn.",
+      "sources": [
+        {
+          "title": "PostgreSQL docs: Write-Ahead Logging (WAL)",
+          "url": "https://www.postgresql.org/docs/current/wal-intro.html"
+        },
+        {
+          "title": "PostgreSQL wiki: Fsync Errors (fsyncgate)",
+          "url": "https://wiki.postgresql.org/wiki/Fsync_Errors"
+        }
+      ]
+    },
+    {
+      "slug": "btree-vs-lsm-write-amplification",
+      "title": "B-tree và LSM-tree",
+      "question": "So sánh B-tree với LSM-tree cho workload ghi nhiều. Write, read, space amplification đánh đổi ra sao và compaction ảnh hưởng thế nào?",
+      "area": "database",
+      "why": "Kiểm tra hiểu storage engine; câu sai phổ biến là nói LSM luôn nhanh hơn mà bỏ qua compaction và read amplification.",
+      "sources": [
+        {
+          "title": "The Log-Structured Merge-Tree (O'Neil et al.)",
+          "url": "https://www.cs.umb.edu/~poneil/lsmtree.pdf"
+        },
+        {
+          "title": "RocksDB wiki: Compaction",
+          "url": "https://github.com/facebook/rocksdb/wiki/Compaction"
+        },
+        {
+          "title": "PostgreSQL docs: B-Tree Indexes",
+          "url": "https://www.postgresql.org/docs/current/btree.html"
+        }
+      ]
+    },
+    {
+      "slug": "query-planner-statistics-bad-plan",
+      "title": "Query planner và statistics",
+      "question": "Query chạy nhanh hôm qua, hôm nay chậm 100 lần dù không đổi code. Query planner chọn plan dựa vào gì và statistics sai gây ra điều gì?",
+      "area": "database",
+      "why": "Kiểm tra khả năng debug plan; câu sai phổ biến là thêm index ngay mà không xem estimate rows và statistics.",
+      "sources": [
+        {
+          "title": "PostgreSQL docs: Statistics Used by the Planner",
+          "url": "https://www.postgresql.org/docs/current/planner-stats.html"
+        },
+        {
+          "title": "PostgreSQL docs: Using EXPLAIN",
+          "url": "https://www.postgresql.org/docs/current/using-explain.html"
+        }
+      ]
+    },
+    {
+      "slug": "timing-side-channel-constant-time",
+      "title": "Timing side channel",
+      "question": "So sánh chuỗi bí mật bằng == có thể bị tấn công thế nào? Constant-time là gì và vì sao Spectre cho thấy kẻ tấn công không cần lỗi logic?",
+      "area": "security",
+      "why": "Kiểm tra tư duy attacker ở tầng thấp; câu sai phổ biến là nghĩ chỉ lỗi logic hoặc injection mới khai thác được.",
+      "sources": [
+        {
+          "title": "Constant-Time Crypto in BearSSL",
+          "url": "https://www.bearssl.org/constanttime.html"
+        },
+        {
+          "title": "Spectre Attacks: Exploiting Speculative Execution",
+          "url": "https://arxiv.org/abs/1801.01203"
+        }
+      ]
+    },
+    {
+      "slug": "supply-chain-slsa-provenance",
+      "title": "Supply chain và SLSA",
+      "question": "Làm sao bạn đảm bảo artifact production đúng là build từ source đã review? Provenance, hermetic build và SLSA level nghĩa là gì?",
+      "area": "security",
+      "why": "Kiểm tra thiết kế bảo mật cấp hệ thống; câu sai phổ biến là chỉ quét CVE dependency mà bỏ qua tính toàn vẹn của build.",
+      "sources": [
+        {
+          "title": "SLSA Specification v1.0",
+          "url": "https://slsa.dev/spec/v1.0/"
+        },
+        {
+          "title": "SLSA v1.0: Provenance",
+          "url": "https://slsa.dev/spec/v1.0/provenance"
+        },
+        {
+          "title": "Reproducible Builds: Definitions",
+          "url": "https://reproducible-builds.org/docs/definition/"
+        }
+      ]
+    },
+    {
+      "slug": "parser-recursive-descent-pratt",
+      "title": "Parser: recursive descent và Pratt",
+      "question": "Bạn viết parser cho biểu thức có độ ưu tiên toán tử và associativity. Recursive descent và Pratt parsing khác nhau thế nào, và left recursion xử lý ra sao?",
+      "area": "language",
+      "why": "Kiểm tra nền tảng compiler; câu sai phổ biến là dùng regex cho ngôn ngữ lồng nhau.",
+      "sources": [
+        {
+          "title": "Crafting Interpreters: Parsing Expressions",
+          "url": "https://craftinginterpreters.com/parsing-expressions.html"
+        },
+        {
+          "title": "Simple but Powerful Pratt Parsing (matklad)",
+          "url": "https://matklad.github.io/2020/04/13/simple-but-powerful-pratt-parsing.html"
+        }
+      ]
+    },
+    {
+      "slug": "compiler-ssa-optimization-pipeline",
+      "title": "SSA và tối ưu compiler",
+      "question": "Compiler biến source thành code nhanh thế nào? SSA form là gì và vì sao nó giúp constant propagation, dead code elimination?",
+      "area": "language",
+      "why": "Kiểm tra hiểu IR và optimization; câu sai phổ biến là nghĩ compiler chỉ dịch từng dòng sang máy.",
+      "sources": [
+        {
+          "title": "LLVM Language Reference Manual (SSA)",
+          "url": "https://llvm.org/docs/LangRef.html"
+        },
+        {
+          "title": "LLVM Kaleidoscope ch.7: Mutable Variables (SSA, mem2reg)",
+          "url": "https://llvm.org/docs/tutorial/MyFirstLanguageFrontend/LangImpl07.html"
+        }
+      ]
+    },
+    {
+      "slug": "lamport-vector-clocks-happens-before",
+      "title": "Lamport và vector clock",
+      "question": "Không có đồng hồ chung, làm sao biết event A xảy ra trước B? Lamport clock và vector clock khác nhau ở đâu?",
+      "area": "algorithms",
+      "why": "Kiểm tra khái niệm happens-before; câu sai phổ biến là tin timestamp wall-clock đủ để sắp thứ tự.",
+      "sources": [
+        {
+          "title": "Time, Clocks, and the Ordering of Events (Lamport 1978)",
+          "url": "https://www.microsoft.com/en-us/research/publication/time-clocks-ordering-events-distributed-system/"
+        },
+        {
+          "title": "Dynamo: Amazon's Highly Available Key-value Store",
+          "url": "https://www.amazon.science/publications/dynamo-amazons-highly-available-key-value-store"
+        }
+      ]
+    },
+    {
+      "slug": "hybrid-logical-clock-truetime",
+      "title": "HLC và TrueTime",
+      "question": "Clock skew làm last-write-wins mất dữ liệu thế nào? Hybrid Logical Clock và TrueTime của Spanner giải quyết ra sao?",
+      "area": "architecture",
+      "why": "Kiểm tra hiểu thời gian trong hệ phân tán; câu sai phổ biến là tin NTP đủ chính xác để sắp thứ tự ghi.",
+      "sources": [
+        {
+          "title": "Logical Physical Clocks and Consistent Snapshots (HLC)",
+          "url": "https://cse.buffalo.edu/tech-reports/2014-04.pdf"
+        },
+        {
+          "title": "Spanner: Google's Globally-Distributed Database",
+          "url": "https://research.google/pubs/spanner-googles-globally-distributed-database/"
+        }
+      ]
+    },
+    {
+      "slug": "linearizability-vs-serializability",
+      "title": "Linearizability và serializability",
+      "question": "Linearizability khác serializability thế nào? Strict serializability là gì và hệ thống nào thật sự đảm bảo?",
+      "area": "database",
+      "why": "Phân biệt người nắm consistency model với người dùng lẫn lộn hai từ; sai phổ biến là coi chúng là một.",
+      "sources": [
+        {
+          "title": "Linearizability versus Serializability (Bailis)",
+          "url": "http://www.bailis.org/blog/linearizability-versus-serializability/"
+        },
+        {
+          "title": "Jepsen: Consistency Models",
+          "url": "https://jepsen.io/consistency"
+        }
+      ]
+    },
+    {
+      "slug": "snapshot-isolation-write-skew-ssi",
+      "title": "Snapshot isolation và write skew",
+      "question": "Snapshot isolation cho phép anomaly nào mà serializable không cho? Ví dụ write skew và cách PostgreSQL SSI phát hiện nó.",
+      "area": "database",
+      "why": "Kiểm tra hiểu isolation thật; câu sai phổ biến là nghĩ REPEATABLE READ nghĩa là serializable.",
+      "sources": [
+        {
+          "title": "PostgreSQL docs: Transaction Isolation",
+          "url": "https://www.postgresql.org/docs/current/transaction-iso.html"
+        },
+        {
+          "title": "Serializable Snapshot Isolation in PostgreSQL (Ports, Grittner)",
+          "url": "https://arxiv.org/abs/1208.4179"
+        }
+      ]
+    },
+    {
+      "slug": "consistent-hashing-virtual-nodes-bounded-loads",
+      "title": "Consistent hashing",
+      "question": "Vì sao hash(key) mod N không dùng được khi thêm node? Consistent hashing, virtual nodes và bounded loads giải quyết hot node thế nào?",
+      "area": "architecture",
+      "why": "Kiểm tra thiết kế partitioning; câu sai phổ biến là bỏ qua phân bố tải không đều khi không có virtual node.",
+      "sources": [
+        {
+          "title": "Consistent Hashing and Random Trees (Karger et al.)",
+          "url": "https://www.cs.princeton.edu/courses/archive/fall09/cos518/papers/chash.pdf"
+        },
+        {
+          "title": "Consistent Hashing with Bounded Loads",
+          "url": "https://arxiv.org/abs/1608.01350"
+        },
+        {
+          "title": "Dynamo: Amazon's Highly Available Key-value Store",
+          "url": "https://www.amazon.science/publications/dynamo-amazons-highly-available-key-value-store"
+        }
+      ]
+    },
+    {
+      "slug": "crdt-eventual-consistency-convergence",
+      "title": "CRDT và eventual consistency",
+      "question": "CRDT đảm bảo hội tụ thế nào mà không cần coordination? State-based khác op-based ra sao và giới hạn của nó là gì?",
+      "area": "architecture",
+      "why": "Kiểm tra hiểu eventual consistency có cấu trúc; câu sai phổ biến là nghĩ last-write-wins là đủ an toàn.",
+      "sources": [
+        {
+          "title": "Conflict-free Replicated Data Types (Shapiro et al.)",
+          "url": "https://inria.hal.science/inria-00555588"
+        },
+        {
+          "title": "Dynamo: Amazon's Highly Available Key-value Store",
+          "url": "https://www.amazon.science/publications/dynamo-amazons-highly-available-key-value-store"
+        }
+      ]
+    },
+    {
+      "slug": "raft-leader-election-log-replication",
+      "title": "Raft: election và log replication",
+      "question": "Giải thích Raft: leader election, term, log replication và khi nào một entry được coi là committed?",
+      "area": "architecture",
+      "why": "Kiểm tra hiểu consensus thật; câu sai phổ biến là coi entry là committed ngay khi leader ghi local.",
+      "sources": [
+        {
+          "title": "Raft Consensus Algorithm (paper and resources)",
+          "url": "https://raft.github.io/"
+        },
+        {
+          "title": "The Chubby lock service for loosely-coupled distributed systems",
+          "url": "https://research.google/pubs/the-chubby-lock-service-for-loosely-coupled-distributed-systems/"
+        }
+      ]
+    },
+    {
+      "slug": "paxos-vs-raft-flp-impossibility",
+      "title": "Paxos, Raft và FLP",
+      "question": "Vì sao consensus không thể vừa an toàn vừa luôn tiến triển trong hệ async (FLP)? Paxos và Raft thoát bằng cách nào?",
+      "area": "architecture",
+      "why": "Kiểm tra lý thuyết nền tảng; câu sai phổ biến là nghĩ FLP nghĩa là consensus không thể làm được trong thực tế.",
+      "sources": [
+        {
+          "title": "Paxos Made Simple (Lamport)",
+          "url": "https://www.microsoft.com/en-us/research/publication/paxos-made-simple/"
+        },
+        {
+          "title": "Impossibility of Distributed Consensus with One Faulty Process (FLP)",
+          "url": "https://groups.csail.mit.edu/tds/papers/Lynch/jacm85.pdf"
+        },
+        {
+          "title": "Raft Consensus Algorithm (paper and resources)",
+          "url": "https://raft.github.io/"
+        }
+      ]
+    },
+    {
+      "slug": "split-brain-fencing-token-lock",
+      "title": "Split brain và fencing token",
+      "question": "Hai node cùng nghĩ mình là leader (split brain), hoặc lock hết hạn giữa chừng khi process bị GC pause. Fencing token giải quyết thế nào?",
+      "area": "architecture",
+      "why": "Kiểm tra thiết kế an toàn khi lock lease hết hạn; câu sai phổ biến là tin Redis lock đủ cho correctness.",
+      "sources": [
+        {
+          "title": "How to do distributed locking (Kleppmann)",
+          "url": "https://martin.kleppmann.com/2016/02/08/how-to-do-distributed-locking.html"
+        },
+        {
+          "title": "The Chubby lock service for loosely-coupled distributed systems",
+          "url": "https://research.google/pubs/the-chubby-lock-service-for-loosely-coupled-distributed-systems/"
+        }
+      ]
+    },
+    {
+      "slug": "exactly-once-myth-idempotence",
+      "title": "Exactly-once là huyền thoại?",
+      "question": "Kafka quảng cáo exactly-once. Vì sao nói exactly-once delivery là không thể, và thực chất nó là gì (at-least-once cộng idempotence)?",
+      "area": "backend",
+      "why": "Phân biệt delivery và processing semantics; câu sai phổ biến là tin exactly-once xóa nhu cầu idempotent consumer.",
+      "sources": [
+        {
+          "title": "KIP-98: Exactly Once Delivery and Transactional Messaging",
+          "url": "https://cwiki.apache.org/confluence/display/KAFKA/KIP-98+-+Exactly+Once+Delivery+and+Transactional+Messaging"
+        },
+        {
+          "title": "End-to-End Arguments in System Design (Saltzer, Reed, Clark)",
+          "url": "https://web.mit.edu/Saltzer/www/publications/endtoend/endtoend.pdf"
+        }
+      ]
+    },
+    {
+      "slug": "tla-plus-formal-methods-chaos",
+      "title": "TLA+ và chaos engineering",
+      "question": "Khi nào đáng viết TLA+ spec thay vì chỉ test, và chaos engineering bổ sung gì mà model checking không làm được?",
+      "area": "testing",
+      "why": "Kiểm tra phán đoán chọn công cụ đảm bảo đúng; câu sai phổ biến là nghĩ unit test đủ bắt lỗi concurrency hiếm.",
+      "sources": [
+        {
+          "title": "Formal Methods at Amazon Web Services",
+          "url": "https://lamport.azurewebsites.net/tla/formal-methods-amazon.pdf"
+        },
+        {
+          "title": "Principles of Chaos Engineering",
+          "url": "https://principlesofchaos.org/"
+        }
+      ]
+    },
+    {
+      "slug": "multi-region-active-active-design",
+      "title": "Active-active multi-region",
+      "question": "Thiết kế hệ thống active-active hai region: xử lý write conflict, latency, failover và consistency thế nào?",
+      "area": "architecture",
+      "why": "Kiểm tra tổng hợp mọi kiến thức consistency; câu sai phổ biến là bật replication hai chiều và coi như xong.",
+      "sources": [
+        {
+          "title": "Amazon DynamoDB global tables",
+          "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GlobalTables.html"
+        },
+        {
+          "title": "CockroachDB multi-region capabilities overview",
+          "url": "https://docs.cockroachlabs.com/docs/stable/multiregion-overview"
+        },
+        {
+          "title": "Spanner: Google's Globally-Distributed Database",
+          "url": "https://research.google/pubs/spanner-googles-globally-distributed-database/"
+        }
+      ]
+    }
+  ]
+}
