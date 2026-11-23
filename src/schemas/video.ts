@@ -1,7 +1,11 @@
 import { z } from 'zod';
+import { CalloutSceneSchema } from '../scenes/Callout/schema';
 import { CodeSceneSchema } from '../scenes/CodeDiff/schema';
+import { CompareSceneSchema } from '../scenes/Compare/schema';
 import { DiagramSceneSchema } from '../scenes/Diagram/schema';
+import { EndCardSceneSchema } from '../scenes/EndCard/schema';
 import { HookSceneSchema } from '../scenes/HookCard/schema';
+import { StatSceneSchema } from '../scenes/Stat/schema';
 import { SummarySceneSchema } from '../scenes/Summary/schema';
 import { TerminalSceneSchema } from '../scenes/Terminal/schema';
 import { TradeoffSceneSchema } from '../scenes/Tradeoff/schema';
@@ -14,12 +18,16 @@ export const SceneSchema = z.discriminatedUnion('type', [
   TerminalSceneSchema,
   TradeoffSceneSchema,
   SummarySceneSchema,
+  StatSceneSchema,
+  CompareSceneSchema,
+  CalloutSceneSchema,
+  EndCardSceneSchema,
 ]);
 
 export const VideoMetaSchema = z.strictObject({
   id: SlugSchema,
   title: z.string().min(1),
-  /** Slug of the folder under content/topics/. */
+  /** Slug of the topic folder: content/<level>/<ddmmyyyy>/<topic>/. */
   topic: SlugSchema,
   level: LevelSchema,
   /** The real interview question this video answers. */
@@ -27,6 +35,8 @@ export const VideoMetaSchema = z.strictObject({
   status: z.enum(['draft', 'review', 'approved', 'published']).default('draft'),
   /** Content policy: AI voice label must be on. */
   aiVoiceLabel: z.boolean().default(true),
+  /** `private`: produced for the owner only (e.g. it belongs to a later point of the path). */
+  visibility: z.enum(['public', 'private']).default('public'),
 });
 
 export const VideoSchema = z

@@ -1,9 +1,12 @@
 import { interpolate, spring, useCurrentFrame, useVideoConfig } from 'remotion';
 import { colors, fontFamily, spacing } from '../../design/tokens';
 import { springs } from '../../design/springs';
+import { RichText } from '../../components/RichText';
+import { useSceneWords } from '../../components/SceneTiming';
+import { spokenFrames } from '../../lib/cues';
 import { summaryLayout } from './layout';
 import type { SummaryScene } from './schema';
-import { summaryTimeline } from './timeline';
+import { applySummaryCues, summaryTimeline } from './timeline';
 
 const CheckMark: React.FC<{ size: number }> = ({ size }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
@@ -51,9 +54,16 @@ const LoopGlyph: React.FC<{ size: number; scale: number; rotation: number }> = (
 export const Summary: React.FC<{ scene: SummaryScene }> = ({ scene }) => {
   const frame = useCurrentFrame();
   const { fps, durationInFrames } = useVideoConfig();
-  const { points, loopLine } = scene.props;
+  const { points, loopLine, pointsAt, loopAt } = scene.props;
+  const words = useSceneWords();
 
-  const timeline = summaryTimeline(durationInFrames, points.length, Boolean(loopLine));
+  const cued = spokenFrames(words, [...points.map((_, i) => pointsAt?.[i]), loopAt], fps);
+  const timeline = applySummaryCues(
+    summaryTimeline(durationInFrames, points.length, Boolean(loopLine)),
+    cued.slice(0, points.length),
+    cued[points.length],
+    durationInFrames,
+  );
   const layout = summaryLayout(points, loopLine);
 
   const enter = (start: number): number =>
@@ -121,7 +131,9 @@ export const Summary: React.FC<{ scene: SummaryScene }> = ({ scene }) => {
           >
             <CheckMark size={layout.fontSize * 1.1} />
           </div>
-          <div style={{ flex: 1, minWidth: 0 }}>{point}</div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <RichText text={point} />
+          </div>
         </div>
       ))}
       {loopLine ? (

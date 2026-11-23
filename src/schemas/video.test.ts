@@ -6,10 +6,10 @@ import { VideoSchema } from './video';
 const readJson = (path: string): unknown =>
   JSON.parse(readFileSync(new URL(path, import.meta.url), 'utf8'));
 
-const sample = () => readJson('../../content/videos/sample.json') as Record<string, unknown>;
+const sample = () => readJson('../../content/samples/sample/video.json') as Record<string, unknown>;
 
 describe('VideoSchema', () => {
-  it('accepts content/videos/sample.json', () => {
+  it('accepts content/samples/sample/video.json', () => {
     expect(VideoSchema.safeParse(sample()).success).toBe(true);
   });
 
@@ -43,7 +43,7 @@ describe('VideoSchema', () => {
 
 describe('InterviewKitSchema', () => {
   it('accepts the database-index kit', () => {
-    const kit = readJson('../../content/topics/database-index/interview-kit.json');
+    const kit = readJson('../../content/junior/20122026/database-index/interview-kit.json');
     expect(InterviewKitSchema.safeParse(kit).success).toBe(true);
   });
 });

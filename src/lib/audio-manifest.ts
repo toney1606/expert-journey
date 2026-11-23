@@ -1,5 +1,5 @@
-import { AudioManifestSchema } from '../schemas/audio-manifest';
-import type { AudioManifest } from '../schemas/audio-manifest';
+import { AudioManifestSchema, BedInfoSchema } from '../schemas/audio-manifest';
+import type { AudioManifest, BedInfo } from '../schemas/audio-manifest';
 
 type FetchLike = (url: string) => Promise<{ ok: boolean; json: () => Promise<unknown> }>;
 
@@ -24,4 +24,19 @@ export const fetchAudioManifest = async (
     throw new Error(`Audio manifest is for "${manifest.videoId}", expected "${videoId}"`);
   }
   return manifest;
+};
+
+/** Load bed.json (music + sfx track made by `pnpm sfx`); undefined when absent or unreadable. */
+export const fetchBedInfo = async (
+  url: string,
+  fetchImpl: FetchLike = fetch,
+): Promise<BedInfo | undefined> => {
+  try {
+    const response = await fetchImpl(url);
+    if (!response.ok) return undefined;
+    const parsed = BedInfoSchema.safeParse(await response.json());
+    return parsed.success ? parsed.data : undefined;
+  } catch {
+    return undefined;
+  }
 };

@@ -9,6 +9,14 @@ export const DIAGRAM_BOX = {
   height: CONTENT_BOX.height - DIAGRAM_TITLE_HEIGHT,
 } as const;
 
+/** Height reserved under the diagram for the 'Bước k/N' badge when a `path` is set. */
+export const STEP_BADGE_HEIGHT = 56;
+/** Diagram area when the scene has a `path`: DIAGRAM_BOX minus the badge band. */
+export const DIAGRAM_PATH_BOX = {
+  width: DIAGRAM_BOX.width,
+  height: DIAGRAM_BOX.height - STEP_BADGE_HEIGHT,
+} as const;
+
 export type LayoutBox = { width: number; height: number };
 
 export type LayoutOptions = {
@@ -67,6 +75,23 @@ export const MIN_GAP = 48;
 export const MIN_GAP_ROUTED = 72;
 /** Narrowest node that still reads; a layer with more nodes than this allows does not fit. */
 export const MIN_NODE_WIDTH = 140;
+
+/**
+ * Offsets that spread `count` arrowheads along an edge of length `size` (centered on 0, in order), so
+ * siblings ending on the same node do not share a tip. Spacing is capped, and shrinks to stay `margin`
+ * clear of both ends.
+ */
+export const spreadOffsets = (
+  count: number,
+  size: number,
+  maxSpacing = 44,
+  margin = 36,
+): number[] => {
+  if (count <= 1) return Array.from({ length: Math.max(0, count) }, () => 0);
+  const usable = Math.max(0, size - 2 * margin);
+  const spacing = Math.min(maxSpacing, usable / (count - 1));
+  return Array.from({ length: count }, (_, i) => (i - (count - 1) / 2) * spacing);
+};
 
 export type NodeInput = { id: string; label: string };
 export type EdgeInput = { from: string; to: string; label?: string };
@@ -370,10 +395,11 @@ export const layoutDiagram = (
   const forwardPoints = (
     source: PlacedNode,
     target: PlacedNode,
+    tipShift = 0,
   ): { p0: Point; p1: Point; p2: Point; p3: Point } => {
     const sx = source.x + source.width / 2;
     const sy = source.y + source.height;
-    const tx = target.x + target.width / 2;
+    const tx = target.x + target.width / 2 + tipShift;
     const by = target.y - opts.arrowLength;
     const dy = (by - sy) / 2;
     return {
@@ -425,6 +451,29 @@ export const layoutDiagram = (
   const laneOf = new Map<EdgeInput, number>();
   routedEdges.forEach((edge, i) => laneOf.set(edge, i % MAX_LANES));
 
+  // Edges ending on the same node get their own spot along its border (forward: top, back: right side).
+  const tipShift = new Map<EdgeInput, number>();
+  const groups = new Map<string, EdgeInput[]>();
+  for (const edge of edges) {
+    const key = `${backSet.has(edge) ? 'back' : 'fwd'}:${edge.to}`;
+    groups.set(key, [...(groups.get(key) ?? []), edge]);
+  }
+  for (const [key, group] of groups) {
+    const target = placed.get(group[0]?.to ?? '');
+    if (!target || group.length < 2) continue;
+    const isBack = key.startsWith('back');
+    // Order by where the edge comes from, so the arrowheads do not cross (lane-routed edges enter from the left).
+    const rank = (edge: EdgeInput): number => {
+      const source = placed.get(edge.from);
+      if (!source) return 0;
+      if (isBack) return source.y;
+      return routed.has(edge) ? Number.NEGATIVE_INFINITY : source.x + source.width / 2;
+    };
+    const ordered = [...group].sort((a, b) => rank(a) - rank(b));
+    const offsets = spreadOffsets(ordered.length, isBack ? target.height : target.width);
+    ordered.forEach((edge, i) => tipShift.set(edge, offsets[i] ?? 0));
+  }
+
   const placedEdges: PlacedEdge[] = [];
   for (const edge of edges) {
     const source = placed.get(edge.from);
@@ -433,7 +482,7 @@ export const layoutDiagram = (
     const label = edge.label === undefined ? {} : { label: edge.label };
     if (backSet.has(edge)) {
       const sy = source.y + source.height / 2;
-      const ty = target.y + target.height / 2;
+      const ty = target.y + target.height / 2 + (tipShift.get(edge) ?? 0);
       const sx = source.x + source.width;
       const tx = target.x + target.width;
       const railX = box.width - opts.pad - RAIL_INSET;
@@ -456,7 +505,7 @@ export const layoutDiagram = (
       });
       continue;
     }
-    const tx = target.x + target.width / 2;
+    const tx = target.x + target.width / 2 + (tipShift.get(edge) ?? 0);
     const ty = target.y;
     const by = ty - opts.arrowLength;
     const sx = source.x + source.width / 2;
@@ -490,7 +539,7 @@ export const layoutDiagram = (
       });
       continue;
     }
-    const { p0, p1, p2, p3 } = forwardPoints(source, target);
+    const { p0, p1, p2, p3 } = forwardPoints(source, target, tipShift.get(edge) ?? 0);
     placedEdges.push({
       ...label,
       from: edge.from,

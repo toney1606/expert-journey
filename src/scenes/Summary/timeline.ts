@@ -1,3 +1,5 @@
+import { resolveCueFrames } from '../../lib/cues';
+
 export type SummaryTimeline = {
   /** Frame at which the "Takeaway" chip enters. */
   labelStart: number;
@@ -29,5 +31,29 @@ export const summaryTimeline = (
     labelStart: 0,
     pointStarts,
     loopStart: hasLoopLine ? startOf(Math.max(0, pointCount)) : null,
+  };
+};
+
+/**
+ * Overlay narration cues (frames at which each point / the loop line is spoken, undefined = not cued) on the
+ * automatic timeline. Order stays points then loop line; reveals never go back and keep a minimum gap.
+ */
+export const applySummaryCues = (
+  fallback: SummaryTimeline,
+  pointCues: readonly (number | undefined)[],
+  loopCue: number | undefined,
+  durationInFrames: number,
+): SummaryTimeline => {
+  const base = [...fallback.pointStarts];
+  const spoken: (number | undefined)[] = fallback.pointStarts.map((_, i) => pointCues[i]);
+  if (fallback.loopStart !== null) {
+    base.push(fallback.loopStart);
+    spoken.push(loopCue);
+  }
+  const flat = resolveCueFrames(spoken, base, durationInFrames);
+  return {
+    labelStart: fallback.labelStart,
+    pointStarts: flat.slice(0, fallback.pointStarts.length),
+    loopStart: fallback.loopStart === null ? null : (flat[fallback.pointStarts.length] ?? null),
   };
 };

@@ -1,5 +1,5 @@
 import { Composition } from 'remotion';
-import sampleJson from '../content/videos/sample.json';
+import sampleJson from '../content/samples/sample/video.json';
 import { FontTest } from './compositions/FontTest';
 import { calculateVideoMetadata } from './compositions/Video/calculate-metadata';
 import { VideoCompositionPropsSchema } from './compositions/Video/schema';

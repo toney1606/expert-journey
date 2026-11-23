@@ -1,10 +1,13 @@
 import { interpolate, useCurrentFrame, useVideoConfig } from 'remotion';
 import { CONTENT_BOX, colors, fontFamily, spacing } from '../../design/tokens';
+import { useSceneWords } from '../../components/SceneTiming';
+import { spokenFrames } from '../../lib/cues';
 import type { TerminalScene } from './schema';
 import {
   HANG_INDENT,
   LINE_HEIGHT,
   PROMPT,
+  applyCues,
   buildTimeline,
   charCount,
   columnsFor,
@@ -59,7 +62,16 @@ export const Terminal: React.FC<{ scene: TerminalScene }> = ({ scene }) => {
   const cols = columnsFor(innerWidth, fontSize);
   const rowHeight = fontSize * LINE_HEIGHT;
 
-  const timeline = buildTimeline(lines, durationInFrames, fps);
+  const words = useSceneWords();
+  const timeline = applyCues(
+    buildTimeline(lines, durationInFrames, fps),
+    spokenFrames(
+      words,
+      scene.props.lines.map((line) => line.at),
+      fps,
+    ),
+    durationInFrames,
+  );
   // The window grows with the revealed rows (spring-smoothed) up to the box, then scrolls.
   const rows = smoothedRows(frame, lines, timeline, cols, fps);
   const finalBodyHeight = Math.min(maxInnerHeight, Math.ceil(totalRows(lines, cols) * rowHeight));
@@ -169,6 +181,8 @@ export const Terminal: React.FC<{ scene: TerminalScene }> = ({ scene }) => {
             style={{
               transform: `translateY(${-scroll}px)`,
               fontFamily: fontFamily.code,
+              // Ligatures would turn real output such as "<expr>=?" into "≥": show characters as typed.
+              fontVariantLigatures: 'none',
               fontSize,
               lineHeight: LINE_HEIGHT,
               color: colors.text,

@@ -1,6 +1,9 @@
 import { interpolate, spring, useCurrentFrame, useVideoConfig } from 'remotion';
 import { CONTENT_BOX, colors, fontFamily, lineHeight } from '../../design/tokens';
 import { springs } from '../../design/springs';
+import { RichText } from '../../components/RichText';
+import { useSceneWords } from '../../components/SceneTiming';
+import { spokenFrames } from '../../lib/cues';
 import {
   CARD_PAD_X,
   CARD_PAD_Y,
@@ -13,7 +16,7 @@ import {
   TITLE_GAP,
   chooseLayout,
 } from './layout';
-import { buildTimeline } from './timeline';
+import { buildTimeline, applyCues } from './timeline';
 import type { TradeoffScene } from './schema';
 
 const CheckIcon: React.FC<{ size: number }> = ({ size }) => (
@@ -47,9 +50,25 @@ export const Tradeoff: React.FC<{ scene: TradeoffScene }> = ({ scene }) => {
   const { title, options } = scene.props;
 
   const layout = chooseLayout(title, options, CONTENT_BOX);
-  const timeline = buildTimeline(
+  const words = useSceneWords();
+  const fallbackTimeline = buildTimeline(
     durationInFrames,
     options.map((option) => option.pros.length + option.cons.length),
+  );
+  const timeline = applyCues(
+    fallbackTimeline,
+    {
+      cards: options.map((option) => {
+        const rowCount = option.pros.length + option.cons.length;
+        const [start, ...rows] = spokenFrames(
+          words,
+          [option.at, ...Array.from({ length: rowCount }, (_, i) => option.cueAt?.[i])],
+          fps,
+        );
+        return { start, rows };
+      }),
+    },
+    durationInFrames,
   );
 
   const enter = (start: number): number =>
@@ -84,7 +103,7 @@ export const Tradeoff: React.FC<{ scene: TradeoffScene }> = ({ scene }) => {
           marginBottom: TITLE_GAP - SECTION_GAP,
         }}
       >
-        {title}
+        <RichText text={title} />
       </div>
       {options.map((option, optionIndex) => {
         const card = timeline.cards[optionIndex];

@@ -5,6 +5,9 @@ import { diffLines, splitLines } from './diff';
 import { fitFontSize } from './fit';
 import { buildLayout, type CodeLayout } from './layout';
 import { tokenColors } from './syntax';
+import { useSceneWords } from '../../components/SceneTiming';
+import { spokenFrames } from '../../lib/cues';
+import { codeTimeline } from './timeline';
 import type { CodeScene } from './schema';
 
 const BOX_WIDTH = CONTENT_BOX.width;
@@ -15,11 +18,6 @@ const BADGE_RESERVE = 96;
 const CODE_LINE_HEIGHT = 1.5;
 const MIN_SCALE = 0.75;
 const SCALE_STEP = 0.02;
-
-/** Phase boundaries as fractions of the scene length. */
-const BEFORE_END = 0.35;
-const MORPH_END = 0.6;
-const BADGE_START = 0.78;
 
 const tint = (color: string, percent: number): string =>
   `color-mix(in srgb, ${color} ${Math.round(percent * 100)}%, transparent)`;
@@ -35,7 +33,8 @@ const range = (value: number, from: number, to: number): number =>
 export const CodeDiff: React.FC<{ scene: CodeScene }> = ({ scene }) => {
   const frame = useCurrentFrame();
   const { fps, durationInFrames } = useVideoConfig();
-  const { language, filename, before, after, testPath } = scene.props;
+  const { language, filename, before, after, testPath, morphAt, testedAt } = scene.props;
+  const words = useSceneWords();
 
   const beforeLines = splitLines(before);
   const afterLines = splitLines(after);
@@ -67,8 +66,8 @@ export const CodeDiff: React.FC<{ scene: CodeScene }> = ({ scene }) => {
   const rowHeight = fontSize * CODE_LINE_HEIGHT;
   const virtualWidth = innerWidth / scale;
 
-  const morphStart = durationInFrames * BEFORE_END;
-  const morphEnd = durationInFrames * MORPH_END;
+  const [morphCue, testedCue] = spokenFrames(words, [morphAt, testedAt], fps);
+  const { morphStart, morphEnd, badgeStart } = codeTimeline(durationInFrames, morphCue, testedCue);
   const p = interpolate(frame, [morphStart, morphEnd], [0, 1], {
     easing: Easing.inOut(Easing.cubic),
     extrapolateLeft: 'clamp',
@@ -77,7 +76,7 @@ export const CodeDiff: React.FC<{ scene: CodeScene }> = ({ scene }) => {
 
   const enter = spring({ frame, fps, config: springs.snappy });
   const badge = spring({
-    frame: frame - durationInFrames * BADGE_START,
+    frame: frame - badgeStart,
     fps,
     config: springs.snappy,
   });

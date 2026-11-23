@@ -1,8 +1,9 @@
 import { spring } from 'remotion';
+import { resolveCueFrames } from '../../lib/cues';
 import { wrapRows, type WrapRow } from './wrap';
 
 export type { WrapRow };
-export type TerminalLine = { command: string; output?: string };
+export type TerminalLine = { command: string; output?: string; at?: string };
 
 export type LineTimeline = {
   /** Frame at which the first character of the command appears. */
@@ -206,3 +207,48 @@ export const smoothedRows = (
 /** Upward scroll in px so the newest rows stay visible. */
 export const scrollOffset = (rows: number, rowHeight: number, innerHeight: number): number =>
   Math.max(0, rows * rowHeight - innerHeight);
+
+/** Gap (frames) kept between the start of consecutive cued commands. */
+const LINE_CUE_GAP = 4;
+
+/**
+ * Overlay narration cues on the automatic timeline: typing of line i starts at `spoken[i]` (frame; undefined =
+ * keep the automatic start). Typing keeps its automatic length and the output follows it; when the next command
+ * starts too soon, typing and pause are shortened proportionally. Without any cue the timeline is unchanged.
+ */
+export const applyCues = (
+  timeline: readonly LineTimeline[],
+  spoken: readonly (number | undefined)[],
+  durationInFrames: number,
+): LineTimeline[] => {
+  if (!timeline.some((_, i) => spoken[i] !== undefined)) return [...timeline];
+  const last = timeline[timeline.length - 1];
+  const reserve = last ? last.outputStart - last.typeStart + 1 : 0;
+  // An uncued line that follows a cued one keeps its full typing slot instead of being squeezed against it.
+  const chained: (number | undefined)[] = [];
+  let prevEnd = -Infinity;
+  timeline.forEach((tl, i) => {
+    let start = spoken[i];
+    if (start === undefined && prevEnd > tl.typeStart) start = prevEnd;
+    chained.push(start);
+    const slot = tl.outputStart - tl.typeStart + LINE_CUE_GAP;
+    prevEnd = (start ?? tl.typeStart) + slot;
+  });
+  const starts = resolveCueFrames(
+    chained,
+    timeline.map((tl) => tl.typeStart),
+    durationInFrames - reserve,
+    LINE_CUE_GAP,
+    0,
+  );
+  return timeline.map((tl, i) => {
+    const typeStart = starts[i] ?? tl.typeStart;
+    const typing = tl.typeEnd - tl.typeStart;
+    const pause = tl.outputStart - tl.typeEnd;
+    const next = starts[i + 1];
+    const budget = next === undefined ? Infinity : next - typeStart - 1;
+    const k = Math.min(1, budget / (typing + pause));
+    const typeEnd = typeStart + Math.max(1, Math.round(typing * k));
+    return { typeStart, typeEnd, outputStart: typeEnd + Math.max(1, Math.round(pause * k)) };
+  });
+};

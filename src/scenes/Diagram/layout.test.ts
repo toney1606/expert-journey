@@ -7,6 +7,7 @@ import {
   fitNodeText,
   defaultLayoutOptions,
   DIAGRAM_BOX,
+  spreadOffsets,
 } from './layout';
 
 const box = DIAGRAM_BOX;
@@ -328,5 +329,65 @@ describe('fits and limits in the 780x770 content box', () => {
       box,
     );
     expect(layout.fits).toBe(false);
+  });
+});
+
+describe('spreadOffsets', () => {
+  it('returns no shift for a single arrow and centred, ordered shifts otherwise', () => {
+    expect(spreadOffsets(1, 300)).toEqual([0]);
+    const two = spreadOffsets(2, 300);
+    expect(two[0]).toBeCloseTo(-(two[1] ?? 0));
+    expect(two[1]).toBeGreaterThan(0);
+    const three = spreadOffsets(3, 300);
+    expect(three[1]).toBeCloseTo(0);
+    expect((three[2] ?? 0) - (three[1] ?? 0)).toBeGreaterThanOrEqual(24);
+  });
+
+  it('keeps the arrows inside the border margin on narrow nodes', () => {
+    const offsets = spreadOffsets(3, 140);
+    for (const offset of offsets) expect(Math.abs(offset)).toBeLessThanOrEqual(140 / 2 - 36);
+  });
+});
+
+describe('arrowheads on a shared target', () => {
+  it('do not coincide when an edge skips a layer next to a sibling edge', () => {
+    // a -> b -> c, and a -> c skips a layer: both arrive at the top of c.
+    const layout = layoutDiagram(
+      n('a', 'b', 'c'),
+      [
+        { from: 'a', to: 'b' },
+        { from: 'b', to: 'c' },
+        { from: 'a', to: 'c' },
+      ],
+      box,
+    );
+    const tips = layout.edges.filter((edge) => edge.to === 'c').map((edge) => edge.tip);
+    expect(tips).toHaveLength(2);
+    expect(Math.abs((tips[0]?.x ?? 0) - (tips[1]?.x ?? 0))).toBeGreaterThanOrEqual(24);
+    const target = byId(layout, 'c');
+    for (const tip of tips) {
+      expect(tip.y).toBe(target.y);
+      expect(tip.x).toBeGreaterThan(target.x);
+      expect(tip.x).toBeLessThan(target.x + target.width);
+    }
+  });
+
+  it('keeps single arrows centred and spreads a fan-in', () => {
+    const layout = layoutDiagram(
+      n('a', 'b', 'c', 'd'),
+      [
+        { from: 'a', to: 'd' },
+        { from: 'b', to: 'd' },
+        { from: 'c', to: 'd' },
+      ],
+      box,
+    );
+    const d = byId(layout, 'd');
+    const xs = layout.edges.map((edge) => edge.tip.x).sort((p, q) => p - q);
+    expect(new Set(xs.map((x) => Math.round(x))).size).toBe(3);
+    expect(xs[1]).toBeCloseTo(d.x + d.width / 2);
+    const single = layoutDiagram(n('a', 'b'), [{ from: 'a', to: 'b' }], box);
+    const b = byId(single, 'b');
+    expect(single.edges[0]?.tip.x).toBeCloseTo(b.x + b.width / 2);
   });
 });

@@ -2,6 +2,7 @@ import { CONTENT_BOX } from '../../design/tokens';
 import { describe, expect, it } from 'vitest';
 import { wrapRows } from './wrap';
 import {
+  applyCues,
   buildTimeline,
   columnsFor,
   cursorVisible,
@@ -172,5 +173,42 @@ describe('typed rows and smoothing', () => {
       prev = v;
     }
     expect(smoothedRows(239, sample, tl, cols, 30)).toBeCloseTo(totalRows(sample, cols), 5);
+  });
+});
+
+describe('applyCues (terminal)', () => {
+  const lines = [
+    { command: 'EXPLAIN SELECT 1', output: 'Seq Scan' },
+    { command: 'CREATE INDEX i ON t(a)', output: 'CREATE INDEX' },
+    { command: 'EXPLAIN SELECT 2', output: 'Index Scan' },
+  ];
+  const base = buildTimeline(lines, 450, 30);
+
+  it('is unchanged without cues', () => {
+    expect(applyCues(base, [undefined, undefined, undefined], 450)).toEqual(base);
+  });
+
+  it('starts typing at the spoken frame and shows output after typing', () => {
+    const t = applyCues(base, [undefined, 200, undefined], 450);
+    expect(t[1]?.typeStart).toBe(200);
+    expect(t[1]?.typeEnd).toBeGreaterThan(200);
+    expect(t[1]?.outputStart).toBeGreaterThan(t[1]?.typeEnd ?? 0);
+    expect((t[1]?.typeEnd ?? 0) - 200).toBe((base[1]?.typeEnd ?? 0) - (base[1]?.typeStart ?? 0));
+  });
+
+  it('keeps lines in order and outputs before the next command', () => {
+    const t = applyCues(base, [100, 102, 103], 450);
+    for (let i = 0; i < t.length; i += 1) {
+      const cur = t[i];
+      const next = t[i + 1];
+      expect(cur?.typeEnd).toBeGreaterThan(cur?.typeStart ?? 0);
+      expect(cur?.outputStart).toBeGreaterThan(cur?.typeEnd ?? 0);
+      if (next) expect(next.typeStart).toBeGreaterThan(cur?.outputStart ?? 0);
+    }
+  });
+
+  it('leaves room for the last line to finish typing', () => {
+    const t = applyCues(base, [undefined, undefined, 449], 450);
+    expect(t[2]?.outputStart).toBeLessThanOrEqual(450);
   });
 });

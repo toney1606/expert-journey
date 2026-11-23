@@ -1,7 +1,11 @@
 import type { Scene } from '../schemas/video';
+import { Callout } from './Callout/Callout';
 import { CodeDiff } from './CodeDiff/CodeDiff';
+import { Compare } from './Compare/Compare';
 import { Diagram } from './Diagram/Diagram';
+import { EndCard } from './EndCard/EndCard';
 import { HookCard } from './HookCard/HookCard';
+import { Stat } from './Stat/Stat';
 import { Summary } from './Summary/Summary';
 import { Terminal } from './Terminal/Terminal';
 import { Tradeoff } from './Tradeoff/Tradeoff';
@@ -21,5 +25,13 @@ export const renderScene = (scene: Scene): React.ReactElement => {
       return <Tradeoff scene={scene} />;
     case 'summary':
       return <Summary scene={scene} />;
+    case 'stat':
+      return <Stat scene={scene} />;
+    case 'compare':
+      return <Compare scene={scene} />;
+    case 'callout':
+      return <Callout scene={scene} />;
+    case 'endcard':
+      return <EndCard scene={scene} />;
   }
 };

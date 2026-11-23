@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { sceneBaseShape } from '../../schemas/common';
+import { SpokenAtSchema, sceneBaseShape } from '../../schemas/common';
 
 export const TerminalPropsSchema = z.strictObject({
   lines: z
@@ -7,6 +7,8 @@ export const TerminalPropsSchema = z.strictObject({
       z.strictObject({
         command: z.string().min(1),
         output: z.string().optional(),
+        /** Narration phrase at which typing of this command starts (output follows the typing). */
+        at: SpokenAtSchema.optional(),
       }),
     )
     .min(1),

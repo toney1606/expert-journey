@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { sceneBaseShape } from '../../schemas/common';
+import { SpokenAtSchema, sceneBaseShape } from '../../schemas/common';
 
 export const HookPropsSchema = z.strictObject({
   /** The interview question or provocative statement shown big. */
@@ -7,6 +7,10 @@ export const HookPropsSchema = z.strictObject({
   subline: z.string().optional(),
   /** Small label above the headline, e.g. "Junior · Database". */
   badge: z.string().optional(),
+  /** Narration phrase at which the headline appears (default: automatic timing). */
+  atHeadline: SpokenAtSchema.optional(),
+  /** Narration phrase at which the subline appears. */
+  atSubline: SpokenAtSchema.optional(),
 });
 
 export const HookSceneSchema = z.strictObject({

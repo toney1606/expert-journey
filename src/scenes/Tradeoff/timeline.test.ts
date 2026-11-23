@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { MAX_STEP_FRAMES, REVEAL_DONE_RATIO, SETTLE_FRAMES, buildTimeline } from './timeline';
+import {
+  MAX_STEP_FRAMES,
+  REVEAL_DONE_RATIO,
+  SETTLE_FRAMES,
+  applyCues,
+  buildTimeline,
+} from './timeline';
 
 describe('buildTimeline', () => {
   it('orders title, cards and rows strictly in sequence', () => {
@@ -37,5 +43,49 @@ describe('buildTimeline', () => {
       expect(f).toBeGreaterThanOrEqual(0);
     }
     expect(t.cards[0]?.rows).toEqual([]);
+  });
+});
+
+describe('applyCues', () => {
+  const fallback = buildTimeline(300, [2, 2]);
+  const none = { cards: [{ rows: [] }, { rows: [] }] };
+
+  it('returns the fallback untouched without cues', () => {
+    expect(applyCues(fallback, none, 300)).toEqual(fallback);
+  });
+
+  it('moves a card and its rows to the spoken frames', () => {
+    const t = applyCues(
+      fallback,
+      {
+        cards: [
+          { start: 60, rows: [90, undefined] },
+          { start: 180, rows: [] },
+        ],
+      },
+      300,
+    );
+    expect(t.cards[0]?.start).toBe(60);
+    expect(t.cards[0]?.rows[0]).toBe(90);
+    expect(t.cards[1]?.start).toBe(180);
+    expect(t.title).toBe(0);
+  });
+
+  it('keeps everything in order even if cues contradict the fallback', () => {
+    const t = applyCues(
+      fallback,
+      {
+        cards: [
+          { start: 200, rows: [] },
+          { start: 20, rows: [] },
+        ],
+      },
+      300,
+    );
+    const flat = [t.title];
+    for (const card of t.cards) flat.push(card.start, ...card.rows);
+    for (let i = 1; i < flat.length; i += 1) {
+      expect(flat[i]).toBeGreaterThan(flat[i - 1] ?? 0);
+    }
   });
 });

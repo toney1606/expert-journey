@@ -30,3 +30,11 @@ export const AudioManifestSchema = z.strictObject({
 });
 
 export type AudioManifest = z.infer<typeof AudioManifestSchema>;
+
+/** public/generated/audio/<id>/bed.json from `pnpm sfx`: only what playback needs (other fields are ignored). */
+export const BedInfoSchema = z.looseObject({
+  /** Linear gain applied to the narration while the music bed plays. */
+  voiceGain: z.number().positive(),
+});
+
+export type BedInfo = z.infer<typeof BedInfoSchema>;

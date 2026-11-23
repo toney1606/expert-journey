@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { sceneBaseShape } from '../../schemas/common';
+import { SpokenAtSchema, sceneBaseShape } from '../../schemas/common';
 
 export const CodePropsSchema = z.strictObject({
   language: z.string().min(1),
@@ -8,6 +8,10 @@ export const CodePropsSchema = z.strictObject({
   after: z.string().min(1),
   /** Repo-relative path of the test proving the code runs (required by content policy). */
   testPath: z.string().min(1),
+  /** Narration phrase at which the before -> after morph starts. */
+  morphAt: SpokenAtSchema.optional(),
+  /** Narration phrase at which the "tested" badge appears. */
+  testedAt: SpokenAtSchema.optional(),
 });
 
 export const CodeSceneSchema = z.strictObject({
