@@ -6,12 +6,12 @@ import { springs } from '../../design/springs';
 import { colors, fontFamily, spacing } from '../../design/tokens';
 import { parseRichText } from '../../lib/rich-text';
 import { CALLOUT_KIND_STYLE, kickerFor } from './kinds';
-import { calloutLayout } from './layout';
+import { CARD_PADDING, CHIP_BLOCK, EXPLANATION_GAP, calloutLayout } from './layout';
 import type { CalloutScene } from './schema';
 import { calloutCueFrames, calloutTimeline, slamShake } from './timeline';
 
 const SLAM_SPRING = { damping: 11, stiffness: 320, mass: 0.8 };
-const STRIKE_HEIGHT = 8;
+const STRIKE_HEIGHT = 10;
 
 /** Myth statement: parts marked {wrong|...} get a line drawn through them as `progress` goes 0 -> 1. */
 const MythStatement: React.FC<{ text: string; progress: number }> = ({ text, progress }) => (
@@ -86,7 +86,7 @@ export const Callout: React.FC<{ scene: CalloutScene }> = ({ scene }) => {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
-        gap: 24,
+        gap: CHIP_BLOCK - 76,
       }}
     >
       <div
@@ -97,7 +97,7 @@ export const Callout: React.FC<{ scene: CalloutScene }> = ({ scene }) => {
           transformOrigin: 'left center',
           fontFamily: fontFamily.code,
           fontWeight: 700,
-          fontSize: 32,
+          fontSize: 38,
           lineHeight: 1.4,
           color: colors.bg,
           background: color,
@@ -115,7 +115,7 @@ export const Callout: React.FC<{ scene: CalloutScene }> = ({ scene }) => {
           background: colors.card,
           border: `3px solid ${color}`,
           borderRadius: 32,
-          padding: 40,
+          padding: CARD_PADDING,
           boxShadow: `0 0 ${glow}px ${color}99`,
           fontFamily: fontFamily.title,
           color: colors.text,
@@ -137,7 +137,7 @@ export const Callout: React.FC<{ scene: CalloutScene }> = ({ scene }) => {
         {explanation ? (
           <div
             style={{
-              marginTop: 24,
+              marginTop: EXPLANATION_GAP,
               opacity: explain,
               transform: `translateY(${interpolate(explain, [0, 1], [24, 0])}px)`,
               fontWeight: 400,

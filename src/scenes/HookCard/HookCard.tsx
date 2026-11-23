@@ -35,7 +35,7 @@ export const HookCard: React.FC<{ scene: HookScene }> = ({ scene }) => {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
-        gap: spacing.md,
+        gap: spacing.lg,
       }}
     >
       {badge ? (
@@ -45,11 +45,11 @@ export const HookCard: React.FC<{ scene: HookScene }> = ({ scene }) => {
             alignSelf: 'flex-start',
             fontFamily: fontFamily.code,
             fontWeight: 700,
-            fontSize: 36,
+            fontSize: 38,
             color: colors.bg,
             background: colors.accent,
             padding: `${spacing.sm}px ${spacing.md}px`,
-            borderRadius: 16,
+            borderRadius: 18,
           }}
         >
           {badge}
@@ -60,7 +60,7 @@ export const HookCard: React.FC<{ scene: HookScene }> = ({ scene }) => {
           ...rise(enter(headlineStart)),
           fontFamily: fontFamily.title,
           fontWeight: 800,
-          fontSize: 72,
+          fontSize: 88,
           lineHeight: lineHeight.title,
           color: colors.text,
         }}
@@ -73,7 +73,7 @@ export const HookCard: React.FC<{ scene: HookScene }> = ({ scene }) => {
             ...rise(enter(sublineStart)),
             fontFamily: fontFamily.title,
             fontWeight: 400,
-            fontSize: 40,
+            fontSize: 48,
             lineHeight: lineHeight.body,
             color: colors.textMuted,
           }}

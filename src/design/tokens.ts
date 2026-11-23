@@ -18,12 +18,12 @@ export const colors = {
  * side). Based on third-party measurements and Meta's ad-safe-zone percentages, NOT official pixel
  * values: tune after checking on real devices. See docs/design-system.md.
  */
-export const safeZone = { top: 270, bottom: 680, right: 180, left: 120 } as const;
+export const safeZone = { top: 230, bottom: 560, right: 160, left: 90 } as const;
 
 export type SafeZone = { top: number; bottom: number; right: number; left: number };
 
 /** Height of the caption band pinned to the bottom of the safe box. */
-export const CAPTION_BAND_HEIGHT = 200;
+export const CAPTION_BAND_HEIGHT = 170;
 
 /** Size of the safe box (inside the margins). */
 export const SAFE_BOX = {

@@ -10,8 +10,8 @@ describe('summaryLayout', () => {
   it('uses a large font for a short list', () => {
     const l = summaryLayout(['Index tăng tốc đọc'], 'Vậy index một cột hay nhiều cột?');
     expect(l.fits).toBe(true);
-    expect(l.fontSize).toBeGreaterThanOrEqual(40);
-    expect(l.fontSize).toBeLessThanOrEqual(44);
+    expect(l.fontSize).toBeGreaterThanOrEqual(48);
+    expect(l.fontSize).toBeLessThanOrEqual(52);
     expect(l.lineHeight).toBeGreaterThanOrEqual(1.35);
   });
 
@@ -31,11 +31,12 @@ describe('summaryLayout', () => {
     expect(SUMMARY_BOX).toBe(CONTENT_BOX);
   });
 
-  it('real limits at the minimum font (120-char points): 5 fit with a loop line or without, 6 do not', () => {
+  it('real limits at the minimum font (120-char points): 5 fit with a loop line or without, 6 fit only without a loop line, 7 do not', () => {
     const pts = (n: number) => Array.from({ length: n }, () => long);
     expect(summaryLayout(pts(5)).fits).toBe(true);
-    expect(summaryLayout(pts(6)).fits).toBe(false);
-    expect(summaryLayout(pts(4), 'Loop?').fits).toBe(true);
+    expect(summaryLayout(pts(6)).fits).toBe(true);
+    expect(summaryLayout(pts(7)).fits).toBe(false);
+    expect(summaryLayout(pts(5), 'Loop?').fits).toBe(true);
     expect(summaryLayout(pts(6), 'Loop?').fits).toBe(false);
   });
 

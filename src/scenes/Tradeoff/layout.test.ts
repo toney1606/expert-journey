@@ -42,8 +42,8 @@ describe('chooseLayout', () => {
     const l = chooseLayout('Có index hay không?', make(2, 2, short), BOX);
     expect(l.fits).toBe(true);
     expect(l.rowSize).toBe(MAX_ROW_SIZE);
-    expect(l.nameSize).toBeGreaterThanOrEqual(48);
-    expect(l.nameSize).toBeLessThanOrEqual(56);
+    expect(l.nameSize).toBeGreaterThanOrEqual(52);
+    expect(l.nameSize).toBeLessThanOrEqual(MAX_NAME_SIZE);
   });
 
   it.each([
@@ -59,15 +59,15 @@ describe('chooseLayout', () => {
 
   it('shrinks as content grows but never below the minimum', () => {
     const small = chooseLayout('T', make(1, 2, short), BOX);
-    const big = chooseLayout('T', make(3, 2, short), BOX);
+    const big = chooseLayout('T', make(3, 3, short), BOX);
     expect(big.rowSize).toBeLessThan(small.rowSize);
     expect(big.rowSize).toBeGreaterThanOrEqual(MIN_ROW_SIZE);
   });
 
-  it('reports the real limits at the minimum font (short rows): 3 options x 2 rows fit, 3 x 3 and 5 x 1 do not', () => {
-    expect(chooseLayout('Tiêu đề', make(3, 2, short), BOX).fits).toBe(true);
-    expect(chooseLayout('Tiêu đề', make(3, 3, short), BOX).fits).toBe(false);
-    expect(chooseLayout('Tiêu đề', make(5, 1, short), BOX).fits).toBe(false);
+  it('reports the real limits at the minimum font (short rows): 3 options x 3 rows fit, 3 x 4 and 4 x 2 do not', () => {
+    expect(chooseLayout('Tiêu đề', make(3, 3, short), BOX).fits).toBe(true);
+    expect(chooseLayout('Tiêu đề', make(3, 4, short), BOX).fits).toBe(false);
+    expect(chooseLayout('Tiêu đề', make(4, 2, short), BOX).fits).toBe(false);
   });
 
   it('reports fits=false (and minimum sizes) when nothing can fit', () => {
@@ -88,7 +88,7 @@ describe('centering and growth', () => {
   });
 
   it('keeps top alignment when full or not fitting', () => {
-    const heavy = chooseLayout('T', make(3, 2, short), BOX);
+    const heavy = chooseLayout('T', make(3, 3, short), BOX);
     expect(heavy.top).toBeLessThan(TITLE_PAD_TOP + BOX.height * 0.03);
     const overflow = chooseLayout('T', make(5, 5, long), BOX);
     expect(overflow.fits).toBe(false);

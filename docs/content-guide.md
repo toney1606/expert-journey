@@ -59,7 +59,7 @@ Mọi scene có chung các field:
   (Manifest lưu `textHash`, nên chạy lại chỉ synthesize các scene đã đổi.)
 - Provider mặc định hiện là `fake` (WAV im lặng, độ dài theo số ký tự): dùng để xem nhịp, không phải giọng thật.
 - **Caption từng từ**: `Video` render component `Captions` cho mỗi scene từ `words` trong manifest. `pnpm tts <id> --provider edge` lấy mốc thời gian
-  từng từ từ giọng thật; provider `fake` chỉ chia đều thời gian cho các từ (chỉ để xem bố cục). Caption nằm trong dải 200px cuối hộp an toàn,
+  từng từ từ giọng thật; provider `fake` chỉ chia đều thời gian cho các từ (chỉ để xem bố cục). Caption (52px, 2 dòng) nằm trong dải 170px cuối hộp an toàn,
   nên scene không phải tự vẽ phụ đề; sửa `voice` thì chạy lại `pnpm tts <id>` để `words` khớp.
 - Mục tiêu cả video 2-4 phút, re-hook quanh giây 45 và giây 100 (xem `story-arc.md`).
 
@@ -67,8 +67,8 @@ Mọi scene có chung các field:
 
 Mọi animation (thứ tự hiện, tốc độ gõ, morph) được suy ra từ độ dài scene, nên scene dài hơn thì reveal chậm hơn.
 Các helper layout trả về cờ `fits`/`wraps`: nội dung quá nhiều sẽ bị co chữ tới mức tối thiểu, rồi tràn hoặc cuộn.
-Hộp an toàn (safe zone) là **780 x 970 px** (1080 - 120 - 180, 1920 - 270 - 680). Dải 200px dưới cùng của hộp dành cho caption, nên mỗi scene tự bố cục
-trong `CONTENT_BOX` = **780 x 770 px**. Các con số bên dưới là giới hạn thực tế tính từ code, tính cho `CONTENT_BOX`. Số "ước tính" là suy ra từ độ rộng ký tự trung bình, hãy kiểm bằng ảnh tĩnh (xem `qa-checklist.md`).
+Hộp an toàn (safe zone) là **830 x 1130 px** (1080 - 90 - 160, 1920 - 230 - 560). Dải 170px dưới cùng của hộp dành cho caption, nên mỗi scene tự bố cục
+trong `CONTENT_BOX` = **830 x 960 px**. Các con số bên dưới là giới hạn thực tế tính từ code, tính cho `CONTENT_BOX`. Số "ước tính" là suy ra từ độ rộng ký tự trung bình, hãy kiểm bằng ảnh tĩnh (xem `qa-checklist.md`).
 
 ### hook
 
@@ -76,8 +76,8 @@ trong `CONTENT_BOX` = **780 x 770 px**. Các con số bên dưới là giới h�
 
 | Prop         | Kiểu               | Ghi chú                                                                             |
 | ------------ | ------------------ | ----------------------------------------------------------------------------------- |
-| `headline`   | string, không rỗng | Chữ lớn 72px (Be Vietnam Pro 800).                                                  |
-| `subline`    | string, tùy chọn   | 40px, màu muted.                                                                    |
+| `headline`   | string, không rỗng | Chữ lớn 88px (Be Vietnam Pro 800).                                                  |
+| `subline`    | string, tùy chọn   | 48px, màu muted.                                                                    |
 | `badge`      | string, tùy chọn   | Nhãn nhỏ phía trên, ví dụ `"Junior · Database"`.                                    |
 | `atHeadline` | string, tùy chọn   | Cụm lời đọc làm `headline` hiện ra (xem mục Cue). `headline` hỗ trợ `{accent\|từ}`. |
 | `atSubline`  | string, tùy chọn   | Cụm lời đọc làm `subline` hiện ra.                                                  |
@@ -92,8 +92,8 @@ trong `CONTENT_BOX` = **780 x 770 px**. Các con số bên dưới là giới h�
 }
 ```
 
-Giới hạn: **không có bước tự co chữ và không có cờ `fits`**. Cỡ chữ cố định (72 / 40 / 36), xuống dòng tự do;
-khoảng 21 ký tự mỗi dòng ở 72px (780 / (72 x 0.5)), nên giữ `headline` dưới ~80 ký tự (ước tính) và `subline` ngắn.
+Giới hạn: **không có bước tự co chữ và không có cờ `fits`**. Cỡ chữ cố định (headline 88 / subline 48 / badge 38), xuống dòng tự do;
+khoảng 19 ký tự mỗi dòng ở 88px (830 / (88 x 0.5)), nên giữ `headline` dưới ~70 ký tự (ước tính) và `subline` ngắn.
 
 ### diagram
 
@@ -101,9 +101,9 @@ khoảng 21 ký tự mỗi dòng ở 72px (780 / (72 x 0.5)), nên giữ `headli
 
 | Prop         | Kiểu                                           | Ghi chú                                                                                                         |
 | ------------ | ---------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| `title`      | string, không rỗng                             | 48px, tối đa 2 dòng (dòng thừa bị cắt).                                                                         |
-| `nodes`      | mảng `{ id: slug, label }`, >= 1               | `id` là slug; `label` hiển thị 40px đậm.                                                                        |
-| `edges`      | mảng `{ from, to, label?, at? }` (có thể rỗng) | `from`/`to` là `id` của node; `label` 32px; `at` = cụm lời đọc lúc mũi tên được vẽ.                             |
+| `title`      | string, không rỗng                             | 54px, tối đa 2 dòng (dòng thừa bị cắt).                                                                         |
+| `nodes`      | mảng `{ id: slug, label }`, >= 1               | `id` là slug; `label` hiển thị đậm 46-30px.                                                                     |
+| `edges`      | mảng `{ from, to, label?, at? }` (có thể rỗng) | `from`/`to` là `id` của node; `label` 36px; `at` = cụm lời đọc lúc mũi tên được vẽ.                             |
 | `nodes[].at` | string, tùy chọn                               | Cụm lời đọc lúc node hiện (mặc định: theo tầng).                                                                |
 | `path`       | mảng `id` node, >= 1, tùy chọn                 | Thứ tự duyệt: một token chạy dọc các cạnh; hai node liên tiếp phải nối nhau bằng một edge (hai chiều đều được). |
 | `pathAt`     | string, tùy chọn                               | Cụm lời đọc lúc bắt đầu duyệt (mặc định: sau khi reveal xong).                                                  |
@@ -130,12 +130,12 @@ khoảng 21 ký tự mỗi dòng ở 72px (780 / (72 x 0.5)), nên giữ `headli
 Cách layout (`layout.ts`): sơ đồ chảy từ trên xuống; tầng của node = đường dài nhất từ nguồn. Mũi tên quay ngược (tạo vòng)
 được vẽ dọc đường ray bên phải (chừa 80px bề ngang). Reveal theo tầng, 80% đầu scene.
 
-Giới hạn thực tế (đo bằng `layoutDiagram`, hộp sơ đồ 780 x 634 px = `CONTENT_BOX` trừ dải tiêu đề 136px; `label` một dòng):
+Giới hạn thực tế (đo bằng `layoutDiagram`, hộp sơ đồ 830 x 810 px = `CONTENT_BOX` trừ dải tiêu đề 150px; khi có `path` còn 830 x 746 px vì chừa 64px cho huy hiệu bước; `label` một dòng):
 
-- **Số tầng**: **tối đa 5 tầng** khi mỗi tầng <= 3 node (6 tầng không vừa); **4 node mỗi tầng** chỉ vừa tới 4 tầng; 5 node mỗi tầng không bao giờ vừa
-  (node rộng tối thiểu 140px, `MIN_NODE_WIDTH`). Khi một edge nhảy qua tầng (phải đi vòng qua đường lane) cần thêm khoảng cách giữa các tầng,
-  nên hãy giữ **<= 4 tầng**. Chia nhánh cùng tầng thì không tốn thêm chiều cao.
-- Chữ node tự co từ 40 xuống 28px, rồi mới tăng chiều cao tầng; node rộng tối đa 700px, cao 80-160px. `label` dài sẽ ngắt dòng và tốn chiều cao,
+- **Số tầng** (chuỗi thẳng): **tối đa 6 tầng** (7 không vừa); có `path` thì **tối đa 5 tầng**. Khi một edge nhảy qua tầng (phải đi vòng qua đường lane) cần thêm khoảng cách giữa các tầng:
+  chỉ vừa **5 tầng** (có `path`: 4 tầng). Hãy giữ **<= 4 tầng** cho dễ đọc. Chia nhánh cùng tầng thì không tốn thêm chiều cao.
+- **Số node mỗi tầng**: tối đa **5** (vừa tới 6 tầng); 6 node mỗi tầng không bao giờ vừa (node rộng tối thiểu 140px, `MIN_NODE_WIDTH`).
+- Chữ node tự co từ 46 xuống 30px, rồi mới tăng chiều cao tầng; node rộng tối đa 740px, cao 90-200px. `label` dài sẽ ngắt dòng và tốn chiều cao,
   nên giữ `label` ngắn (một dòng) khi có 3 node/tầng trở lên.
 - `edge.label` rộng tối đa 360px; label ở đường ray bên phải bị cắt bằng dấu `…`.
 - **`layoutDiagram` trả `fits`**; `pnpm qa` báo lỗi `layout.diagram-overflow` khi không vừa ở cỡ nhỏ nhất: rút ngắn label, giảm số tầng/node mỗi tầng, hoặc tách thành hai scene diagram.
@@ -176,12 +176,12 @@ Giới hạn thực tế (đo bằng `layoutDiagram`, hộp sơ đồ 780 x 634 
 
 Giới hạn (`fit.ts`, `CodeDiff.tsx`):
 
-- Hộp code rộng 740px (780 - 2 x 20 padding), font JetBrains Mono, bề ngang ký tự = 0.6 x cỡ chữ.
-- `fontSize` tự chọn từ **40px xuống 22px** sao cho dòng dài nhất (trong cả before và after) vừa một hàng: dòng <= **30 ký tự** được 40px;
-  dòng ~56 ký tự được 22px. Dòng dài hơn thì khối code được **thu nhỏ (scale) tới 0.75** để thêm cột (tối đa ~74 cột ở 22px); quá nữa thì bị ngắt dòng cứng (cờ `wraps`).
-- Chiều cao: vùng code cao tối đa 770 - 64 (header) - 96 (badge) - 40 (padding) = 570px. Khi số hàng x 1.5 x cỡ chữ vượt quá thì cả khối cũng bị thu nhỏ, tối thiểu 0.75.
+- Hộp code rộng 782px (830 - 2 x 24 padding), font JetBrains Mono, bề ngang ký tự = 0.6 x cỡ chữ.
+- `fontSize` tự chọn từ **44px xuống 22px** sao cho dòng dài nhất (trong cả before và after) vừa một hàng: dòng <= **29 ký tự** được 44px, <= 32 ký tự được 40px;
+  dòng ~59 ký tự được 22px. Dòng dài hơn thì khối code được **thu nhỏ (scale) tới 0.75** để thêm cột (tối đa ~79 cột ở 22px); quá nữa thì bị ngắt dòng cứng (cờ `wraps`).
+- Chiều cao: vùng code cao tối đa 960 - 72 (header) - 110 (badge) - 48 (padding) = 730px. Khi số hàng x 1.5 x cỡ chữ vượt quá thì cả khối cũng bị thu nhỏ, tối thiểu 0.75.
   Cỡ chữ thực tế thấp nhất vì vậy là khoảng **16.5px** (22 x 0.75), đọc khó trên điện thoại: **hãy giữ snippet ngắn**, ví dụ mẫu dùng 5-6 dòng, mỗi dòng tối đa ~36 ký tự.
-  Ở 22px không co thì vừa ~17 hàng; ở scale 0.75 vừa ~23 hàng. `pnpm qa` cảnh báo `code.line-too-long` khi dòng quá dài.
+  Ở 22px không co thì vừa ~22 hàng; ở scale 0.75 vừa ~29 hàng. `pnpm qa` cảnh báo `code.line-too-long` khi dòng quá dài.
 - Mọi dòng giống nhau giữa before và after được giữ nguyên và trượt vị trí (diff theo dòng, LCS): đổi nhỏ giữa hai bản cho hiệu ứng đẹp nhất.
 - Màu cú pháp: xem `design-system.md`.
 
@@ -213,10 +213,10 @@ Giới hạn (`fit.ts`, `CodeDiff.tsx`):
 
 Giới hạn (`timeline.ts`, `wrap.ts`, `Terminal.tsx`):
 
-- Vùng chữ rộng 732px (780 trừ padding 24px mỗi bên), cao tối đa 666px (770 trừ header 56px và padding). Cỡ chữ tự chọn từ **36 xuống 24px** sao cho toàn bộ bản ghi vừa;
-  ở 24px một hàng chứa ~49 ký tự (cột cuối chừa cho con trỏ) và vừa khoảng **19 hàng** (mỗi lệnh tính thêm `$ ` đầu dòng).
+- Vùng chữ rộng 782px (830 trừ padding 24px mỗi bên), cao tối đa 856px (960 trừ header 56px và padding). Cỡ chữ tự chọn từ **40 xuống 24px** sao cho toàn bộ bản ghi vừa;
+  ở 24px một hàng chứa ~53 ký tự (cột cuối chừa cho con trỏ) và vừa khoảng **24 hàng** (mỗi lệnh tính thêm `$ ` đầu dòng).
 - Lệnh và output được **ngắt dòng theo từ** thành các hàng tường minh (`wrap.ts`), không còn break-all. Cửa sổ terminal **cao dần theo số hàng đã hiện**, tối đa bằng `CONTENT_BOX`.
-- Vượt quá ~19 hàng thì giữ 24px và **tự cuộn lên**; `pnpm qa` cảnh báo `terminal.auto-scroll`. Người xem không đọc lại được phần đã cuộn nên hãy rút gọn lệnh/output.
+- Vượt quá ~24 hàng thì giữ 24px và **tự cuộn lên**; `pnpm qa` cảnh báo `terminal.auto-scroll`. Người xem không đọc lại được phần đã cuộn nên hãy rút gọn lệnh/output.
 - Tốc độ gõ tỉ lệ với độ dài lệnh: từ 22 tới tối đa 90 ký tự/giây cho tới khi mọi thứ vừa 85% độ dài scene (phần còn lại để giữ hình).
   Nếu vẫn không vừa thì tất cả bị nén đều. Lời đọc quá ngắn so với nhiều lệnh dài sẽ làm gõ rất nhanh.
 - Số trong `output` được tô màu accent tự động.
@@ -246,10 +246,10 @@ Giới hạn (`timeline.ts`, `wrap.ts`, `Terminal.tsx`):
 }
 ```
 
-Giới hạn (`layout.ts`, hàm `chooseLayout`): cỡ chữ dòng giảm từng 1px từ **36 xuống 28px** (tên 36-48px, tiêu đề 40-52px); khi
-chiều cao ước tính vẫn vượt 97% `CONTENT_BOX` (770px) thì `fits = false`; `pnpm qa` báo lỗi `layout.tradeoff-overflow` (và cảnh báo `layout.tradeoff-tight` khi chỉ vừa ở 28px).
-Ở cỡ chữ nhỏ nhất, với dòng pros/cons ngắn (~20-30 ký tự, một hàng): **1 option** vừa ~10 dòng pros+cons, **2 option** ~4 dòng mỗi option,
-**3 option** ~2 dòng, **4 option** ~1 dòng; **5 option không bao giờ vừa**. Dòng ~45 ký tự thì còn 2 dòng cho 2 option, 1 dòng cho 3 option.
+Giới hạn (`layout.ts`, hàm `chooseLayout`): cỡ chữ dòng giảm từng 1px từ **36 xuống 28px** (tên 36-56px, tiêu đề 40-60px); khi
+chiều cao ước tính vẫn vượt 97% `CONTENT_BOX` (960px) thì `fits = false`; `pnpm qa` báo lỗi `layout.tradeoff-overflow` (và cảnh báo `layout.tradeoff-tight` khi chỉ vừa ở 28px).
+Ở cỡ chữ nhỏ nhất, với dòng pros/cons ngắn (~20-30 ký tự, một hàng): **1 option** vừa ~14 dòng pros+cons, **2 option** ~6 dòng mỗi option,
+**3 option** ~3 dòng, **4 option** 1 dòng, **5 option** 1 dòng (chỉ cons hoặc chỉ pros, chữ co về ~29px). Dòng ~45 ký tự thì còn 8 dòng cho 1 option, 3 dòng cho 2 option, 1 dòng cho 3 option.
 Nên dùng 2 option (tối đa 3), mỗi dòng dưới ~45 ký tự.
 
 ### summary
@@ -276,9 +276,9 @@ Nên dùng 2 option (tối đa 3), mỗi dòng dưới ~45 ký tự.
 }
 ```
 
-Giới hạn (`layout.ts`, hàm `summaryLayout`): cỡ chữ tự giảm từ **44px xuống 28px** (bước 2); không vừa `CONTENT_BOX` (780 x 770) thì `fits = false`
+Giới hạn (`layout.ts`, hàm `summaryLayout`): cỡ chữ tự giảm từ **52px xuống 28px** (bước 2); không vừa `CONTENT_BOX` (830 x 960) thì `fits = false`
 (`pnpm qa`: lỗi `layout.summary-overflow`, cảnh báo `layout.summary-tight` khi chỉ vừa ở 28px).
-Ước tính: ý dài ~78 ký tự vừa **7 ý** (6 ý nếu có `loopLine`); ý dài ~120 ký tự vừa **5 ý** (4 ý nếu có `loopLine`). Nên giữ **3-5 ý**, mỗi ý dưới ~80 ký tự.
+Ước tính: ý dài ~78 ký tự vừa **8 ý** (7 ý nếu có `loopLine`); ý dài ~120 ký tự vừa **6 ý** (5 ý nếu có `loopLine`), tức 5 ý dài 120 ký tự vừa cả khi có hoặc không có `loopLine`. Nên giữ **3-5 ý**, mỗi ý dưới ~80 ký tự.
 
 ### stat
 
@@ -286,9 +286,9 @@ Giới hạn (`layout.ts`, hàm `summaryLayout`): cỡ chữ tự giảm từ **
 
 | Prop       | Kiểu                                            | Ghi chú                                                                                                                                                                                                                                                           |
 | ---------- | ----------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `title`    | string, không rỗng                              | 44px, hỗ trợ `{accent\|từ}`.                                                                                                                                                                                                                                      |
+| `title`    | string, không rỗng                              | 52px, hỗ trợ `{accent\|từ}`.                                                                                                                                                                                                                                      |
 | `items`    | mảng **1-4** phần tử                            | Mỗi hàng hiện lần lượt.                                                                                                                                                                                                                                           |
-| `footnote` | string, tùy chọn                                | Dòng chú thích nhỏ (26px) dưới cùng, ví dụ nguồn đo.                                                                                                                                                                                                              |
+| `footnote` | string, tùy chọn                                | Dòng chú thích nhỏ (30px) dưới cùng, ví dụ nguồn đo.                                                                                                                                                                                                              |
 | `items[]`  | `{ label, value, unit?, caption?, tone?, at? }` | `label` không rỗng (mô tả cái được đếm); `value` số **>= 0** (counter chạy từ 0 tới số này); `unit` đơn vị đứng cạnh số; `caption` dòng nhỏ dưới số; `tone` `good\|bad\|neutral` (mặc định `neutral`: xanh lá / đỏ / xanh dương); `at` cụm lời đọc lúc hàng hiện. |
 
 ```json
@@ -325,11 +325,12 @@ Hành vi (`format.ts`, `scale.ts`, `timeline.ts`): số hiển thị kiểu Vi�
 **thang log** (`log10(1+v)`), số lớn nhất luôn đầy thanh, số > 0 nào cũng có ít nhất 7% thanh. Counter dài 20% độ dài scene, tối đa 54 frame (1,8 giây).
 Không có `at` thì các hàng hiện đều từ 10% tới 55% độ dài scene.
 
-Giới hạn thực tế (đo bằng `statLayout`, `CONTENT_BOX` 780 x 770; cỡ số tự giảm từ **120px xuống 56px**, bước 4):
+Giới hạn thực tế (đo bằng `statLayout`, `CONTENT_BOX` 830 x 960; cỡ số tự giảm từ **156px xuống 56px**, bước 4; ví dụ dưới đây dùng `unit` ngắn, `caption` ~40 ký tự):
 
-- **1 hàng**: số cỡ ~100-116px. **2 hàng**: ~76-116px (caption dài làm số nhỏ đi). **3 hàng**: ~68-92px khi `label` <= ~45 ký tự; nếu có `caption` thì caption bị ẩn
-  (`showCaptions = false`) để vừa. **4 hàng**: chỉ vừa ở **56px**, `label` <= ~30 ký tự, và mọi `caption` bị ẩn. `label` ~40 ký tự trở lên với 4 hàng thì không vừa (`fits = false`).
-- Độ rộng số: `value` tới 10^14 vẫn vừa (số tự co: 10.000.000 ở ~92px, 10^11 ở ~68px; thêm `unit` dài làm co thêm). Nên giữ `value` dưới 10^11.
+- **1 hàng**: số **156px** (tối đa), kể cả `label` ~50 ký tự. **2 hàng**: ~152px khi không có `caption`, ~104-124px khi có `caption` ~40 ký tự. **3 hàng**: ~88-116px khi không có `caption`
+  (`label` <= ~45 ký tự), ~68-84px khi có `caption`; tối đa **3 hàng còn hiện được `caption`**.
+- **4 hàng**: số ~76px, `label` <= ~40 ký tự, và mọi `caption` bị ẩn (`showCaptions = false`) để vừa; `label` ~44 ký tự trở lên với 4 hàng thì không vừa (`fits = false`).
+- Độ rộng số: `value` tới 10^14 vẫn vừa (số tự co: 10.000.000 ở ~112px, 10^9 ở ~88px, 10^11 ở ~76px, 10^14 ở ~64px; thêm `unit` dài làm co thêm). Nên giữ `value` dưới 10^11.
 - Nên dùng **1-2 hàng** (một con số gây sốc); 3-4 hàng chỉ khi thật sự cần so sánh.
 - **Chỉ đưa số đo thật** (xem "Quy tắc chính xác" bên dưới).
 
@@ -339,7 +340,7 @@ Giới hạn thực tế (đo bằng `statLayout`, `CONTENT_BOX` 780 x 770; cỡ
 
 | Prop        | Kiểu                                     | Ghi chú                                                                                                                                     |
 | ----------- | ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| `title`     | string, không rỗng                       | Tiêu đề (44-52px).                                                                                                                          |
+| `title`     | string, không rỗng                       | Tiêu đề (44-58px).                                                                                                                          |
 | `left`      | `{ label, caption?, icon?, tone?, at? }` | Thẻ trái. `label` không rỗng; `icon` thuộc danh sách icon; `tone` `good\|bad\|neutral` (mặc định `neutral`); `at` cụm lời đọc lúc thẻ hiện. |
 | `right`     | như `left`                               | Thẻ phải.                                                                                                                                   |
 | `verdict`   | string, tùy chọn                         | Kết luận hiện cuối, hỗ trợ `{accent\|từ}`, ví dụ `"INDEX = mục lục của bảng"`.                                                              |
@@ -375,9 +376,9 @@ Giới hạn thực tế (đo bằng `statLayout`, `CONTENT_BOX` 780 x 770; cỡ
 Bố cục (`chooseLayout`): **cạnh nhau** khi cả hai `label` <= 2 dòng và mọi thứ vừa ở cỡ label >= 36px; không thì **xếp dọc** (thẻ rộng hết hàng, icon bên trái chữ,
 có dấu "vs" giữa). Cỡ label tự giảm từ 48 xuống 36px. Giới hạn đo bằng `chooseLayout` (icon 96px):
 
-- Cạnh nhau: `label` <= ~24 ký tự (một đến hai dòng); `caption` ~60 ký tự vẫn vừa (label co về ~40px).
-- Xếp dọc: `label` tới ~60 ký tự vừa, ~80 ký tự thì `fits = false`. `label` ~28-50 ký tự + `caption` ~40 ký tự + `verdict` ~40 ký tự đã sát ngưỡng.
-- `verdict` tới ~160 ký tự vẫn vừa ở layout cạnh nhau với label ngắn, nhưng nên giữ dưới ~60 ký tự (một câu chốt).
+- Cạnh nhau: `label` <= ~26 ký tự (một đến hai dòng; ~24 ký tự giữ 48px, ~26 ký tự co về ~38px); `caption` ~90 ký tự vẫn vừa.
+- Xếp dọc (từ `label` ~28 ký tự): `label` tới ~90 ký tự vẫn vừa khi không có gì khác; `label` ~100 ký tự + `caption` ~40 + `verdict` ~40 ký tự thì `fits = false`.
+- `verdict` tới ~200 ký tự vẫn vừa ở layout cạnh nhau với label ngắn, nhưng nên giữ dưới ~60 ký tự (một câu chốt).
 - Reveal: tiêu đề -> trái -> "vs" -> phải -> `verdict`, xong trong 80% scene; mỗi bước tối đa 30 frame nếu không có `at`.
 
 ### callout
@@ -389,7 +390,7 @@ có dấu "vs" giữa). Cỡ label tự giảm từ 48 xuống 36px. Giới hạ
 | `kind`          | `myth` \| `fact` \| `warning` \| `tip` | Bắt buộc. Quyết định màu, kicker mặc định và mood.    |
 | `kicker`        | string, tùy chọn                       | Nhãn nhỏ phía trên; mặc định theo `kind` (bảng dưới). |
 | `statement`     | string, không rỗng                     | Câu lớn, hỗ trợ `{accent\|từ}`.                       |
-| `explanation`   | string, tùy chọn                       | Giải thích 34px.                                      |
+| `explanation`   | string, tùy chọn                       | Giải thích 40px.                                      |
 | `statementAt`   | string, tùy chọn                       | Cụm lời đọc lúc câu lớn đóng dấu vào.                 |
 | `explanationAt` | string, tùy chọn                       | Cụm lời đọc lúc phần giải thích hiện.                 |
 
@@ -416,9 +417,9 @@ có dấu "vs" giữa). Cỡ label tự giảm từ 48 xuống 36px. Giới hạ
 }
 ```
 
-Giới hạn (`calloutLayout`, tính trên chữ hiển thị đã bỏ markup): cỡ `statement` giảm từ **96px xuống 52px** (bước 2), tối đa **3 dòng**, `fits = false` khi hơn 3 dòng.
-Thực tế: <= ~30 ký tự được 96px, ~40 ký tự 72px, ~54 ký tự (cỡ ~54px) vẫn vừa **3 dòng**; từ **~56 ký tự trở lên không vừa**. `explanation` (34px) ~200 ký tự vẫn vừa
-với câu ngắn, nhưng với câu ~40 ký tự thì làm cỡ chữ giảm xuống ~58px. Nên giữ `statement` <= ~45 ký tự và `explanation` <= ~120 ký tự.
+Giới hạn (`calloutLayout`, tính trên chữ hiển thị đã bỏ markup): cỡ `statement` giảm từ **100px xuống 52px** (bước 2), tối đa **4 dòng**, `fits = false` khi hơn 4 dòng.
+Thực tế: <= ~20 ký tự được 100px (2 dòng), ~40 ký tự vẫn 100px (4 dòng), ~54 ký tự ~74px, ~60 ký tự ~70px; **~78 ký tự vẫn vừa** (cỡ ~54px, 4 dòng); từ **~79 ký tự trở lên không vừa**.
+`explanation` (40px) ~120 ký tự không làm đổi giới hạn ở câu ngắn; ~200 ký tự với câu ~30 ký tự thì `statement` còn ~80px, và ~300 ký tự thì không vừa. Nên giữ `statement` <= ~60 ký tự và `explanation` <= ~120 ký tự.
 
 ### endcard
 
@@ -426,10 +427,10 @@ với câu ngắn, nhưng với câu ~40 ký tự thì làm cỡ chữ giảm xu
 
 | Prop       | Kiểu               | Ghi chú                                                                |
 | ---------- | ------------------ | ---------------------------------------------------------------------- |
-| `headline` | string, không rỗng | Cỡ 76px, tự giảm tới 48px.                                             |
-| `subline`  | string, tùy chọn   | 34px.                                                                  |
+| `headline` | string, không rỗng | Cỡ 90px, tự giảm tới 48px.                                             |
+| `subline`  | string, tùy chọn   | 40px.                                                                  |
 | `cta`      | string, tùy chọn   | Lời kêu gọi, vẽ dạng nút, ví dụ `"Theo dõi để xem câu hỏi tiếp theo"`. |
-| `brand`    | string, tùy chọn   | Tên kênh ở chân thẻ (30px).                                            |
+| `brand`    | string, tùy chọn   | Tên kênh ở chân thẻ (34px).                                            |
 | `loopLine` | string, tùy chọn   | Câu dẫn ngược về hook; nên khớp câu hỏi/câu mở của hook.               |
 
 ```json
@@ -448,8 +449,9 @@ với câu ngắn, nhưng với câu ~40 ký tự thì làm cỡ chữ giảm xu
 ```
 
 Không có trường cue: các phần tử hiện đều nhau từ 4% tới 62% độ dài scene (thứ tự `headline`, `subline`, `cta`, `loopLine`, `brand`; phần tử thiếu thì bỏ qua).
-Giới hạn (`endCardLayout`): chỉ có `headline` thì ~240 ký tự vẫn vừa (cỡ giảm dần), nhưng khi có đủ `subline` ~60 + `cta` ~40 + `loopLine` ~60 + `brand`,
-`headline` ~60 ký tự đã co về 56px và **~100 ký tự trở lên không vừa** (`fits = false`). Nên giữ `headline` <= ~50 ký tự, mỗi dòng phụ <= ~60 ký tự.
+Giới hạn (`endCardLayout`; headline 90px xuống 48px, các dòng phụ 40px): chỉ có `headline` thì <= ~100 ký tự vẫn ở 90px, ~240 ký tự co về ~60px và ~300 ký tự về 52px (vẫn vừa);
+khi có đủ `subline` ~60 + `cta` ~40 + `loopLine` ~60 + `brand`, `headline` ~50 ký tự còn 68px, ~80 ký tự còn 52px, **~100 ký tự co về 48px (vẫn vừa)** và **~120 ký tự trở lên không vừa** (`fits = false`).
+Nên giữ `headline` <= ~50 ký tự, mỗi dòng phụ <= ~60 ký tự.
 `endcard` là scene cuối; câu cuối của `voice` nên là câu hỏi của hook để video lặp.
 
 ## Cue: hình hiện đúng lúc người đọc nói

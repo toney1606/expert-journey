@@ -20,20 +20,20 @@ export type TradeoffLayout = {
 export const LINE_HEIGHT = 1.4;
 export const NAME_LINE_HEIGHT = 1.35;
 export const TITLE_LINE_HEIGHT = 1.3;
-export const CARD_PAD_X = 24;
-export const CARD_PAD_Y = 16;
-export const SECTION_GAP = 16;
+export const CARD_PAD_X = 28;
+export const CARD_PAD_Y = 20;
+export const SECTION_GAP = 20;
 /** Space between the top of the box and the title. */
 export const TITLE_PAD_TOP = 8;
 /** Space between the title and the first card. */
-export const TITLE_GAP = 28;
-export const ROW_GAP = 8;
-export const NAME_GAP = 10;
-export const ICON_GAP = 14;
-export const MAX_ROW_SIZE = 36;
+export const TITLE_GAP = 34;
+export const ROW_GAP = 10;
+export const NAME_GAP = 12;
+export const ICON_GAP = 16;
+export const MAX_ROW_SIZE = 42;
 export const MIN_ROW_SIZE = 28;
-export const MAX_NAME_SIZE = 48;
-export const MAX_TITLE_SIZE = 52;
+export const MAX_NAME_SIZE = 56;
+export const MAX_TITLE_SIZE = 60;
 export const MIN_NAME_SIZE = 36;
 export const MIN_TITLE_SIZE = 40;
 /** Average glyph width in em for Be Vietnam Pro (slightly pessimistic; bold is wider). */

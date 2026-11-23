@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { CONTENT_BOX } from '../../design/tokens';
 import {
   LABEL_INSET,
   labelSpace,
@@ -179,8 +180,9 @@ describe('layer-skipping edges', () => {
       box,
     );
     expectEdgesAvoidOtherNodes(layout);
-    // 5 layers plus a skip edge no longer fit the 780x770 box: reported via fits.
-    expect(layout.fits).toBe(false);
+    // 5 layers plus a skip edge fit the 830x960 box (the 4-layer limit applied to 780x770).
+    expect(layout.fits).toBe(true);
+    expectInside(layout);
     expectNoOverlap(layout);
   });
 
@@ -263,7 +265,7 @@ describe('labelSpace', () => {
   });
 });
 
-describe('fits and limits in the 780x770 content box', () => {
+describe('fits and limits in the 830x960 content box', () => {
   const chain = (count: number) => {
     const ids = Array.from({ length: count }, (_, i) => `n${i}`);
     const edges = ids.slice(1).map((id, i) => ({ from: ids[i] as string, to: id }));
@@ -283,12 +285,13 @@ describe('fits and limits in the 780x770 content box', () => {
   };
 
   it('derives its box from CONTENT_BOX', () => {
-    expect(box.width).toBe(780);
-    expect(box.height).toBeLessThan(770);
+    expect(box.width).toBe(CONTENT_BOX.width);
+    expect(box.height).toBeLessThan(CONTENT_BOX.height);
+    expect(box.width).toBe(830);
   });
 
-  it('fits up to 5 layers with short labels and stays inside the box', () => {
-    for (const count of [1, 3, 5]) {
+  it('fits up to 6 layers with short labels and stays inside the box', () => {
+    for (const count of [1, 3, 5, 6]) {
       const layout = chain(count);
       expect(layout.fits).toBe(true);
       expectInside(layout);
@@ -296,16 +299,16 @@ describe('fits and limits in the 780x770 content box', () => {
     }
   });
 
-  it('does not fit 6 layers', () => {
-    expect(chain(6).fits).toBe(false);
+  it('does not fit 7 layers', () => {
+    expect(chain(7).fits).toBe(false);
   });
 
-  it('fits 4 nodes in a layer but not 6', () => {
-    expect(fan(4).fits).toBe(true);
+  it('fits 5 nodes in a layer but not 6', () => {
+    expect(fan(5).fits).toBe(true);
     expect(fan(6).fits).toBe(false);
   });
 
-  it('needs wider gaps (so 4 layers at most) when an edge skips layers', () => {
+  it('needs wider gaps (so 5 layers at most) when an edge skips layers', () => {
     const build = (count: number) => {
       const ids = Array.from({ length: count }, (_, i) => `n${i}`);
       const edges = ids.slice(1).map((to, i) => ({ from: ids[i] as string, to }));
@@ -316,19 +319,21 @@ describe('fits and limits in the 780x770 content box', () => {
         box,
       );
     };
-    expect(build(4).fits).toBe(true);
-    expect(build(5).fits).toBe(false);
+    expect(build(5).fits).toBe(true);
+    expect(build(6).fits).toBe(false);
   });
 
   it('does not fit when long labels grow the layers past the height', () => {
     const label = 'A rather long label that wraps over many lines';
-    const ids = ['a', 'b', 'c', 'd', 'e'];
-    const layout = layoutDiagram(
-      ids.map((id) => ({ id, label })),
-      ids.slice(1).map((id, i) => ({ from: ids[i] as string, to: id })),
-      box,
-    );
-    expect(layout.fits).toBe(false);
+    const build = (ids: string[]) =>
+      layoutDiagram(
+        ids.map((id) => ({ id, label })),
+        ids.slice(1).map((id, i) => ({ from: ids[i] as string, to: id })),
+        box,
+      );
+    // Five such layers still fit (font shrinks to the minimum); six do not.
+    expect(build(['a', 'b', 'c', 'd', 'e']).fits).toBe(true);
+    expect(build(['a', 'b', 'c', 'd', 'e', 'f']).fits).toBe(false);
   });
 });
 

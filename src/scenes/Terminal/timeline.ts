@@ -1,6 +1,11 @@
 import { spring } from 'remotion';
+import { spacing } from '../../design/tokens';
 import { resolveCueFrames } from '../../lib/cues';
 import { wrapRows, type WrapRow } from './wrap';
+
+/** Window chrome sizes (shared with pipeline/qa so checks use the same inner area). */
+export const TERMINAL_HEADER_HEIGHT = 56;
+export const TERMINAL_BODY_PADDING = spacing.sm + spacing.xs;
 
 export type { WrapRow };
 export type TerminalLine = { command: string; output?: string; at?: string };
@@ -23,7 +28,7 @@ const PAUSE_BEFORE_OUTPUT_SEC = 0.3;
 const PAUSE_AFTER_OUTPUT_SEC = 0.4;
 
 const MIN_FONT = 24;
-const MAX_FONT = 36;
+const MAX_FONT = 40;
 /** JetBrains Mono advance width relative to font size. */
 export const CHAR_WIDTH_EM = 0.6;
 export const LINE_HEIGHT = 1.45;
@@ -131,7 +136,7 @@ export const totalRows = (lines: readonly TerminalLine[], cols: number): number 
   ) + 1;
 
 /**
- * Largest font size in [24, 36] whose full transcript fits `innerHeight`; 24 when none does
+ * Largest font size in [24, 40] whose full transcript fits `innerHeight`; 24 when none does
  * (the body then auto-scrolls).
  */
 export const pickFontSize = (

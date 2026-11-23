@@ -3,7 +3,7 @@ import { CONTENT_BOX, colors, fontFamily, lineHeight, spacing } from '../../desi
 import { springs } from '../../design/springs';
 import { diffLines, splitLines } from './diff';
 import { fitFontSize } from './fit';
-import { buildLayout, type CodeLayout } from './layout';
+import { buildLayout, type CodeLayout, CODE_CARD_PAD } from './layout';
 import { tokenColors } from './syntax';
 import { useSceneWords } from '../../components/SceneTiming';
 import { spokenFrames } from '../../lib/cues';
@@ -12,9 +12,8 @@ import type { CodeScene } from './schema';
 
 const BOX_WIDTH = CONTENT_BOX.width;
 const BOX_HEIGHT = CONTENT_BOX.height;
-const CARD_PAD = 20;
-const HEADER_HEIGHT = 64;
-const BADGE_RESERVE = 96;
+const HEADER_HEIGHT = 72;
+const BADGE_RESERVE = 110;
 const CODE_LINE_HEIGHT = 1.5;
 const MIN_SCALE = 0.75;
 const SCALE_STEP = 0.02;
@@ -40,9 +39,9 @@ export const CodeDiff: React.FC<{ scene: CodeScene }> = ({ scene }) => {
   const afterLines = splitLines(after);
   const entries = diffLines(beforeLines, afterLines);
 
-  const innerWidth = BOX_WIDTH - CARD_PAD * 2;
+  const innerWidth = BOX_WIDTH - CODE_CARD_PAD * 2;
   const allLines = [...beforeLines, ...afterLines];
-  const maxCodeHeight = BOX_HEIGHT - HEADER_HEIGHT - BADGE_RESERVE - CARD_PAD * 2;
+  const maxCodeHeight = BOX_HEIGHT - HEADER_HEIGHT - BADGE_RESERVE - CODE_CARD_PAD * 2;
   // The code block is drawn at `scale` (<1 when it is too tall); lay it out in a virtual width of
   // innerWidth / scale so the scaled block still spans the card. Take the largest scale that fits.
   let chosen: { scale: number; fontSize: number; layout: CodeLayout } | undefined;
@@ -115,10 +114,10 @@ export const CodeDiff: React.FC<{ scene: CodeScene }> = ({ scene }) => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            padding: `0 ${CARD_PAD}px`,
+            padding: `0 ${CODE_CARD_PAD}px`,
             background: tint(colors.bg, 0.55),
             fontFamily: fontFamily.code,
-            fontSize: 26,
+            fontSize: 30,
             color: colors.textMuted,
           }}
         >
@@ -137,7 +136,7 @@ export const CodeDiff: React.FC<{ scene: CodeScene }> = ({ scene }) => {
             {showAfter ? 'after' : 'before'}
           </span>
         </div>
-        <div style={{ padding: CARD_PAD }}>
+        <div style={{ padding: CODE_CARD_PAD }}>
           <div style={{ position: 'relative', height: codeHeight, width: innerWidth }}>
             <div
               style={{
@@ -220,7 +219,7 @@ export const CodeDiff: React.FC<{ scene: CodeScene }> = ({ scene }) => {
           gap: spacing.sm,
           fontFamily: fontFamily.code,
           fontWeight: 700,
-          fontSize: 26,
+          fontSize: 30,
           lineHeight: lineHeight.body,
           color: colors.bg,
           background: colors.correct,

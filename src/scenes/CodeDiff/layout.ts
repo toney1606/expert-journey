@@ -3,6 +3,9 @@ import { wrapTokens } from './fit';
 import { tokenizeLine } from './tokenize';
 import type { Token } from './tokenize';
 
+/** Padding of the code card on every side (shared with pipeline/qa so checks use the same inner width). */
+export const CODE_CARD_PAD = 24;
+
 export type LayoutLine = {
   kind: DiffEntry['kind'];
   rows: Token[][];

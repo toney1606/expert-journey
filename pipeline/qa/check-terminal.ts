@@ -1,15 +1,16 @@
-import { CONTENT_BOX, spacing } from '../../src/design/tokens';
+import { CONTENT_BOX } from '../../src/design/tokens';
 import {
   LINE_HEIGHT,
+  TERMINAL_BODY_PADDING,
+  TERMINAL_HEADER_HEIGHT,
   columnsFor,
   pickFontSize,
   totalRows,
 } from '../../src/scenes/Terminal/timeline';
 import type { QaCheck, QaIssue } from './types';
 
-/** Mirrors Terminal.tsx (HEADER_HEIGHT and BODY_PADDING are not exported there). */
-const HEADER_HEIGHT = 56;
-const BODY_PADDING = spacing.sm + spacing.xs;
+const HEADER_HEIGHT = TERMINAL_HEADER_HEIGHT;
+const BODY_PADDING = TERMINAL_BODY_PADDING;
 export const TERMINAL_INNER_WIDTH = CONTENT_BOX.width - 2 * BODY_PADDING;
 export const TERMINAL_INNER_HEIGHT = CONTENT_BOX.height - HEADER_HEIGHT - 2 * BODY_PADDING;
 

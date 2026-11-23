@@ -14,20 +14,21 @@ export type EndCardLayout = {
   fits: boolean;
 };
 
-export const MAX_HEADLINE = 76;
+export const MAX_HEADLINE = 90;
 export const MIN_HEADLINE = 48;
-export const BODY_FONT = 34;
+export const BODY_FONT = 40;
 export const MIN_BODY = 30;
-const BRAND_FONT = 30;
+const BRAND_FONT = 34;
 const LINE_HEIGHT = 1.3;
 const BODY_LINE_HEIGHT = 1.45;
 const HEADLINE_EM = 0.62;
 const BODY_EM = 0.58;
 const WRAP_SLACK = 1.08;
-const GAP = 24;
-const PILL_PADDING = 20;
-const LOOP_PADDING = 20;
-const LOOP_GLYPH_GAP = 18;
+export const GAP = 32;
+export const PILL_PADDING = 26;
+export const PILL_PADDING_X = 48;
+export const LOOP_PADDING = 26;
+export const LOOP_GLYPH_GAP = 22;
 
 const linesFor = (chars: number, width: number, fontSize: number, em: number): number => {
   const perLine = Math.max(1, Math.floor(width / (fontSize * em)));
@@ -56,7 +57,7 @@ const heightFor = (
     );
   }
   if (props.cta) {
-    const w = box.width - 2 * 40 - 40;
+    const w = box.width - 2 * PILL_PADDING_X - 40;
     add(
       linesFor(stripMarkup(props.cta).length, w, BODY_FONT, BODY_EM) *
         BODY_FONT *

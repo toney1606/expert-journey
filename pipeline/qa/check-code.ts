@@ -1,11 +1,10 @@
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
+import { CODE_CARD_PAD } from '../../src/scenes/CodeDiff/layout';
 import { CONTENT_BOX } from '../../src/design/tokens';
 import { fitFontSize } from '../../src/scenes/CodeDiff/fit';
 import type { QaCheck, QaIssue } from './types';
 
-/** CodeDiff.tsx CARD_PAD (not exported there). */
-const CODE_CARD_PAD = 20;
 /** Same inner width CodeDiff uses: content box minus the card padding on both sides. */
 export const CODE_INNER_WIDTH = CONTENT_BOX.width - 2 * CODE_CARD_PAD;
 export const CODE_MIN_COMFORT_FONT = 26;

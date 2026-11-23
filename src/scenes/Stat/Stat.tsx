@@ -5,7 +5,7 @@ import { spokenFrames } from '../../lib/cues';
 import { colors, fontFamily, lineHeight } from '../../design/tokens';
 import { springs } from '../../design/springs';
 import { decimalsOf, formatNumber } from './format';
-import { statLayout } from './layout';
+import { BAR_GAP, BAR_H, PAD_X, PAD_Y, TITLE_GAP, statLayout } from './layout';
 import type { StatLayout } from './layout';
 import { barFraction, pickScale } from './scale';
 import type { BarScale } from './scale';
@@ -72,7 +72,7 @@ const Row: React.FC<{
         background: colors.card,
         border: `2px solid ${color}`,
         borderRadius: 24,
-        padding: '12px 22px',
+        padding: `${PAD_Y}px ${PAD_X}px`,
         boxShadow: `0 0 ${8 + 36 * glow}px ${color}`,
         boxSizing: 'border-box',
       }}
@@ -112,9 +112,9 @@ const Row: React.FC<{
       </div>
       <div
         style={{
-          marginTop: 8,
-          height: 14,
-          borderRadius: 7,
+          marginTop: BAR_GAP,
+          height: BAR_H,
+          borderRadius: BAR_H / 2,
           background: colors.bg,
           overflow: 'hidden',
         }}
@@ -123,7 +123,7 @@ const Row: React.FC<{
           style={{
             width: `${fill * 100}%`,
             height: '100%',
-            borderRadius: 7,
+            borderRadius: BAR_H / 2,
             background: color,
             boxShadow: `0 0 ${12 + 16 * glow}px ${color}`,
           }}
@@ -186,7 +186,7 @@ export const Stat: React.FC<{ scene: StatScene }> = ({ scene }) => {
           fontSize: layout.titleSize,
           lineHeight: lineHeight.title,
           color: colors.accent,
-          marginBottom: 20 - layout.gap,
+          marginBottom: TITLE_GAP - layout.gap,
         }}
       >
         <RichText text={title} />

@@ -8,15 +8,17 @@ Nguồn sự thật trong code: `src/design/` (`tokens.ts`, `springs.ts`, `fonts
 
 ## Safe zone
 
-`safeZone` trong `tokens.ts`: top **270**, bottom **680**, left **120**, right **180** px. Hộp an toàn (`SAFE_BOX`) = **780 x 970 px**, đặt tại (120, 270).
+`safeZone` trong `tokens.ts`: top **230**, bottom **560**, left **90**, right **160** px. Hộp an toàn (`SAFE_BOX`) = **830 x 1130 px**, đặt tại (90, 230).
 `SafeZoneFrame` bọc mọi scene trong hộp này (`safeBox` trong `src/lib/safe-zone.ts`), nên scene chỉ cần fill `100%` và không tự canh lề.
 
-**Dải caption:** `CAPTION_BAND_HEIGHT` = 200px ở đáy hộp an toàn, chứa component `Captions` (từng từ, `Video` render theo từng scene từ `words` trong manifest audio).
-Mọi scene bố cục trong `CONTENT_BOX` = **780 x 770 px** (`SAFE_BOX` trừ dải caption), nên không đè lên caption.
+**Dải caption:** `CAPTION_BAND_HEIGHT` = 170px ở đáy hộp an toàn, chứa component `Captions` (từng từ, `Video` render theo từng scene từ `words` trong manifest audio; cỡ chữ 52px, 2 dòng vừa dải 170px).
+Mọi scene bố cục trong `CONTENT_BOX` = **830 x 960 px** (`SAFE_BOX` trừ dải caption), nên không đè lên caption.
 
-**Nền tảng mục tiêu: TikTok và Facebook Reels** (không đăng Instagram Reels). Mỗi cạnh lấy giá trị lớn nhất của hai nguồn: số đo bên thứ ba cho TikTok
-(khoảng 240 trên / 660 dưới / 120 hai bên) và tỉ lệ safe zone quảng cáo của Meta (14% trên, 35% dưới, 6% hai bên; cùng số cho Facebook và Instagram Reels).
-**Trạng thái kiểm chứng:** chưa có số pixel chính thức cho Facebook Reels organic, nên các con số này là mặc định an toàn **chưa được xác minh**;
+**Nền tảng mục tiêu: TikTok và Facebook Reels** (không đăng Instagram Reels). Các con số này lấy từ số đo bên thứ ba cho TikTok và tỉ lệ safe zone quảng cáo của Meta
+(14% trên, 35% dưới, 6% hai bên; cùng số cho Facebook và Instagram Reels), rồi **chủ kênh chủ động nới lề đáy** (từ 680 xuống 560) để có thêm chỗ cho nội dung.
+**Đánh đổi đã chấp nhận:** lề đáy nhỏ hơn nên đáy dải caption có thể đè lên vùng tên tài khoản và mô tả của TikTok/Facebook trên một số điện thoại.
+Muốn an toàn hơn thì tăng `bottom` trong `safeZone` (`src/design/tokens.ts`); `SAFE_BOX`, `CONTENT_BOX` và mọi layout tự co theo.
+**Trạng thái kiểm chứng:** chưa có số pixel chính thức cho TikTok hay Facebook Reels organic, nên các con số này **không phải giá trị pixel chính thức** và chưa được xác minh;
 cần kiểm bằng video thật trên điện thoại (TikTok và Facebook) rồi chỉnh `safeZone`. Nghiên cứu trước đó dựa nhầm vào một trang Instagram nên đã bị loại.
 Bật viền kiểm tra bằng prop `debugSafeZone` (mặc định bật trong composition mẫu): viền đỏ đứt nét và vùng ngoài được phủ hồng.
 

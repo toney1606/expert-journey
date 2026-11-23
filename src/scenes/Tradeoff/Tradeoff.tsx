@@ -118,7 +118,7 @@ export const Tradeoff: React.FC<{ scene: TradeoffScene }> = ({ scene }) => {
             style={{
               ...rise(enter(card.start), 56),
               background: colors.card,
-              borderRadius: 24,
+              borderRadius: 28,
               padding: `${CARD_PAD_Y}px ${CARD_PAD_X}px`,
               display: 'flex',
               flexDirection: 'column',

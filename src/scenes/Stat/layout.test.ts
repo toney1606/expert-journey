@@ -43,11 +43,15 @@ describe('statLayout', () => {
 
 describe('statLayout limits', () => {
   const rows = (n: number, over = {}) => Array.from({ length: n }, () => row(over));
-  it('keeps captions up to 3 rows, drops them to fit 4 rows', () => {
-    expect(statLayout('T', rows(3, { caption: 'Ghi chú ngắn' })).showCaptions).toBe(true);
+  it('keeps captions up to 3 rows, drops them to fit 4 rows, 5 rows never fit', () => {
+    const three = statLayout('T', rows(3, { caption: 'Ghi chú ngắn' }));
+    expect(three.showCaptions).toBe(true);
+    expect(three.numberSize).toBe(88);
     const four = statLayout('T', rows(4, { caption: 'Ghi chú ngắn' }));
     expect(four.fits).toBe(true);
     expect(four.showCaptions).toBe(false);
+    expect(four.numberSize).toBe(76);
+    expect(statLayout('T', rows(5)).fits).toBe(false);
   });
   it('4 rows fit with a one-line title but not with a 2-line title plus footnote', () => {
     expect(statLayout('Quét bảng khổng lồ', rows(4)).fits).toBe(true);

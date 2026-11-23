@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ENDCARD_BOX, MIN_BODY, MIN_HEADLINE, endCardLayout } from './layout';
+import { ENDCARD_BOX, MAX_HEADLINE, MIN_BODY, MIN_HEADLINE, endCardLayout } from './layout';
 import { CONTENT_BOX } from '../../design/tokens';
 
 const full = {
@@ -22,7 +22,7 @@ describe('endCardLayout', () => {
     expect(l.loopFontSize).toBeGreaterThanOrEqual(MIN_BODY);
   });
   it('headline alone gets the largest size', () => {
-    expect(endCardLayout({ headline: 'Hết' }).headlineFontSize).toBe(76);
+    expect(endCardLayout({ headline: 'Hết' }).headlineFontSize).toBe(MAX_HEADLINE);
   });
   it('shrinks monotonically as the headline grows', () => {
     let prev = Infinity;
@@ -32,11 +32,23 @@ describe('endCardLayout', () => {
       prev = l.headlineFontSize;
     }
   });
-  it('real limit: an 80-char headline fits the full card at min font, 300 chars does not', () => {
-    expect(endCardLayout({ ...full, headline: 'a'.repeat(80) }).fits).toBe(true);
-    const over = endCardLayout({ ...full, headline: 'a'.repeat(300) });
+  it('real limit: with subline 60 + cta 40 + loop 60 a 100-char headline fits at min font, 120 does not', () => {
+    const rest = {
+      subline: 'a'.repeat(60),
+      cta: 'a'.repeat(40),
+      loopLine: 'a'.repeat(60),
+      brand: 'Expert Journey',
+    };
+    const ok = endCardLayout({ ...rest, headline: 'a'.repeat(100) });
+    expect(ok.fits).toBe(true);
+    expect(ok.headlineFontSize).toBe(MIN_HEADLINE);
+    const over = endCardLayout({ ...rest, headline: 'a'.repeat(120) });
     expect(over.fits).toBe(false);
     expect(over.headlineFontSize).toBe(MIN_HEADLINE);
+  });
+  it('headline alone: 300 chars still fits (shrunk), 400 does not', () => {
+    expect(endCardLayout({ headline: 'a'.repeat(300) }).fits).toBe(true);
+    expect(endCardLayout({ headline: 'a'.repeat(400) }).fits).toBe(false);
   });
 
   it('measures text without {accent|...} markup characters', () => {

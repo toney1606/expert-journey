@@ -78,8 +78,8 @@ describe('layout helpers', () => {
     expect(wrappedRows('a'.repeat(25), 10)).toBe(3);
     expect(wrappedRows('ab\ncd', 10)).toBe(2);
   });
-  it('picks 36 for little content and 24 for lots', () => {
-    expect(pickFontSize([{ command: 'ls' }], W, H)).toBe(36);
+  it('picks 40 for little content and 24 for lots', () => {
+    expect(pickFontSize([{ command: 'ls' }], W, H)).toBe(40);
     const many = Array.from({ length: 12 }, () => ({
       command: 'z'.repeat(100),
       output: 'o'.repeat(200),
@@ -89,7 +89,7 @@ describe('layout helpers', () => {
   it('chosen size fits the height when possible', () => {
     const size = pickFontSize(sample, W, 400);
     expect(size).toBeGreaterThanOrEqual(24);
-    expect(size).toBeLessThanOrEqual(36);
+    expect(size).toBeLessThanOrEqual(40);
     if (size > 24) {
       expect(totalRows(sample, columnsFor(W, size)) * size * 1.45).toBeLessThanOrEqual(400);
     }

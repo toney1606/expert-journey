@@ -1,8 +1,8 @@
 /** Pure layered layout for the Diagram scene. Flows top to bottom. */
 import { CONTENT_BOX } from '../../design/tokens';
 
-/** Title band above the diagram (two lines at 48px). */
-export const DIAGRAM_TITLE_HEIGHT = 136;
+/** Title band above the diagram (two lines at 54px). */
+export const DIAGRAM_TITLE_HEIGHT = 150;
 /** Area available to the diagram itself: the scene content box minus the title. */
 export const DIAGRAM_BOX = {
   width: CONTENT_BOX.width,
@@ -10,7 +10,7 @@ export const DIAGRAM_BOX = {
 } as const;
 
 /** Height reserved under the diagram for the 'Bước k/N' badge when a `path` is set. */
-export const STEP_BADGE_HEIGHT = 56;
+export const STEP_BADGE_HEIGHT = 64;
 /** Diagram area when the scene has a `path`: DIAGRAM_BOX minus the badge band. */
 export const DIAGRAM_PATH_BOX = {
   width: DIAGRAM_BOX.width,
@@ -45,17 +45,17 @@ export type LayoutOptions = {
 export const RAIL_INSET = 24;
 
 export const defaultLayoutOptions: LayoutOptions = {
-  maxNodeWidth: 700,
-  maxNodeHeight: 160,
-  minNodeHeight: 80,
-  minLayerGap: 90,
-  maxLayerGap: 150,
+  maxNodeWidth: 740,
+  maxNodeHeight: 200,
+  minNodeHeight: 90,
+  minLayerGap: 72,
+  maxLayerGap: 170,
   columnGap: 28,
   railWidth: 80,
   arrowLength: 22,
   pad: 8,
-  nodeFontMax: 40,
-  nodeFontMin: 28,
+  nodeFontMax: 46,
+  nodeFontMin: 30,
   nodeLineHeight: 1.3,
   nodePadX: 20, // 4px border + 16px padding
   nodePadY: 12, // 4px border + 8px padding

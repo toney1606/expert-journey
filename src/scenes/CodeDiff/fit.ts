@@ -2,7 +2,7 @@ import type { Token } from './tokenize';
 
 /** JetBrains Mono advance width as a fraction of the font size. */
 export const ADVANCE_EM = 0.6;
-export const MAX_FONT_SIZE = 40;
+export const MAX_FONT_SIZE = 44;
 export const MIN_FONT_SIZE = 22;
 
 export type Fit = {

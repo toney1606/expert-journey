@@ -9,6 +9,7 @@ import {
   DIAGRAM_BOX,
   DIAGRAM_PATH_BOX,
   DIAGRAM_TITLE_HEIGHT,
+  STEP_BADGE_HEIGHT as DIAGRAM_BADGE_HEIGHT,
   LABEL_INSET,
   labelSpace,
   layoutDiagram,
@@ -37,12 +38,12 @@ import type { TraversalPlan } from './traversal';
 import type { DiagramScene } from './schema';
 
 const TITLE_HEIGHT = DIAGRAM_TITLE_HEIGHT;
-const EDGE_FONT = 32;
-const STROKE = 5;
+const EDGE_FONT = 36;
+const STROKE = 6;
 const ARROW_HALF = 12;
 const ARROW_LENGTH = 22;
-const BADGE_HEIGHT = 56;
-const TOKEN_RADIUS = 13;
+const BADGE_HEIGHT = DIAGRAM_BADGE_HEIGHT;
+const TOKEN_RADIUS = 15;
 /** Frames a node takes to fade into its lit state. */
 const LIGHT_FRAMES = 8;
 /** Seconds per pulse of the emphasis halo. */
@@ -99,7 +100,7 @@ const NodeCard: React.FC<NodeCardProps> = ({ node, start, lit, current, emphasis
         textAlign: 'center',
         background: mixHex(diagramPalette.card, diagramPalette.lit, 0.1 * lit),
         border: `4px solid ${mixHex(diagramPalette.base, diagramPalette.lit, lit)}`,
-        borderRadius: 28,
+        borderRadius: 30,
         color: mixHex(diagramPalette.base, diagramPalette.lit, 0.9 * lit),
         boxShadow: shadows.length > 0 ? shadows.join(', ') : undefined,
         fontFamily: fontFamily.title,
@@ -257,7 +258,7 @@ const StepBadge: React.FC<{ text: string; opacity: number; top: number }> = ({
         color: diagramPalette.lit,
         fontFamily: fontFamily.title,
         fontWeight: 700,
-        fontSize: 30,
+        fontSize: 34,
         lineHeight: lineHeight.title,
         whiteSpace: 'nowrap',
       }}
@@ -402,7 +403,7 @@ export const Diagram: React.FC<{ scene: DiagramScene }> = ({ scene }) => {
           overflow: 'hidden',
           fontFamily: fontFamily.title,
           fontWeight: 800,
-          fontSize: 48,
+          fontSize: 54,
           lineHeight: lineHeight.title,
           color: colors.text,
           opacity: titleIn,

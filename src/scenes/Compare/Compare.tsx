@@ -108,11 +108,11 @@ const SideCard: React.FC<{
         <div
           style={{
             position: 'absolute',
-            top: -22,
+            top: -26,
             right: 14,
-            width: 48,
-            height: 48,
-            borderRadius: 24,
+            width: 56,
+            height: 56,
+            borderRadius: 28,
             background: tone,
             display: 'flex',
             alignItems: 'center',
@@ -120,7 +120,7 @@ const SideCard: React.FC<{
             transform: `scale(${progress})`,
           }}
         >
-          <Icon name={badge} size={30} color={colors.bg} />
+          <Icon name={badge} size={34} color={colors.bg} />
         </div>
       ) : null}
     </div>
@@ -216,7 +216,7 @@ export const Compare: React.FC<{ scene: CompareScene }> = ({ scene }) => {
           color: colors.accent,
           fontFamily: fontFamily.title,
           fontWeight: 800,
-          fontSize: 30,
+          fontSize: 34,
           lineHeight: 1,
           display: 'flex',
           alignItems: 'center',

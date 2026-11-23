@@ -24,27 +24,27 @@ export type CompareLayout = {
 };
 
 export const TITLE_PAD_TOP = 8;
-export const TITLE_GAP = 28;
+export const TITLE_GAP = 32;
 export const TITLE_LINE_HEIGHT = 1.3;
 export const LABEL_LINE_HEIGHT = 1.3;
 export const CAPTION_LINE_HEIGHT = 1.4;
 export const VERDICT_LINE_HEIGHT = 1.35;
-export const CARD_PAD = 24;
-export const ICON_GAP = 20;
+export const CARD_PAD = 28;
+export const ICON_GAP = 24;
 export const TEXT_GAP = 6;
 /** Height of the "vs" divider between stacked cards; width of the gap between side cards. */
-export const VS_SIZE = 64;
-export const VERDICT_GAP = 32;
+export const VS_SIZE = 72;
+export const VERDICT_GAP = 36;
 export const VERDICT_PAD_Y = 14;
 export const VERDICT_PAD_X = 28;
-export const MAX_TITLE_SIZE = 52;
+export const MAX_TITLE_SIZE = 58;
 export const MIN_TITLE_SIZE = 44;
-export const MAX_LABEL_SIZE = 48;
+export const MAX_LABEL_SIZE = 54;
 export const MIN_LABEL_SIZE = 36;
 export const MIN_CAPTION_SIZE = 30;
-export const MAX_CAPTION_SIZE = 34;
+export const MAX_CAPTION_SIZE = 38;
 export const MIN_VERDICT_SIZE = 38;
-export const MAX_VERDICT_SIZE = 44;
+export const MAX_VERDICT_SIZE = 50;
 export const HEIGHT_MARGIN = 0.97;
 /** Side by side is only used when it fits with labels at least this big and at most 2 lines. */
 export const SIDE_MIN_LABEL_SIZE = 36;
@@ -58,7 +58,7 @@ const sizesFor = (label: number): Sizes => ({
   title: Math.max(MIN_TITLE_SIZE, Math.min(MAX_TITLE_SIZE, label + 4)),
   caption: Math.max(MIN_CAPTION_SIZE, Math.min(MAX_CAPTION_SIZE, label - 10)),
   verdict: Math.max(MIN_VERDICT_SIZE, Math.min(MAX_VERDICT_SIZE, label - 4)),
-  icon: 96,
+  icon: 112,
 });
 
 const textBlockHeight = (side: SideText, textWidth: number, s: Sizes): number => {

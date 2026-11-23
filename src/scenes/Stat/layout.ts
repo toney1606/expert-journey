@@ -23,9 +23,9 @@ export type StatLayout = {
 
 export const MIN_NUMBER = 56;
 export const MIN_LABEL = 30;
-const MAX_NUMBER = 120;
+const MAX_NUMBER = 156;
 
-const TITLE_SIZE = 44;
+const TITLE_SIZE = 52;
 const TITLE_LH = 1.3;
 const LABEL_LH = 1.35;
 const NUMBER_LH = 1.2;
@@ -36,13 +36,13 @@ const DIGIT_EM = 0.62;
 const SEP_EM = 0.3;
 const UNIT_EM = 0.5;
 const UNIT_GAP = 16;
-const PAD_Y = 12;
-const PAD_X = 22;
-const BAR_H = 14;
-const BAR_GAP = 8;
+export const PAD_Y = 16;
+export const PAD_X = 26;
+export const BAR_H = 18;
+export const BAR_GAP = 10;
 const LABEL_GAP = 4;
 const CAPTION_GAP = 4;
-const TITLE_GAP = 20;
+export const TITLE_GAP = 24;
 
 /** Strip {accent|word} markup so length estimates see only visible text. */
 const plain = (text: string): string => text.replace(/\{[^|}]*\|([^}]*)\}/g, '$1');
@@ -76,7 +76,7 @@ const widthFits = (row: StatRowInput, numberSize: number, innerWidth: number): b
   return numberWidth(row.value, numberSize) + unitWidth <= innerWidth;
 };
 
-/** Largest numbers (120px down to 56px, step 4) at which title + rows + footnote fit the box. */
+/** Largest numbers (156px down to 56px, step 4) at which title + rows + footnote fit the box. */
 export const statLayout = (
   title: string,
   rows: readonly StatRowInput[],
@@ -89,8 +89,8 @@ export const statLayout = (
     for (let number = MAX_NUMBER; number >= MIN_NUMBER; number -= 4) {
       const label = Math.max(MIN_LABEL, Math.round(number * 0.4));
       const caption = Math.max(26, label - 4);
-      const footnoteSize = 26;
-      const gap = rows.length >= 4 ? 12 : 20;
+      const footnoteSize = 30;
+      const gap = rows.length >= 4 ? 16 : 28;
       const rowHeights = rows.map((r) =>
         rowHeight(r, showCaptions, { label, number, caption }, innerWidth),
       );

@@ -29,7 +29,7 @@ any Remotion API or `@remotion/*` package. Never write Remotion code from memory
   timeline helper (no React) + Vitest tests. Scenes are wired in `src/scenes/registry.tsx`. Scene types: `hook`
   (HookCard), `diagram`, `code` (CodeDiff), `terminal`, `tradeoff`, `summary`, `stat`, `compare`, `callout`, `endcard`.
 - Reveal timelines are derived from `durationInFrames` (audio length), never hardcoded frame numbers.
-- Content must fit: layout helpers expose a `fits` (or `wraps`) flag and pick the largest font that fits the 780x770
+- Content must fit: layout helpers expose a `fits` (or `wraps`) flag and pick the largest font that fits the 830x960
   `CONTENT_BOX` (safe box minus the caption band); do not add a scene that overflows silently.
 - Design tokens (colors, spacing, spring presets, safe zone) only in `src/design/`.
   Non-UI logic = pure functions in `src/lib/`, tested with Vitest.

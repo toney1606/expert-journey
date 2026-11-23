@@ -2,7 +2,14 @@ import { interpolate, spring, useCurrentFrame, useVideoConfig } from 'remotion';
 import { springs } from '../../design/springs';
 import { colors, fontFamily, spacing } from '../../design/tokens';
 import { RichText } from '../../components/RichText';
-import { endCardLayout } from './layout';
+import {
+  GAP,
+  LOOP_GLYPH_GAP,
+  LOOP_PADDING,
+  PILL_PADDING,
+  PILL_PADDING_X,
+  endCardLayout,
+} from './layout';
 import type { EndCardScene } from './schema';
 import { endCardTimeline } from './timeline';
 
@@ -77,7 +84,7 @@ export const EndCard: React.FC<{ scene: EndCardScene }> = ({ scene }) => {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
-        gap: 24,
+        gap: GAP,
         fontFamily: fontFamily.title,
       }}
     >
@@ -117,7 +124,7 @@ export const EndCard: React.FC<{ scene: EndCardScene }> = ({ scene }) => {
             fontWeight: 700,
             fontSize: layout.ctaFontSize,
             lineHeight: 1.45,
-            padding: `20px 40px`,
+            padding: `${PILL_PADDING}px ${PILL_PADDING_X}px`,
             borderRadius: 999,
             boxShadow: `0 0 ${ctaGlow}px ${colors.diagram}`,
           }}
@@ -131,11 +138,11 @@ export const EndCard: React.FC<{ scene: EndCardScene }> = ({ scene }) => {
             ...rise(enter(timeline.loopStart, springs.snappy)),
             display: 'flex',
             alignItems: 'center',
-            gap: 18,
-            padding: 20,
+            gap: LOOP_GLYPH_GAP,
+            padding: LOOP_PADDING,
             background: colors.card,
             border: `2px solid ${colors.accent}`,
-            borderRadius: 24,
+            borderRadius: 28,
             boxShadow: `0 0 ${borderGlow}px ${colors.accent}`,
             fontWeight: 700,
             fontSize: layout.loopFontSize,

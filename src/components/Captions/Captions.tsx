@@ -12,7 +12,9 @@ type Props = {
   startFrame?: number;
 };
 
-const FONT_SIZE = 58;
+const FONT_SIZE = 52;
+/** 2 lines: 2 * 52 * 1.35 + 2 * 12 = 164px, inside the 170px caption band. */
+const PAD_Y = 12;
 const MAX_WIDTH = CONTENT_BOX.width;
 
 /**
@@ -51,7 +53,7 @@ export const Captions: React.FC<Props> = ({ words, startFrame = 0 }) => {
         style={{
           maxWidth: MAX_WIDTH,
           boxSizing: 'border-box',
-          padding: `${spacing.sm}px ${spacing.md}px`,
+          padding: `${PAD_Y}px ${spacing.md}px`,
           borderRadius: 36,
           backgroundColor: 'rgba(49, 50, 68, 0.82)',
           fontFamily: fontFamily.title,

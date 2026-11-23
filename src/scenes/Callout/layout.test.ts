@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { CALLOUT_BOX, MAX_LINES, MIN_FONT, calloutLayout } from './layout';
+import { CALLOUT_BOX, MAX_FONT, MAX_LINES, MIN_FONT, calloutLayout } from './layout';
 import { CONTENT_BOX } from '../../design/tokens';
 
 describe('calloutLayout', () => {
@@ -34,15 +34,19 @@ describe('calloutLayout', () => {
     }
   });
 
-  it('real limits at the minimum font: 55 chars fit, 70 do not (no explanation)', () => {
-    expect(calloutLayout('a'.repeat(55)).fits).toBe(true);
-    expect(calloutLayout('a'.repeat(70)).fits).toBe(false);
-    expect(calloutLayout('a'.repeat(70)).statementFontSize).toBe(MIN_FONT);
+  it('real limits at the minimum font: 77 chars fit, 78 do not (4 lines, no explanation)', () => {
+    expect(calloutLayout('a'.repeat(77)).fits).toBe(true);
+    expect(calloutLayout('a'.repeat(78)).fits).toBe(false);
+    expect(calloutLayout('a'.repeat(78)).statementFontSize).toBe(MIN_FONT);
+  });
+  it('gives a short statement the maximum font', () => {
+    expect(calloutLayout('Ngắn').statementFontSize).toBe(MAX_FONT);
   });
 
   it('an explanation costs room but a long one still fits a short statement', () => {
     const exp = 'x'.repeat(130);
     expect(calloutLayout('Ngắn gọn', exp).fits).toBe(true);
-    expect(calloutLayout('a'.repeat(55), exp).fits).toBe(true);
+    expect(calloutLayout('a'.repeat(77), exp).fits).toBe(true);
+    expect(calloutLayout('a'.repeat(78), exp).fits).toBe(false);
   });
 });

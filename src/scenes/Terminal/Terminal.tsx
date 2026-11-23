@@ -20,11 +20,13 @@ import {
   totalRows,
   typedRowCount,
   visibleChars,
+  TERMINAL_BODY_PADDING,
+  TERMINAL_HEADER_HEIGHT,
 } from './timeline';
 
-const HEADER_HEIGHT = 56;
-const BODY_PADDING = spacing.sm + spacing.xs;
-const DOT_SIZE = 18;
+const HEADER_HEIGHT = TERMINAL_HEADER_HEIGHT;
+const BODY_PADDING = TERMINAL_BODY_PADDING;
+const DOT_SIZE = 20;
 
 const NUMBER_PATTERN = /(\d+(?:[.,]\d+)*)/;
 const INDENT = ' '.repeat(HANG_INDENT);

@@ -14,10 +14,10 @@ export type CalloutLayout = {
   fits: boolean;
 };
 
-export const MAX_FONT = 96;
+export const MAX_FONT = 100;
 export const MIN_FONT = 52;
-export const MAX_LINES = 3;
-export const EXPLANATION_FONT = 34;
+export const MAX_LINES = 4;
+export const EXPLANATION_FONT = 40;
 const STATEMENT_LINE_HEIGHT = 1.3;
 const EXPLANATION_LINE_HEIGHT = 1.45;
 /** Conservative glyph width in em for Be Vietnam Pro 800 (Vietnamese, spaces included). */
@@ -25,10 +25,10 @@ const STATEMENT_CHAR_EM = 0.64;
 const EXPLANATION_CHAR_EM = 0.58;
 const WRAP_SLACK = 1.08;
 
-const CHIP_BLOCK = 64 + 24;
-const CARD_PADDING = 40;
+export const CHIP_BLOCK = 76 + 32;
+export const CARD_PADDING = 48;
 const CARD_BORDER = 3;
-const EXPLANATION_GAP = 24;
+export const EXPLANATION_GAP = 32;
 
 const linesFor = (chars: number, width: number, fontSize: number, em: number): number => {
   const perLine = Math.max(1, Math.floor(width / (fontSize * em)));

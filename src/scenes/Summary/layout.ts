@@ -12,7 +12,7 @@ export type SummaryLayout = {
   fits: boolean;
 };
 
-const MAX_FONT = 44;
+const MAX_FONT = 52;
 export const MIN_FONT = 28;
 const LINE_HEIGHT = 1.4;
 /** Conservative average glyph width in em for Be Vietnam Pro (Vietnamese text, spaces included). */
@@ -20,12 +20,12 @@ const CHAR_EM = 0.58;
 /** Extra lines for word-wrap slack. */
 const WRAP_SLACK = 1.08;
 
-const CHIP_HEIGHT = 64;
-const GAP_AFTER_CHIP = 24;
-const ROW_GAP = 18;
-const LOOP_MARGIN = 18;
-const LOOP_PADDING = 20;
-const CHECK_GAP = 18;
+const CHIP_HEIGHT = 76;
+const GAP_AFTER_CHIP = 30;
+const ROW_GAP = 22;
+const LOOP_MARGIN = 24;
+const LOOP_PADDING = 24;
+const CHECK_GAP = 22;
 
 /** Loop line is slightly smaller than the points but never below the minimum font. */
 const loopFontFor = (fontSize: number): number => Math.max(MIN_FONT, Math.round(fontSize * 0.9));
