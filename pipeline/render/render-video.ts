@@ -11,6 +11,7 @@ import {
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { VideoSchema } from '../../src/schemas/video';
+import { findVideoFile } from '../content/paths';
 
 export type RunSpec = { command: string; args: string[]; cwd: string };
 export type RunResult = { exitCode: number | null; stderrTail: string };
@@ -64,7 +65,7 @@ export const spawnRunner: Runner = ({ command, args, cwd }) =>
     child.on('close', (exitCode) => resolve({ exitCode, stderrTail: tail }));
   });
 
-/** Render content/videos/<id>.json to an MP4 by shelling out to the Remotion CLI. */
+/** Render a video (found by id, see findVideoFile) to an MP4 by shelling out to the Remotion CLI. */
 export const renderVideo = async ({
   root,
   videoId,
@@ -73,21 +74,21 @@ export const renderVideo = async ({
   frames,
   runner = spawnRunner,
 }: RenderOptions): Promise<RenderResult> => {
-  const videoPath = join(root, 'content', 'videos', `${videoId}.json`);
-  if (!existsSync(videoPath)) throw new Error(`Video not found: content/videos/${videoId}.json`);
+  const videoPath = findVideoFile(root, videoId);
+  if (!videoPath) throw new Error(`Video not found: ${videoId}`);
 
   let json: unknown;
   try {
     json = JSON.parse(readFileSync(videoPath, 'utf8'));
   } catch (error) {
-    throw new Error(`Invalid JSON in content/videos/${videoId}.json: ${(error as Error).message}`);
+    throw new Error(`Invalid JSON in video ${videoId}: ${(error as Error).message}`);
   }
   const parsed = VideoSchema.safeParse(json);
   if (!parsed.success) {
     const issues = parsed.error.issues
       .map((issue) => `  ${issue.path.join('.') || '(root)'}: ${issue.message}`)
       .join('\n');
-    throw new Error(`Invalid video content/videos/${videoId}.json:\n${issues}`);
+    throw new Error(`Invalid video ${videoId}:\n${issues}`);
   }
 
   const usedAudio = existsSync(

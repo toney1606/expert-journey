@@ -1,9 +1,10 @@
 import { createHash } from 'node:crypto';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { AudioManifestSchema } from '../../src/schemas/audio-manifest';
 import type { AudioManifest } from '../../src/schemas/audio-manifest';
 import { VideoSchema } from '../../src/schemas/video';
+import { findVideoFile } from '../content/paths';
 import type { TtsProvider } from './types';
 
 export type SynthesizeOptions = {
@@ -32,6 +33,9 @@ export const hashRequest = (
     .digest('hex')
     .slice(0, 16);
 
+/** A cached clip only counts when the file exists and is not empty (a full disk can leave 0 bytes). */
+const hasAudio = (path: string): boolean => existsSync(path) && statSync(path).size > 0;
+
 const readManifest = (path: string): AudioManifest | undefined => {
   if (!existsSync(path)) return undefined;
   try {
@@ -50,8 +54,8 @@ export const synthesizeVideo = async ({
   speed,
   lang = 'vi',
 }: SynthesizeOptions): Promise<SynthesizeSummary> => {
-  const videoPath = join(root, 'content', 'videos', `${videoId}.json`);
-  if (!existsSync(videoPath)) throw new Error(`Video not found: content/videos/${videoId}.json`);
+  const videoPath = findVideoFile(root, videoId);
+  if (!videoPath) throw new Error(`Video not found: ${videoId}`);
   const video = VideoSchema.parse(JSON.parse(readFileSync(videoPath, 'utf8')));
 
   const relativeDir = `generated/audio/${videoId}`;
@@ -67,7 +71,7 @@ export const synthesizeVideo = async ({
   for (const scene of video.scenes) {
     const textHash = hashRequest(provider.id, scene.voice, voice, speed);
     const old = previous?.scenes.find((entry) => entry.sceneId === scene.id);
-    if (old?.textHash === textHash && existsSync(join(root, 'public', old.file))) {
+    if (old?.textHash === textHash && hasAudio(join(root, 'public', old.file))) {
       scenes.push(old);
       cached.push(scene.id);
       continue;

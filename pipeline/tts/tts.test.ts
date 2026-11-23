@@ -1,4 +1,12 @@
-import { cpSync, existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import {
+  cpSync,
+  existsSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  statSync,
+  writeFileSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -94,7 +102,7 @@ describe('synthesizeVideo', () => {
     const provider = new CountingProvider();
     await synthesizeVideo({ root, videoId: 'sample', provider });
 
-    const videoPath = join(root, 'content/videos/sample.json');
+    const videoPath = join(root, 'content/samples/sample/video.json');
     const video = JSON.parse(readFileSync(videoPath, 'utf8')) as { scenes: { voice: string }[] };
     video.scenes[0]!.voice = 'Lời thoại mới hoàn toàn cho cảnh mở đầu.';
     writeFileSync(videoPath, JSON.stringify(video));
@@ -110,6 +118,19 @@ describe('synthesizeVideo', () => {
     await synthesizeVideo({ root, videoId: 'sample', provider });
     const result = await synthesizeVideo({ root, videoId: 'sample', provider, speed: 1.2 });
     expect(result.synthesized).toHaveLength(6);
+  });
+
+  it('does not trust an empty (0 byte) audio file left by a failed write', async () => {
+    const root = tempRoot();
+    const provider = new CountingProvider();
+    const first = await synthesizeVideo({ root, videoId: 'sample', provider });
+    const broken = first.manifest.scenes[0];
+    expect(broken).toBeDefined();
+    writeFileSync(join(root, 'public', broken!.file), '');
+
+    const second = await synthesizeVideo({ root, videoId: 'sample', provider });
+    expect(second.synthesized).toEqual([broken!.sceneId]);
+    expect(statSync(join(root, 'public', broken!.file)).size).toBeGreaterThan(0);
   });
 
   it('fails clearly for a missing video', async () => {

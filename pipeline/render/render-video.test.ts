@@ -18,8 +18,11 @@ let root: string;
 
 beforeEach(() => {
   root = mkdtempSync(join(tmpdir(), 'render-test-'));
-  mkdirSync(join(root, 'content', 'videos'), { recursive: true });
-  cpSync(join(repoRoot, 'content/videos/sample.json'), join(root, 'content/videos/sample.json'));
+  mkdirSync(join(root, 'content', 'samples', 'sample'), { recursive: true });
+  cpSync(
+    join(repoRoot, 'content/samples/sample/video.json'),
+    join(root, 'content/samples/sample/video.json'),
+  );
 });
 afterEach(() => rmSync(root, { recursive: true, force: true }));
 
@@ -101,16 +104,18 @@ describe('renderVideo', () => {
 
   it('fails clearly for a missing video', async () => {
     await expect(renderVideo({ root, videoId: 'nope', runner: okRunner({}) })).rejects.toThrow(
-      'Video not found: content/videos/nope.json',
+      'Video not found: nope',
     );
   });
 
   it('fails clearly for invalid JSON and invalid schema', async () => {
-    writeFileSync(join(root, 'content/videos/bad.json'), '{not json');
+    mkdirSync(join(root, 'content/samples/bad'), { recursive: true });
+    mkdirSync(join(root, 'content/samples/bad2'), { recursive: true });
+    writeFileSync(join(root, 'content/samples/bad/video.json'), '{not json');
     await expect(renderVideo({ root, videoId: 'bad', runner: okRunner({}) })).rejects.toThrow(
       /Invalid JSON/,
     );
-    writeFileSync(join(root, 'content/videos/bad2.json'), '{}');
+    writeFileSync(join(root, 'content/samples/bad2/video.json'), '{}');
     await expect(renderVideo({ root, videoId: 'bad2', runner: okRunner({}) })).rejects.toThrow(
       /Invalid video/,
     );
