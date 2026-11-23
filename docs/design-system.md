@@ -60,8 +60,48 @@ Nếu cần thêm màu cú pháp mới, lấy từ bảng Catppuccin Mocha và t
 - **Quy tắc line-height:** `lineHeight.title = 1.3`, `lineHeight.body = 1.45`. Không đặt line-height < 1.3 cho chữ tiếng Việt,
   nếu không dấu chồng (ví dụ `ệ`, `ữ`) bị cắt. Composition `FontTest` dùng để kiểm tra.
 - Ngoại lệ có chủ đích: code dùng 1.5 (CodeDiff) và 1.45 (Terminal), chữ đơn dòng trong khung có `overflow: hidden` cần thêm padding đáy.
-- Cỡ chữ không cố định theo bảng: mỗi scene có helper tự chọn cỡ chữ lớn nhất vừa hộp (xem `content-guide.md`). Các cỡ nền: hook headline 84,
-  diagram title 64 / node 40 / edge 32, code 22-40, terminal 28-40, tradeoff 28-60, summary 30-56.
+- Cỡ chữ không cố định theo bảng: mỗi scene có helper tự chọn cỡ chữ lớn nhất vừa hộp (xem `content-guide.md`). Các cỡ nền: hook headline 72,
+  diagram title 64 / node 40 / edge 32, code 22-40, terminal 24-36, tradeoff 28-52, summary 28-44, stat số 56-120, compare nhãn 36-48, callout 52-96, endcard headline 48-76.
+
+## Backdrop và mood
+
+`Backdrop` (`src/components/Backdrop/`) vẽ nền động toàn khung dưới mọi scene: 3 đốm sáng trôi, lưới mờ, hạt, vignette và nhiễu hạt phim. Màu lấy từ `moodPalettes` trong `src/design/mood.ts`
+(các màu Catppuccin Mocha không có trong `tokens.ts` chỉ được khai báo ở file đó). `Video` chọn mood của mỗi scene (`scene.mood` hoặc `defaultMoodFor`) và pha màu giữa hai mood trong
+**12 frame** hai bên ranh giới scene (`MOOD_WINDOW`).
+
+| Mood       | Đốm sáng (3 màu)                | Nền gốc   | Ý nghĩa                        |
+| ---------- | ------------------------------- | --------- | ------------------------------ |
+| `problem`  | `#f38ba8`, `#fab387`, `#7a1f3d` | `#1c1019` | vấn đề, đau, nghịch lý         |
+| `concept`  | `#89b4fa`, `#cba6f7`, `#3b2a7a` | `#12122a` | khái niệm, cơ chế              |
+| `solution` | `#a6e3a1`, `#94e2d5`, `#1f6b5a` | `#0f1d1c` | lời giải, kết luận             |
+| `warning`  | `#f9e2af`, `#fab387`, `#8a5a12` | `#1d1810` | đánh đổi, cẩn thận             |
+| `neutral`  | `#b4befe`, `#5b5fc7`, `#cba6f7` | `#181825` | trung tính (mặc định terminal) |
+
+Mood mặc định theo loại scene nằm ở `docs/content-guide.md` (mục Mood). Mood cũng chọn loại nhạc nền khi chạy `pnpm sfx`.
+
+## Chuyển cảnh
+
+`SceneTransition` trong `Video.tsx`: mỗi scene mờ vào và mờ ra trong tối đa **8 frame** (`FADE_FRAMES`) và trượt lên **28px** khi vào; độ dài scene không đổi. Nền (`Backdrop`) không bị cắt mà chuyển màu mượt.
+
+## Icon
+
+`src/components/Icon/` vẽ icon bằng SVG inline (đường nét, `currentColor`-style qua prop `color`). Tên hợp lệ (`ICONS`): `book`, `pages`, `list`, `search`, `database`, `server`, `tree`, `clock`, `bolt`,
+`warning`, `check`, `cross`, `lock`, `cloud`, `code`, `user`. Thêm icon: thêm đường vẽ vào `ICON_PATHS` và tên vào `ICONS` trong `src/schemas/common.ts`. Tone `good`/`bad`/`neutral` ánh xạ `correct`/`wrong`/`diagram`.
+
+## RichText
+
+`RichText` (`src/components/RichText.tsx`) hiển thị markup `{màu|chữ}` với 4 màu: `accent`, `wrong`, `correct`, `diagram` (đúng các token trong `colors`); có tùy chọn `glow`. Parser thuần `src/lib/rich-text.ts`
+(`parseRichText`, `stripMarkup`) không bao giờ ném lỗi: markup hỏng hiện chữ thường. Danh sách trường hỗ trợ: `content-guide.md`, mục Markup.
+
+## Âm thanh (sound design)
+
+Toàn bộ nhạc nền và SFX được **tổng hợp bằng code** (`pipeline/audio/`), không dùng file có sẵn. Lý do: không vướng giấy phép/bản quyền, kết quả xác định (cùng đầu vào cho cùng âm thanh) và không phải ghi vào `public/music/LICENSES.md`.
+
+- **Nhạc nền** (`music.ts`): pad cộng + arp nhẹ + nhịp trầm, 108 BPM, mỗi mood một hợp âm/âm sắc riêng; các scene liền kề crossfade **1,2s**, mở đầu fade 0,8s, kết fade 2s.
+- **SFX** (`sfx.ts`): `whoosh` (chuyển scene), `pop` (mỗi lần phần tử hiện đúng cue), `tick` (đếm số trong `stat`), `thud` (mở và kết video), `riser` (trước scene cuối).
+- **Ducking** (`ducking.ts`): nhạc giảm **12 dB** và SFX giảm 4 dB khi người đọc nói (theo mốc từng từ trong manifest, không phân tích audio); attack 0,08s, release 0,45s, khoảng nghỉ < 0,35s vẫn giữ ducking.
+- **Mức âm lượng**: bed được đặt thấp hơn giọng ~14 dB (LUFS), đỉnh bed <= 0,5. `pnpm sfx <id>` ghi `public/generated/audio/<id>/bed.wav` + `bed.json` (cần `pnpm tts <id>` trước);
+  `Video` tự phát `bed.wav` nếu có. Sau khi render, `pnpm render`/`pnpm produce` chuẩn hóa MP4 về **-14 LUFS**, true peak <= -1,5 dBTP (loudnorm hai lượt, copy hình, `--no-normalize` để bỏ qua; không áp dụng khi render một đoạn `--frames`).
 
 ## Motion
 

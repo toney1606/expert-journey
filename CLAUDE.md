@@ -13,7 +13,9 @@ any Remotion API or `@remotion/*` package. Never write Remotion code from memory
 - `pnpm dev` — Remotion Studio (compositions `Video`, `FontTest`)
 - `pnpm lint` / `pnpm typecheck` / `pnpm test` / `pnpm validate` — all must pass
 - `pnpm tts <videoId> [--provider fake|edge]` — synthesize scene audio into `public/generated/audio/<id>/` (+ `manifest.json`); default `fake` (silent WAV), `edge` = real Vietnamese voice (needs `.venv`, see README)
-- `pnpm qa <videoId>` — automated QA checks (exit 1 on errors); `pnpm render <videoId>` — MP4 to `out/`; `pnpm produce <videoId>` — validate → tts → qa → render, stops at the first failure
+- `pnpm sfx <videoId>` — synthesize the music bed + SFX (ducked under the narration) into `public/generated/audio/<id>/bed.wav` (needs `pnpm tts` first)
+- `pnpm plan [--level L] [--from D] [--to D] [--scaffold]` — curriculum schedule table; `--scaffold` creates missing `research.md` stubs (never touches existing folders)
+- `pnpm qa <videoId>` — automated QA checks incl. script checks (exit 1 on errors); `pnpm render <videoId>` — MP4 to `out/`, loudness-normalised to -14 LUFS (`--no-normalize` skips, `--frames` clip is not normalised); `pnpm produce <videoId>` — validate → tts → sfx → qa → render, stops at the first failure
 - `pnpm format` — Prettier
 - `pnpm exec remotion still src/index.ts Video out/x.png --frame=45` — render one frame to check visuals
 
@@ -21,11 +23,11 @@ any Remotion API or `@remotion/*` package. Never write Remotion code from memory
 
 - One package, two layers: `src/` (render, React/Remotion) and `pipeline/` (Node CLI via tsx). They
   talk only through JSON files and audio files.
-- Data (`content/*.json`) is separate from UI. The single source of truth for schemas is zod in
+- Data (`content/`, layout in `pipeline/content/paths.ts`) is separate from UI. The single source of truth for schemas is zod in
   `src/schemas/` (scene schemas live next to their scene in `src/scenes/<Scene>/schema.ts`).
 - Feature-based layout, scene folder pattern: `src/scenes/<Scene>/` = component + `schema.ts` (zod) + a pure layout and/or
   timeline helper (no React) + Vitest tests. Scenes are wired in `src/scenes/registry.tsx`. Scene types: `hook`
-  (HookCard), `diagram`, `code` (CodeDiff), `terminal`, `tradeoff`, `summary`.
+  (HookCard), `diagram`, `code` (CodeDiff), `terminal`, `tradeoff`, `summary`, `stat`, `compare`, `callout`, `endcard`.
 - Reveal timelines are derived from `durationInFrames` (audio length), never hardcoded frame numbers.
 - Content must fit: layout helpers expose a `fits` (or `wraps`) flag and pick the largest font that fits the 780x770
   `CONTENT_BOX` (safe box minus the caption band); do not add a scene that overflows silently.
@@ -39,6 +41,8 @@ any Remotion API or `@remotion/*` package. Never write Remotion code from memory
 - Animate only with `useCurrentFrame()`, `spring()`, `interpolate()`. No CSS transition/animation
   (lint-enforced best effort). Durations come from audio via `calculateMetadata`, never hardcoded frame
   counts. `calculateMetadata` reads `public/generated/audio/<id>/manifest.json` (from `pnpm tts`) and uses real audio length + 0.4s tail per scene; without a manifest it falls back to `draft.durationSec`. Re-run `pnpm tts <id>` after editing any `voice`.
+- Scene text and cues: optional `at...` fields (`at`, `atHeadline`, `pointsAt`, `cueAt`, `morphAt`, ...) are narration phrases matched accent-insensitively against the scene's `voice`; keep `voice` free of markup and digits (numbers spelled out), `{accent|word}` markup only in display props. See `docs/content-guide.md`.
+- Music and SFX are synthesized in `pipeline/audio/` (no licensed files); `mood` per scene drives the backdrop and the music.
 - Fonts are local files in `public/fonts/` (OFL), loaded via `useFonts()`. Test stacked Vietnamese diacritics.
 - Do not add dependencies outside the approved list without asking the owner.
 - Conventional commits, small steps. Never push without being asked.

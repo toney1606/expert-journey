@@ -15,17 +15,19 @@ pnpm install
 
 ## Commands
 
-| Command             | What it does                                               |
-| ------------------- | ---------------------------------------------------------- |
-| `pnpm dev`          | Open Remotion Studio (compositions `Video` and `FontTest`) |
-| `pnpm lint`         | ESLint (no `any`, Remotion rules, CSS animation ban)       |
-| `pnpm typecheck`    | `tsc --noEmit`                                             |
-| `pnpm test`         | Vitest                                                     |
-| `pnpm validate`     | Validate everything in `content/` against the schemas      |
-| `pnpm qa <id>`      | Automated QA checks for one video (exit 1 on errors)       |
-| `pnpm render <id>`  | Render `out/<id>.mp4` (add `--frames 0-89` for a clip)     |
-| `pnpm produce <id>` | validate → tts → qa → render, stops at first failure       |
-| `pnpm format`       | Prettier                                                   |
+| Command             | What it does                                                                                 |
+| ------------------- | -------------------------------------------------------------------------------------------- |
+| `pnpm dev`          | Open Remotion Studio (compositions `Video` and `FontTest`)                                   |
+| `pnpm lint`         | ESLint (no `any`, Remotion rules, CSS animation ban)                                         |
+| `pnpm typecheck`    | `tsc --noEmit`                                                                               |
+| `pnpm test`         | Vitest                                                                                       |
+| `pnpm validate`     | Validate everything in `content/` against the schemas                                        |
+| `pnpm plan`         | Curriculum schedule (`--level`, `--from`, `--to`, `--scaffold` creates research.md stubs)    |
+| `pnpm sfx <id>`     | Synthesize music bed + SFX into `bed.wav` (after `pnpm tts`)                                 |
+| `pnpm qa <id>`      | Automated QA checks incl. script checks (exit 1 on errors)                                   |
+| `pnpm render <id>`  | Render `out/<id>.mp4`, normalised to -14 LUFS (`--no-normalize` skips; `--frames 0-89` clip) |
+| `pnpm produce <id>` | validate → tts → sfx → qa → render, stops at first failure                                   |
+| `pnpm format`       | Prettier                                                                                     |
 
 Render a single frame to check visuals:
 
@@ -35,37 +37,38 @@ pnpm exec remotion still src/index.ts Video out/hook.png --frame=45
 
 ## Try it
 
-1. `pnpm dev`, open the `Video` composition. It reads `content/videos/sample.json` and shows the safe zone
+1. `pnpm dev`, open the `Video` composition. It reads `content/samples/sample/video.json` and shows the safe zone
    outline (`debugSafeZone` prop, editable in the Studio props panel).
 2. Open `FontTest` to check stacked Vietnamese diacritics.
-3. Edit `content/videos/sample.json`, then run `pnpm validate`.
+3. Edit `content/samples/sample/video.json`, then run `pnpm validate`.
 4. Run `pnpm tts sample`, then reload Studio: scene lengths now follow the generated audio and each scene plays its audio.
 
 ## Layout
 
 ```
-content/   topics/<slug>/{research.md, interview-kit.json}, videos/<id>.json
-docs/      vision, story arc, design system, content guide (scene reference), QA checklist
-pipeline/  Node CLI via tsx: validate/, tts/ (providers behind TtsProvider), qa/, render/
+content/   curriculum.json, <level>/topics.json, <level>/<ddmmyyyy>/<topic>/{research.md, interview-kit.json, video.json, code/, notes/}, samples/<id>/video.json
+docs/      vision, story arc, design system (backdrop, moods, sound), content guide (scenes, cues, script rules), QA checklist
+pipeline/  Node CLI via tsx: validate/, plan/, tts/ (providers behind TtsProvider), audio/ (synthesized music + SFX), qa/, render/
 public/    fonts/ (OFL), sfx/, music/ (+ LICENSES.md), generated/audio/<id>/ (gitignored)
 src/       Remotion layer
   compositions/  Video (reads the script + audio manifest), FontTest
   scenes/        one folder per scene type + registry.tsx:
-                 HookCard, Diagram, CodeDiff (type `code`), Terminal, Tradeoff, Summary
+                 HookCard, Diagram, CodeDiff (type `code`), Terminal, Tradeoff, Summary,
+                 Stat, Compare, Callout, EndCard
   components/    SafeZoneFrame, Captions, ScenePlaceholder
   design/        tokens, springs, fonts
   schemas/       zod schemas (video, common, interview-kit, audio-manifest)
   lib/           pure helpers (duration, safe-zone, audio-manifest, clamp), unit-tested
 ```
 
-Scene types: `hook`, `diagram`, `code`, `terminal`, `tradeoff`, `summary`. Each scene folder has the
+Scene types: `hook`, `diagram`, `code`, `terminal`, `tradeoff`, `summary`, `stat`, `compare`, `callout`, `endcard`. Each scene folder has the
 component, its zod `schema.ts`, a pure layout/timeline helper and Vitest tests.
 
 ## Writing a video
 
-Authors write `content/videos/<id>.json`. The full scene reference (props, limits, examples) is in
+Authors write `content/<level>/<ddmmyyyy>/<topic>/video.json` (video id = `<ddmmyyyy>-<topic>`, e.g. `pnpm produce 20122026-database-index`). The full scene reference (props, limits, examples) is in
 `docs/content-guide.md`; the review checklist and the still-image recipe are in `docs/qa-checklist.md`;
-tokens and motion rules are in `docs/design-system.md`.
+tokens, motion and sound rules are in `docs/design-system.md`.
 
 See `CLAUDE.md` for conventions and the definition of done.
 

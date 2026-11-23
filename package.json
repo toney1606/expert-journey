@@ -17,6 +17,9 @@
     "test": "vitest run",
     "validate": "tsx pipeline/cli.ts validate",
     "tts": "tsx pipeline/cli.ts tts",
+    "plan": "tsx pipeline/cli.ts plan",
+    "sfx": "tsx pipeline/cli.ts sfx",
+    "sheet": "tsx pipeline/cli.ts sheet",
     "qa": "tsx pipeline/cli.ts qa",
     "render": "tsx pipeline/cli.ts render",
     "produce": "tsx pipeline/cli.ts produce"
