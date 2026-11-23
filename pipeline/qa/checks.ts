@@ -4,6 +4,7 @@ import { checkLayout } from './check-layout';
 import { checkNarration } from './check-narration';
 import { checkPolicy } from './check-policy';
 import { checkRehook } from './check-rehook';
+import { checkScript } from './check-script';
 import { checkStructure } from './check-structure';
 import { checkTerminal } from './check-terminal';
 import type { QaCheck } from './types';
@@ -18,4 +19,5 @@ export const QA_CHECKS: readonly QaCheck[] = [
   checkCode,
   checkLayout,
   checkTerminal,
+  checkScript,
 ];

@@ -17,7 +17,9 @@ import type { QaContext } from './types';
 
 const repoRoot = resolve(import.meta.dirname, '../..');
 const sample = (): Video =>
-  VideoSchema.parse(JSON.parse(readFileSync(join(repoRoot, 'content/videos/sample.json'), 'utf8')));
+  VideoSchema.parse(
+    JSON.parse(readFileSync(join(repoRoot, 'content/samples/sample/video.json'), 'utf8')),
+  );
 
 const dirs: string[] = [];
 afterEach(() => {
@@ -324,7 +326,7 @@ describe('terminal', () => {
   });
 });
 
-describe('runQa on content/videos/sample.json', () => {
+describe('runQa on content/samples/sample/video.json', () => {
   it('reports no errors (draft status only warns)', () => {
     const { issues } = runQa({ root: repoRoot, video: sample() });
     expect(issues.filter((issue) => issue.severity === 'error')).toEqual([]);

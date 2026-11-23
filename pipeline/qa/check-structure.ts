@@ -15,12 +15,12 @@ export const checkStructure: QaCheck = (ctx) => {
       message: `first scene must be a hook (is "${first.type}")`,
     });
   }
-  if (last && last.type !== 'summary') {
+  if (last && last.type !== 'summary' && last.type !== 'endcard') {
     issues.push({
       severity: 'warn',
       code: 'structure.last-not-summary',
       sceneId: last.id,
-      message: `last scene should be a summary (is "${last.type}")`,
+      message: `last scene should be a summary or endcard (is "${last.type}")`,
     });
   }
   for (const scene of scenes) {
