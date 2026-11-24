@@ -164,8 +164,8 @@ describe('alignWords', () => {
 });
 
 describe('registry', () => {
-  it('lists fake and edge', () => {
-    expect(providerNames()).toEqual(['fake', 'edge']);
+  it('lists the registered providers', () => {
+    expect(providerNames()).toEqual(['fake', 'edge', 'elevenlabs', 'import']);
     expect(createProvider('edge').id).toBe('edge');
   });
 });
