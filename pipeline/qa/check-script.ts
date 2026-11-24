@@ -44,7 +44,7 @@ const wordsOf = (text: string): string[] => text.split(/\s+/).filter((word) => w
 
 const hookOf = (ctx: QaContext): Scene | undefined => {
   const first = ctx.video.scenes[0];
-  return first?.type === 'hook' ? first : undefined;
+  return first?.type === 'hook' || first?.type === 'counterhook' ? first : undefined;
 };
 
 /** Every string in a props tree with its dotted path (arrays as `name[i]`). */

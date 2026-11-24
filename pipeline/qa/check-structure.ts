@@ -7,7 +7,7 @@ export const checkStructure: QaCheck = (ctx) => {
   const { scenes } = ctx.video;
   const first = scenes[0];
   const last = scenes[scenes.length - 1];
-  if (first && first.type !== 'hook') {
+  if (first && first.type !== 'hook' && first.type !== 'counterhook') {
     issues.push({
       severity: 'error',
       code: 'structure.first-not-hook',
@@ -15,7 +15,7 @@ export const checkStructure: QaCheck = (ctx) => {
       message: `first scene must be a hook (is "${first.type}")`,
     });
   }
-  if (last && last.type !== 'summary' && last.type !== 'endcard') {
+  if (last && last.type !== 'summary' && last.type !== 'endcard' && last.type !== 'pageslider') {
     issues.push({
       severity: 'warn',
       code: 'structure.last-not-summary',

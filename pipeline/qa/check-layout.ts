@@ -6,6 +6,14 @@ import { calloutLayout } from '../../src/scenes/Callout/layout';
 import { chooseLayout as chooseCompareLayout } from '../../src/scenes/Compare/layout';
 import { endCardLayout } from '../../src/scenes/EndCard/layout';
 import { statLayout } from '../../src/scenes/Stat/layout';
+import { counterHookLayout } from '../../src/scenes/CounterHook/layout';
+import { pageTreeLayout } from '../../src/scenes/PageTree/layout';
+import { costRoadsLayout } from '../../src/scenes/CostRoads/layout';
+import { rowSetupLayout } from '../../src/scenes/RowSetup/layout';
+import { rowTwistLayout } from '../../src/scenes/RowTwist/layout';
+import { rowFixLayout } from '../../src/scenes/RowFix/layout';
+import { indexCardsLayout } from '../../src/scenes/IndexCards/layout';
+import { pageSliderLayout } from '../../src/scenes/PageSlider/layout';
 import type { QaCheck, QaIssue } from './types';
 
 /** Tradeoff lays itself out in the shared content box. */
@@ -108,6 +116,38 @@ export const checkLayout: QaCheck = (ctx) => {
             'shorten the statement (max 3 lines) or the explanation, or split it',
           ),
         );
+      }
+    } else if (scene.type === 'counterhook') {
+      if (!counterHookLayout(scene.props).fits) {
+        issues.push(overflow(scene.id, 'counterhook', 'shorten the text or split the scene'));
+      }
+    } else if (scene.type === 'pagetree') {
+      if (!pageTreeLayout(scene.props).fits) {
+        issues.push(overflow(scene.id, 'pagetree', 'shorten the text or split the scene'));
+      }
+    } else if (scene.type === 'costroads') {
+      if (!costRoadsLayout(scene.props).fits) {
+        issues.push(overflow(scene.id, 'costroads', 'shorten the text or split the scene'));
+      }
+    } else if (scene.type === 'rowsetup') {
+      if (!rowSetupLayout(scene.props).fits) {
+        issues.push(overflow(scene.id, 'rowsetup', 'shorten the text or split the scene'));
+      }
+    } else if (scene.type === 'rowtwist') {
+      if (!rowTwistLayout(scene.props).fits) {
+        issues.push(overflow(scene.id, 'rowtwist', 'shorten the text or split the scene'));
+      }
+    } else if (scene.type === 'rowfix') {
+      if (!rowFixLayout(scene.props).fits) {
+        issues.push(overflow(scene.id, 'rowfix', 'shorten the text or split the scene'));
+      }
+    } else if (scene.type === 'indexcards') {
+      if (!indexCardsLayout(scene.props).fits) {
+        issues.push(overflow(scene.id, 'indexcards', 'shorten the text or split the scene'));
+      }
+    } else if (scene.type === 'pageslider') {
+      if (!pageSliderLayout(scene.props).fits) {
+        issues.push(overflow(scene.id, 'pageslider', 'shorten the text or split the scene'));
       }
     } else if (scene.type === 'endcard') {
       if (!endCardLayout(scene.props).fits) {
