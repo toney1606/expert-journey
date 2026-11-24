@@ -1,0 +1,28 @@
+{
+  "id": "setup",
+  "type": "rowsetup",
+  "voice": "Bảng orders, mười triệu dòng. Lấy mười đơn chờ xử lý mới nhất, có index trên ngày tạo. Đơn chờ chiếm năm phần trăm. Database nhẩm: hai mươi đơn có một đơn chờ, đi lùi từ đơn mới nhất, khoảng hai trăm đơn là đủ mười. Rẻ quá, chọn luôn. Và suốt sáu tháng, nó đúng.",
+  "draft": {
+    "durationSec": 17
+  },
+  "mood": "concept",
+  "props": {
+    "kicker": {
+      "label": "THIẾT LẬP",
+      "step": 4,
+      "total": 8
+    },
+    "rowCount": 10000000,
+    "rowUnit": "dòng",
+    "pendingPercent": 5,
+    "pendingLabel": "đơn chờ",
+    "code": "SELECT * FROM orders\nWHERE status = 'pending'\nORDER BY created_at DESC\nLIMIT 10;",
+    "readLabel": "đã đọc",
+    "readCount": 220,
+    "limit": 10,
+    "atTable": "Bảng orders",
+    "atCode": "Lấy mười đơn chờ",
+    "atPending": "Đơn chờ chiếm năm phần trăm",
+    "atCursor": "đi lùi từ đơn mới nhất"
+  }
+}

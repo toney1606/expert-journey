@@ -1,0 +1,35 @@
+{
+  "id": "fix",
+  "type": "rowfix",
+  "voice": "Chạy EXPLAIN ANALYZE, bạn sẽ thấy nó đi ngược index từ mới về cũ. Mỗi đơn nó hỏi: đơn chờ không? Không, bỏ. Không, bỏ. Con số nằm ở dòng Rows Removed by Filter. Thấy nó lên hàng triệu, là bạn bắt được thủ phạm.\nPhản xạ của nhiều người là chạy ANALYZE. Chẳng đổi được gì, vì thống kê đâu có sai: nó biết năm phần trăm là đơn chờ, chỉ không biết đơn chờ nằm ở đâu.\nNên đừng bắt nó đoán nữa. Tạo index trên trạng thái, rồi đến ngày tạo. Đơn chờ nằm sát nhau, đã sắp theo ngày. Nó nhảy thẳng tới, đọc mười đơn rồi dừng. Từ hàng triệu dòng, còn mười.",
+  "draft": {
+    "durationSec": 40
+  },
+  "mood": "solution",
+  "props": {
+    "kicker": {
+      "label": "CÁCH SỬA",
+      "step": 6,
+      "total": 8
+    },
+    "explainTitle": "EXPLAIN ANALYZE",
+    "explainCode": "Limit (rows=10)\n-> Index Scan Backward\n  using idx_orders_created_at\n  Filter: status = 'pending'\nRows Removed by Filter: …",
+    "rowsRemoved": 9499424,
+    "analyzeLabel": "ANALYZE",
+    "statLabel": "Thống kê: vẫn",
+    "pendingPercent": 5,
+    "stampText": "KHÔNG ĐỔI",
+    "fixCode": "CREATE INDEX idx_orders_status_created\nON orders (status, created_at);",
+    "readLabel": "đã đọc",
+    "limit": 10,
+    "resultText": "10 dòng",
+    "atRows": "Rows Removed by Filter",
+    "atAnalyze": "là chạy ANALYZE",
+    "atStamp": "Chẳng đổi được gì",
+    "atStrip": "đừng bắt nó đoán nữa",
+    "atFixCode": "Tạo index trên trạng thái",
+    "atMorph": "Đơn chờ nằm sát nhau",
+    "atCursor": "Nó nhảy thẳng tới",
+    "atResult": "Từ hàng triệu dòng"
+  }
+}

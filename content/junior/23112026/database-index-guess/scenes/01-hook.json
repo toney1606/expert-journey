@@ -1,0 +1,38 @@
+{
+  "id": "hook",
+  "type": "counterhook",
+  "voice": "Một câu query chạy mười hai mili giây suốt sáu tháng. Sáng nay, một phẩy hai giây. Chậm gấp trăm lần. Không ai đổi code. Không ai đổi index. Dữ liệu gần như y nguyên. Vậy chuyện gì xảy ra? Database không biết trước kết quả. Nó đoán. Và hôm nay, nó đoán sai.",
+  "draft": {
+    "durationSec": 14
+  },
+  "mood": "problem",
+  "props": {
+    "fastMs": 12,
+    "slowMs": 1200,
+    "unit": "ms",
+    "countAt": "Sáng nay",
+    "lines": [
+      {
+        "text": "Không đổi code",
+        "at": "Không ai đổi code"
+      },
+      {
+        "text": "Không đổi index",
+        "at": "Không ai đổi index"
+      },
+      {
+        "text": "Dữ liệu y nguyên",
+        "at": "Dữ liệu gần như y nguyên"
+      }
+    ],
+    "finalText": "Database",
+    "accentWord": "ĐOÁN",
+    "finalAt": "Nó đoán",
+    "footText": "Hôm nay nó đoán sai",
+    "kicker": {
+      "label": "VẤN ĐỀ",
+      "step": 1,
+      "total": 8
+    }
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "topic": "database-index-guess",
+  "title": "Database đoán sai",
+  "level": "junior",
+  "question": "Database có thể chọn sai kế hoạch dù query và index không đổi: khi nào, vì sao, và sửa thế nào?",
+  "followUps": [
+    "Làm sao biết planner đang đoán sai? Em đọc gì trong EXPLAIN ANALYZE?",
+    "Chạy ANALYZE có sửa được không, vì sao?",
+    "Composite index (status, created_at) khác index riêng từng cột thế nào?",
+    "Partial index khi nào đáng dùng, đánh đổi gì?",
+    "Vì sao phân trang OFFSET lớn chậm dù có index, sửa thế nào?"
+  ],
+  "keyPoints": [
+    "Planner ước lượng số dòng khớp bằng thống kê, không đếm thật",
+    "Thống kê không biết hai cột liên quan vị trí vật lý với nhau",
+    "Dấu hiệu: Rows Removed by Filter lên hàng triệu",
+    "ANALYZE không sửa được giả định sai về phân bố",
+    "Composite index (status, created_at) cho nhảy thẳng tới dòng cần",
+    "Partial index nhỏ hơn nhiều, ghi nhẹ hơn"
+  ],
+  "weakAnswer": "Chạy ANALYZE hoặc thêm index lên từng cột.",
+  "strongAnswer": "Đọc EXPLAIN ANALYZE, thấy Rows Removed by Filter lớn nghĩa là index quét ngược phải bỏ qua nhiều dòng. Thống kê đúng nên ANALYZE không giúp. Tạo composite index (status, created_at) hoặc partial index để database không phải đoán.",
+  "pitfalls": [
+    "Nghĩ ANALYZE luôn sửa kế hoạch chậm",
+    "Index một cột cho mỗi điều kiện",
+    "Quên chi phí ghi của mỗi index"
+  ],
+  "sources": [
+    {
+      "title": "PostgreSQL Documentation: Statistics Used by the Planner",
+      "url": "https://www.postgresql.org/docs/current/planner-stats.html"
+    },
+    {
+      "title": "PostgreSQL Documentation: Planner Cost Constants (random_page_cost)",
+      "url": "https://www.postgresql.org/docs/current/runtime-config-query.html"
+    },
+    {
+      "title": "PostgreSQL Documentation: Using EXPLAIN",
+      "url": "https://www.postgresql.org/docs/current/using-explain.html"
+    },
+    {
+      "title": "PostgreSQL Documentation: Multicolumn Indexes",
+      "url": "https://www.postgresql.org/docs/current/indexes-multicolumn.html"
+    },
+    {
+      "title": "PostgreSQL Documentation: Partial Indexes",
+      "url": "https://www.postgresql.org/docs/current/indexes-partial.html"
+    },
+    {
+      "title": "PostgreSQL Documentation: Index Types",
+      "url": "https://www.postgresql.org/docs/current/indexes-types.html"
+    },
+    {
+      "title": "Use The Index, Luke: The Search Tree",
+      "url": "https://use-the-index-luke.com/sql/anatomy/the-tree"
+    }
+  ]
+}

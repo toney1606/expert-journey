@@ -1,0 +1,41 @@
+{
+  "id": "cost",
+  "type": "costroads",
+  "voice": "Nhưng không phải lúc nào nó cũng dùng index. Với mỗi query, nó tính giá hai đường: đi qua index, hay đọc cả bảng. Nhảy tới page ngẫu nhiên đắt hơn đọc liền, mặc định PostgreSQL là gấp bốn lần. Nhân với số dòng nó nghĩ là khớp, ra giá. Đường nào rẻ hơn thì đi. Để ý chữ nghĩ: nó không đếm thật, nó dựa vào thống kê. Cả câu chuyện sáng nay nằm ở chữ nghĩ đó.",
+  "draft": {
+    "durationSec": 20
+  },
+  "mood": "concept",
+  "props": {
+    "kicker": {
+      "label": "CHI PHÍ",
+      "step": 3,
+      "total": 8
+    },
+    "randomLabel": "Nhảy ngẫu nhiên",
+    "randomCost": 4,
+    "seqLabel": "Đọc liền mạch",
+    "seqCost": 1,
+    "formulaBefore": "số dòng",
+    "guessWord": "nghĩ",
+    "formulaAfter": "là khớp",
+    "priceLabel": "giá",
+    "costLabel": "chi phí",
+    "pendingLabel": "pending",
+    "pendingPercent": 5,
+    "doneLabel": "done",
+    "donePercent": 95,
+    "engine": "PostgreSQL",
+    "engineParam": "random_page_cost",
+    "roadsAt": "hai đường",
+    "randomAt": "ngẫu nhiên",
+    "seqAt": "đọc liền",
+    "engineAt": "PostgreSQL",
+    "multAt": "gấp bốn lần",
+    "rowsAt": "Nhân với",
+    "priceAt": "ra giá",
+    "costAt": "Đường nào rẻ hơn",
+    "guessAt": "Để ý chữ nghĩ",
+    "statsAt": "dựa vào thống kê"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "id": "three-reads",
+  "type": "pagetree",
+  "voice": "Trước hết: database rất lười đọc đĩa, vì đĩa là thứ chậm nhất. Nó không đọc từng dòng, mà đọc từng khối, gọi là page. Index chính là trang mục lục. Mỗi trang chỉ tới ba trăm trang con. Ba tầng như vậy phủ hai mươi bảy triệu dòng. Tìm một người trong mười triệu người, chỉ cần khoảng ba lần đọc. Ba. Không phải mười triệu.",
+  "draft": {
+    "durationSec": 18
+  },
+  "mood": "concept",
+  "props": {
+    "kicker": {
+      "label": "ĐỌC ĐĨA",
+      "step": 2,
+      "total": 8
+    },
+    "pageLabel": "1 page = vài trăm dòng",
+    "pageAt": "page",
+    "fanout": 300,
+    "fanoutAt": "ba trăm trang con",
+    "levelsAt": "Ba tầng",
+    "total": 27000000,
+    "totalUnit": "dòng",
+    "totalAt": "hai mươi bảy triệu",
+    "population": 10000000,
+    "populationUnit": "người",
+    "populationAt": "mười triệu người",
+    "readsLabel": "~3 lần đọc",
+    "readsAt": "ba lần đọc"
+  }
+}

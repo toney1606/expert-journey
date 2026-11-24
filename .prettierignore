@@ -3,3 +3,4 @@ out
 public/generated
 pnpm-lock.yaml
 coverage
+content/**/notes/script-v1.md

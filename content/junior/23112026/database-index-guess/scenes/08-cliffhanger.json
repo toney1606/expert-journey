@@ -1,0 +1,24 @@
+{
+  "id": "cliffhanger",
+  "type": "pageslider",
+  "voice": "Giờ đến thử thách. Index nhanh vì giá trị đã sắp xếp, nhưng sắp xếp không có nghĩa là nó biết thứ hạng. Danh sách đơn hàng, trang một chỉ vài mili giây. Kéo tới trang mười nghìn thì chậm hẳn, dù có index ngày tạo. Vì sao, và sửa thế nào? Câu này hay gặp khi phỏng vấn. Trả lời ở bình luận, mình ghim đáp án đúng.",
+  "draft": {
+    "durationSec": 20
+  },
+  "mood": "warning",
+  "props": {
+    "code": "SELECT * FROM orders\nORDER BY created_at DESC\nLIMIT 10 OFFSET 99990;",
+    "page1Ms": null,
+    "page10000Ms": null,
+    "question": "Vì sao? Sửa thế nào?",
+    "pinText": "Trả lời ở bình luận",
+    "dragAt": "Kéo tới trang mười nghìn",
+    "questionAt": "Vì sao",
+    "pinAt": "Trả lời ở bình luận",
+    "kicker": {
+      "label": "THỬ THÁCH",
+      "step": 8,
+      "total": 8
+    }
+  }
+}

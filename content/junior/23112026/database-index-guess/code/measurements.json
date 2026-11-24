@@ -1,0 +1,57 @@
+{
+  "note": "Raw ms are machine dependent; quote ratios. All numbers are SQLite (node:sqlite), not Postgres: Postgres EXPLAIN ANALYZE \"Rows Removed by Filter\" is a different engine output of the same mechanism. rowsRemoved = rows skipped by the status filter while walking idx_orders_created_at (examined - 10).",
+  "engine": "node:sqlite (SQLite via DatabaseSync, in-memory)",
+  "generatedBy": "pnpm exec tsx content/junior/23112026/database-index-guess/code/measure.ts",
+  "sizeMethod": "SUM(pgsize) FROM dbstat WHERE name = <index>",
+  "rows": 10000000,
+  "summary": {
+    "fastMs": 0.0417,
+    "slowMs": 1496.5551,
+    "slowToFastRatio": 35889,
+    "rowsExaminedSpread": 220,
+    "rowsRemoved": 9499424,
+    "rowsExaminedClustered": 9499434,
+    "rowsExaminedFixed": 10,
+    "fixedMs": 0.0082,
+    "page1Ms": 0.0079,
+    "page10000Ms": 1.672,
+    "partialIndexRatio": 20.3
+  },
+  "buildMs": 11372,
+  "spread": {
+    "pendingRows": 500576,
+    "pendingShare": 0.0501,
+    "rowsExamined": 220,
+    "rowsRemovedByFilter": 210,
+    "queryMs": 0.0417,
+    "plan": "SCAN orders USING INDEX idx_orders_created_at"
+  },
+  "clustered": {
+    "pendingRows": 500576,
+    "pendingShare": 0.0501,
+    "rowsExamined": 9499434,
+    "rowsRemovedByFilter": 9499424,
+    "queryMs": 1496.5551,
+    "plan": "SCAN orders USING INDEX idx_orders_created_at"
+  },
+  "fixed": {
+    "pendingRows": 500576,
+    "pendingShare": 0.0501,
+    "rowsExamined": 10,
+    "rowsRemovedByFilter": 0,
+    "queryMs": 0.0082,
+    "plan": "SEARCH orders USING INDEX idx_orders_status_created (status=?)"
+  },
+  "partialIndex": {
+    "fullIndexBytes": 132132864,
+    "partialIndexBytes": 6512640,
+    "ratio": 20.3,
+    "plan": "SCAN orders USING INDEX idx_orders_pending"
+  },
+  "pagination": {
+    "page1Ms": 0.0079,
+    "page10000Ms": 1.672,
+    "plan": "SCAN orders USING INDEX idx_orders_created_at"
+  },
+  "measureSeconds": 49
+}

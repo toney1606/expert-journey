@@ -1,0 +1,32 @@
+{
+  "id": "twist",
+  "type": "rowtwist",
+  "voice": "Rồi công ty bật tự động duyệt. Đơn mới được xử lý ngay, đơn còn chờ chỉ còn là đơn cũ, nằm sâu phía sau. Nhưng chúng vẫn chiếm năm phần trăm, nên thống kê không đổi. Database vẫn tin: hai trăm đơn là đủ. Thực tế, nó phải bỏ qua hàng triệu đơn đã xử lý, từng đơn một, mới chạm tới đơn chờ đầu tiên. Cùng query. Cùng index. Thứ sai là một giả định: đơn chờ nằm rải đều. Giờ chúng dồn về một phía.",
+  "draft": {
+    "durationSec": 26
+  },
+  "mood": "problem",
+  "props": {
+    "kicker": {
+      "label": "BƯỚC NGOẶT",
+      "step": 5,
+      "total": 8
+    },
+    "toggleLabel": "Tự động duyệt",
+    "toggleOnText": "BẬT",
+    "pendingPercent": 5,
+    "statLabel": "Thống kê: vẫn",
+    "beliefText": "Database vẫn tin: ~200 đơn là đủ",
+    "assumptionText": "Giả định: nằm rải đều",
+    "skipLabel": "bỏ",
+    "skippedLabel": "đã bỏ qua",
+    "skippedCount": 9499424,
+    "atToggle": "bật tự động duyệt",
+    "atSlide": "đơn còn chờ chỉ còn là đơn cũ",
+    "atStat": "thống kê không đổi",
+    "atBelief": "Database vẫn tin",
+    "atCursor": "bỏ qua hàng triệu đơn",
+    "atAssumption": "Thứ sai là một giả định",
+    "atStrike": "nằm rải đều"
+  }
+}

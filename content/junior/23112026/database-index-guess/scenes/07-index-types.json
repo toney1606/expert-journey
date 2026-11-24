@@ -1,0 +1,78 @@
+{
+  "id": "index-types",
+  "type": "indexcards",
+  "voice": "Index vừa rồi là composite. Còn vài loại nữa, mỗi loại giải một bài toán. B+Tree, mặc định: tìm đúng một giá trị, một khoảng, hoặc cần thứ tự. Unique: cấm trùng, như email. Composite: nhiều cột, thứ tự cột quyết định query nào được giúp. Covering: chứa đủ cột query cần, khỏi quay về bảng. Partial: chỉ giữ dòng thỏa điều kiện, như năm phần trăm đơn chờ, nhỏ hơn hai chục lần, ghi cũng nhẹ hơn. Cuối cùng là full-text, để tìm từ trong văn bản, chỗ B+Tree bó tay.",
+  "draft": {
+    "durationSec": 24
+  },
+  "mood": "concept",
+  "props": {
+    "kicker": {
+      "label": "CÁC LOẠI INDEX",
+      "step": 7,
+      "total": 8
+    },
+    "cards": [
+      {
+        "name": "B+Tree",
+        "use": "bằng / khoảng / thứ tự",
+        "example": "email, khoảng ngày",
+        "at": "B+Tree, mặc định",
+        "icon": "tree"
+      },
+      {
+        "name": "Unique",
+        "use": "cấm trùng",
+        "example": "email không trùng",
+        "at": "Unique",
+        "icon": "key"
+      },
+      {
+        "name": "Composite",
+        "use": "nhiều cột, thứ tự",
+        "example": "(status, created_at)",
+        "at": "Composite: nhiều cột",
+        "icon": "columns"
+      },
+      {
+        "name": "Covering",
+        "use": "khỏi quay về bảng",
+        "example": "tên + trạng thái",
+        "at": "Covering",
+        "icon": "bag"
+      },
+      {
+        "name": "Partial",
+        "use": "chỉ một phần dòng",
+        "example": "chỉ đơn chờ",
+        "at": "Partial",
+        "extra": {
+          "bars": [
+            {
+              "label": "index đầy đủ 100%",
+              "fraction": 1,
+              "tone": "diagram"
+            },
+            {
+              "label": "partial ~5%",
+              "fraction": 0.05,
+              "tone": "pending"
+            }
+          ],
+          "barsAt": "năm phần trăm",
+          "code": "CREATE INDEX idx_orders_pending\nON orders (created_at)\nWHERE status = 'pending';",
+          "language": "sql",
+          "codeAt": "ghi cũng nhẹ"
+        },
+        "icon": "funnel"
+      },
+      {
+        "name": "Full-text",
+        "use": "tìm từ trong văn bản",
+        "example": "tìm bài viết",
+        "at": "Cuối cùng là",
+        "icon": "search"
+      }
+    ]
+  }
+}
