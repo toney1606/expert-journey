@@ -4,6 +4,7 @@ import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import type { SynthesisCue, SynthesisRequest, SynthesisResult, TtsProvider } from '../types';
 import { alignWords } from './edge-align';
+import { regroupTimings, respell } from '../lexicon';
 import { mp3DurationSec } from './mp3';
 
 export const DEFAULT_EDGE_VOICE = 'vi-VN-HoaiMyNeural';
@@ -100,8 +101,9 @@ export class EdgeTtsProvider implements TtsProvider {
   }
 
   async synthesize({ text, voice, speed }: SynthesisRequest): Promise<SynthesisResult> {
+    const { spoken, groups } = respell(text);
     const job: EdgeJob = {
-      text,
+      text: spoken,
       voice: voice ?? process.env.EDGE_TTS_VOICE ?? DEFAULT_EDGE_VOICE,
       rate: edgeRate(speed),
       timeoutSec: this.timeoutSec,
@@ -110,7 +112,8 @@ export class EdgeTtsProvider implements TtsProvider {
     for (let attempt = 1; attempt <= this.maxAttempts; attempt += 1) {
       try {
         const { audio, words: raw } = await this.runner(job);
-        const { words, cues } = alignWords(text, raw);
+        const regrouped = regroupTimings(groups, raw);
+        const { words, cues } = regrouped ?? alignWords(text, raw);
         return { audio, format: 'mp3', durationSec: mp3DurationSec(audio), cues, words };
       } catch (error) {
         lastError = error;
