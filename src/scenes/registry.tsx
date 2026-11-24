@@ -5,6 +5,14 @@ import { Compare } from './Compare/Compare';
 import { Diagram } from './Diagram/Diagram';
 import { EndCard } from './EndCard/EndCard';
 import { HookCard } from './HookCard/HookCard';
+import { CounterHook } from './CounterHook/CounterHook';
+import { PageTree } from './PageTree/PageTree';
+import { CostRoads } from './CostRoads/CostRoads';
+import { RowSetup } from './RowSetup/RowSetup';
+import { RowTwist } from './RowTwist/RowTwist';
+import { RowFix } from './RowFix/RowFix';
+import { IndexCards } from './IndexCards/IndexCards';
+import { PageSlider } from './PageSlider/PageSlider';
 import { Stat } from './Stat/Stat';
 import { Summary } from './Summary/Summary';
 import { Terminal } from './Terminal/Terminal';
@@ -33,5 +41,21 @@ export const renderScene = (scene: Scene): React.ReactElement => {
       return <Callout scene={scene} />;
     case 'endcard':
       return <EndCard scene={scene} />;
+    case 'counterhook':
+      return <CounterHook scene={scene} />;
+    case 'pagetree':
+      return <PageTree scene={scene} />;
+    case 'costroads':
+      return <CostRoads scene={scene} />;
+    case 'rowsetup':
+      return <RowSetup scene={scene} />;
+    case 'rowtwist':
+      return <RowTwist scene={scene} />;
+    case 'rowfix':
+      return <RowFix scene={scene} />;
+    case 'indexcards':
+      return <IndexCards scene={scene} />;
+    case 'pageslider':
+      return <PageSlider scene={scene} />;
   }
 };

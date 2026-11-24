@@ -9,6 +9,14 @@ import { StatSceneSchema } from '../scenes/Stat/schema';
 import { SummarySceneSchema } from '../scenes/Summary/schema';
 import { TerminalSceneSchema } from '../scenes/Terminal/schema';
 import { TradeoffSceneSchema } from '../scenes/Tradeoff/schema';
+import { CounterHookSceneSchema } from '../scenes/CounterHook/schema';
+import { PageTreeSceneSchema } from '../scenes/PageTree/schema';
+import { CostRoadsSceneSchema } from '../scenes/CostRoads/schema';
+import { RowSetupSceneSchema } from '../scenes/RowSetup/schema';
+import { RowTwistSceneSchema } from '../scenes/RowTwist/schema';
+import { RowFixSceneSchema } from '../scenes/RowFix/schema';
+import { IndexCardsSceneSchema } from '../scenes/IndexCards/schema';
+import { PageSliderSceneSchema } from '../scenes/PageSlider/schema';
 import { LevelSchema, SlugSchema, SourcesSchema } from './common';
 
 export const SceneSchema = z.discriminatedUnion('type', [
@@ -22,6 +30,14 @@ export const SceneSchema = z.discriminatedUnion('type', [
   CompareSceneSchema,
   CalloutSceneSchema,
   EndCardSceneSchema,
+  CounterHookSceneSchema,
+  PageTreeSceneSchema,
+  CostRoadsSceneSchema,
+  RowSetupSceneSchema,
+  RowTwistSceneSchema,
+  RowFixSceneSchema,
+  IndexCardsSceneSchema,
+  PageSliderSceneSchema,
 ]);
 
 export const VideoMetaSchema = z.strictObject({
