@@ -43,7 +43,7 @@ export const Backdrop: React.FC<Props> = ({ from, to = from, mix = 0 }) => {
               width: spec.radius * 2,
               height: spec.radius * 2,
               borderRadius: '50%',
-              opacity: spec.opacity,
+              opacity: spec.opacity * 0.14,
               background: `radial-gradient(circle, ${color} 0%, ${color}00 68%)`,
             }}
           />
@@ -51,7 +51,7 @@ export const Backdrop: React.FC<Props> = ({ from, to = from, mix = 0 }) => {
       })}
       <AbsoluteFill
         style={{
-          opacity: 0.07 * gridFade,
+          opacity: 0.03 * gridFade,
           backgroundImage:
             `linear-gradient(${palette.line} 1px, transparent 1px),` +
             `linear-gradient(90deg, ${palette.line} 1px, transparent 1px)`,
@@ -80,7 +80,7 @@ export const Backdrop: React.FC<Props> = ({ from, to = from, mix = 0 }) => {
       })}
       <AbsoluteFill
         style={{
-          background: `radial-gradient(ellipse at 50% 45%, transparent 45%, ${mixHex(palette.base, BACKDROP_EDGE, 0.8)}cc 100%)`,
+          background: `radial-gradient(ellipse at 50% 45%, transparent 45%, ${mixHex(palette.base, BACKDROP_EDGE, 0.6)}cc 100%)`,
         }}
       />
       <AbsoluteFill

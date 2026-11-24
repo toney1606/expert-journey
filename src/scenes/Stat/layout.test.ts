@@ -43,20 +43,21 @@ describe('statLayout', () => {
 
 describe('statLayout limits', () => {
   const rows = (n: number, over = {}) => Array.from({ length: n }, () => row(over));
-  it('keeps captions up to 3 rows, drops them to fit 4 rows, 5 rows never fit', () => {
-    const three = statLayout('T', rows(3, { caption: 'Ghi chú ngắn' }));
-    expect(three.showCaptions).toBe(true);
-    expect(three.numberSize).toBe(88);
+  it('keeps captions up to 4 rows, drops them to fit 5 rows, 6 rows never fit', () => {
     const four = statLayout('T', rows(4, { caption: 'Ghi chú ngắn' }));
     expect(four.fits).toBe(true);
-    expect(four.showCaptions).toBe(false);
+    expect(four.showCaptions).toBe(true);
     expect(four.numberSize).toBe(76);
-    expect(statLayout('T', rows(5)).fits).toBe(false);
+    const five = statLayout('T', rows(5, { caption: 'Ghi chú ngắn' }));
+    expect(five.fits).toBe(true);
+    expect(five.showCaptions).toBe(false);
+    expect(five.numberSize).toBe(68);
+    expect(statLayout('T', rows(6)).fits).toBe(false);
   });
-  it('4 rows fit with a one-line title but not with a 2-line title plus footnote', () => {
-    expect(statLayout('Quét bảng khổng lồ', rows(4)).fits).toBe(true);
+  it('5 rows fit with a one-line title but not with a 2-line title plus footnote', () => {
+    expect(statLayout('Quét bảng khổng lồ', rows(5)).fits).toBe(true);
     expect(
-      statLayout('Chi phí khổng lồ của việc quét bảng', rows(4), 'Số liệu minh hoạ').fits,
+      statLayout('Chi phí khổng lồ của việc quét bảng', rows(5), 'Số liệu minh hoạ').fits,
     ).toBe(false);
   });
   it('fits the widest counter (1.000.000.000 + short unit) at the minimum size', () => {

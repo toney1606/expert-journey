@@ -1,24 +1,35 @@
-/** Single source of truth for visual constants. Catppuccin Mocha palette. */
+/** Single source of truth for visual constants. Near-black ground, yellow / red / green signals. */
 
 export const VIDEO = { width: 1080, height: 1920, fps: 30 } as const;
 
 export const colors = {
-  bg: '#1e1e2e',
-  card: '#313244',
-  text: '#cdd6f4',
-  textMuted: '#a6adc8',
-  accent: '#f9e2af',
-  correct: '#a6e3a1',
-  wrong: '#f38ba8',
-  diagram: '#89b4fa',
+  bg: '#0A0A0A',
+  card: '#141414',
+  border: '#262626',
+  text: '#FFFFFF',
+  textMuted: '#9A9A9A',
+  /** Yellow: the one main concept of a screen (glows). Only one accent word per screen. */
+  accent: '#FFD60A',
+  /** Dim yellow for small labels (step chip). */
+  accentMuted: '#B8A030',
+  correct: '#3DDC84',
+  wrong: '#FF4D3D',
+  /** Neutral strokes and structure (light grey; the palette has no blue). */
+  diagram: '#D4D4D4',
+  /** Orange: pending orders and the word "guess". */
+  pending: '#FF8A3D',
 } as const;
+
+/** Neon glow for text in `color` (yellow hero word, big numbers). */
+export const glow = (color: string): string =>
+  `0 0 12px color-mix(in srgb, ${color} 60%, transparent), 0 0 36px color-mix(in srgb, ${color} 40%, transparent), 0 0 80px color-mix(in srgb, ${color} 20%, transparent)`;
 
 /**
  * Margins in px for 1080x1920 that keep content clear of TikTok and Facebook Reels UI (largest of each
  * side). Based on third-party measurements and Meta's ad-safe-zone percentages, NOT official pixel
  * values: tune after checking on real devices. See docs/design-system.md.
  */
-export const safeZone = { top: 230, bottom: 560, right: 160, left: 90 } as const;
+export const safeZone = { top: 200, bottom: 420, right: 160, left: 90 } as const;
 
 export type SafeZone = { top: number; bottom: number; right: number; left: number };
 

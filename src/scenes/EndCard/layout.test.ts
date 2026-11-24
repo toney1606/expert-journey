@@ -32,23 +32,23 @@ describe('endCardLayout', () => {
       prev = l.headlineFontSize;
     }
   });
-  it('real limit: with subline 60 + cta 40 + loop 60 a 100-char headline fits at min font, 120 does not', () => {
+  it('real limit: with subline 60 + cta 40 + loop 60 a 174-char headline fits at min font, 175 does not', () => {
     const rest = {
       subline: 'a'.repeat(60),
       cta: 'a'.repeat(40),
       loopLine: 'a'.repeat(60),
       brand: 'Expert Journey',
     };
-    const ok = endCardLayout({ ...rest, headline: 'a'.repeat(100) });
+    const ok = endCardLayout({ ...rest, headline: 'a'.repeat(174) });
     expect(ok.fits).toBe(true);
     expect(ok.headlineFontSize).toBe(MIN_HEADLINE);
-    const over = endCardLayout({ ...rest, headline: 'a'.repeat(120) });
+    const over = endCardLayout({ ...rest, headline: 'a'.repeat(175) });
     expect(over.fits).toBe(false);
     expect(over.headlineFontSize).toBe(MIN_HEADLINE);
   });
-  it('headline alone: 300 chars still fits (shrunk), 400 does not', () => {
-    expect(endCardLayout({ headline: 'a'.repeat(300) }).fits).toBe(true);
-    expect(endCardLayout({ headline: 'a'.repeat(400) }).fits).toBe(false);
+  it('headline alone: 449 chars still fits (shrunk), 450 does not', () => {
+    expect(endCardLayout({ headline: 'a'.repeat(449) }).fits).toBe(true);
+    expect(endCardLayout({ headline: 'a'.repeat(450) }).fits).toBe(false);
   });
 
   it('measures text without {accent|...} markup characters', () => {

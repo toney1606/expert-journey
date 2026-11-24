@@ -1,36 +1,29 @@
-import { colors } from './tokens';
 import type { Mood } from '../schemas/common';
 
 /*
- * Raw colours below are Catppuccin Mocha palette entries not exposed in tokens.ts (peach, mauve, teal,
- * lavender, crust, mantle). They only feed the animated backdrop; keep them in this file.
+ * The backdrop is near-black; each mood only tints a faint glow (yellow = concept, red = problem, green = solution).
  */
-const PEACH = '#fab387';
-const MAUVE = '#cba6f7';
-const TEAL = '#94e2d5';
-const LAVENDER = '#b4befe';
-const MANTLE = '#181825';
-const CRUST = '#11111b';
-
 export type MoodPalette = {
   /** Three glow colours for the drifting gradient blobs. */
   blobs: readonly [string, string, string];
   /** Colour of the grid lines and particles. */
   line: string;
-  /** Dark base the blobs sit on (tinted towards the mood). */
+  /** Dark base the blobs sit on. */
   base: string;
 };
 
+const BASE = '#0a0a0a';
+
 export const moodPalettes: Record<Mood, MoodPalette> = {
-  problem: { blobs: [colors.wrong, PEACH, '#7a1f3d'], line: colors.wrong, base: '#1c1019' },
-  concept: { blobs: [colors.diagram, MAUVE, '#3b2a7a'], line: colors.diagram, base: '#12122a' },
-  solution: { blobs: [colors.correct, TEAL, '#1f6b5a'], line: TEAL, base: '#0f1d1c' },
-  warning: { blobs: [colors.accent, PEACH, '#8a5a12'], line: colors.accent, base: '#1d1810' },
-  neutral: { blobs: [LAVENDER, '#5b5fc7', MAUVE], line: LAVENDER, base: MANTLE },
+  problem: { blobs: ['#ff4d3d', '#ff8a3d', '#7a1a12'], line: '#ff4d3d', base: BASE },
+  concept: { blobs: ['#ffd60a', '#ffb800', '#6b5a05'], line: '#ffd60a', base: BASE },
+  solution: { blobs: ['#3ddc84', '#1fb8a0', '#0f5c3a'], line: '#3ddc84', base: BASE },
+  warning: { blobs: ['#ffd60a', '#ff8a3d', '#6b4a05'], line: '#ffd60a', base: BASE },
+  neutral: { blobs: ['#ffffff', '#9a9a9a', '#3a3a3a'], line: '#ffffff', base: BASE },
 };
 
 /** Darkest colour used under the vignette. */
-export const BACKDROP_EDGE = CRUST;
+export const BACKDROP_EDGE = '#000000';
 
 const CALLOUT_MOODS: Record<string, Mood> = {
   myth: 'problem',
@@ -49,6 +42,14 @@ const SCENE_MOODS: Record<string, Mood> = {
   stat: 'concept',
   compare: 'concept',
   endcard: 'solution',
+  counterhook: 'concept',
+  pagetree: 'concept',
+  costroads: 'concept',
+  rowsetup: 'concept',
+  rowtwist: 'problem',
+  rowfix: 'solution',
+  indexcards: 'concept',
+  pageslider: 'warning',
 };
 
 /** Natural mood of a scene type; callouts depend on `props.kind`. */

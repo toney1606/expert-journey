@@ -64,10 +64,11 @@ describe('chooseLayout', () => {
     expect(big.rowSize).toBeGreaterThanOrEqual(MIN_ROW_SIZE);
   });
 
-  it('reports the real limits at the minimum font (short rows): 3 options x 3 rows fit, 3 x 4 and 4 x 2 do not', () => {
-    expect(chooseLayout('Tiêu đề', make(3, 3, short), BOX).fits).toBe(true);
-    expect(chooseLayout('Tiêu đề', make(3, 4, short), BOX).fits).toBe(false);
-    expect(chooseLayout('Tiêu đề', make(4, 2, short), BOX).fits).toBe(false);
+  it('reports the real limits at the minimum font (short rows): 3 options x 4 rows and 4 x 2 fit, 3 x 5 and 4 x 3 do not', () => {
+    expect(chooseLayout('Tiêu đề', make(3, 4, short), BOX).fits).toBe(true);
+    expect(chooseLayout('Tiêu đề', make(3, 5, short), BOX).fits).toBe(false);
+    expect(chooseLayout('Tiêu đề', make(4, 2, short), BOX).fits).toBe(true);
+    expect(chooseLayout('Tiêu đề', make(4, 3, short), BOX).fits).toBe(false);
   });
 
   it('reports fits=false (and minimum sizes) when nothing can fit', () => {

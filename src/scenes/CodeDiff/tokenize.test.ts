@@ -45,3 +45,18 @@ describe('tokenizeLine', () => {
     expect(tokenizeLine('x = 1  # hi', 'python').at(-1)).toEqual({ type: 'comment', text: '# hi' });
   });
 });
+
+describe('sql', () => {
+  it('highlights keywords and -- comments', () => {
+    const tokens = tokenizeLine("SELECT * FROM orders WHERE status = 'pending'; -- hot", 'sql');
+    const types = Object.fromEntries(tokens.map((t) => [t.text, t.type]));
+    expect(types['SELECT']).toBe('keyword');
+    expect(types['FROM']).toBe('keyword');
+    expect(types['orders']).toBe('identifier');
+    expect(types["'pending'"]).toBe('string');
+    expect(tokens.at(-1)?.type).toBe('comment');
+    expect(tokens.map((t) => t.text).join('')).toBe(
+      "SELECT * FROM orders WHERE status = 'pending'; -- hot",
+    );
+  });
+});

@@ -180,7 +180,7 @@ describe('layer-skipping edges', () => {
       box,
     );
     expectEdgesAvoidOtherNodes(layout);
-    // 5 layers plus a skip edge fit the 830x960 box (the 4-layer limit applied to 780x770).
+    // 5 layers plus a skip edge fit the 830x1130 box (the 4-layer limit applied to 780x770).
     expect(layout.fits).toBe(true);
     expectInside(layout);
     expectNoOverlap(layout);
@@ -265,7 +265,7 @@ describe('labelSpace', () => {
   });
 });
 
-describe('fits and limits in the 830x960 content box', () => {
+describe('fits and limits in the 830x1130 content box', () => {
   const chain = (count: number) => {
     const ids = Array.from({ length: count }, (_, i) => `n${i}`);
     const edges = ids.slice(1).map((id, i) => ({ from: ids[i] as string, to: id }));
@@ -290,8 +290,8 @@ describe('fits and limits in the 830x960 content box', () => {
     expect(box.width).toBe(830);
   });
 
-  it('fits up to 6 layers with short labels and stays inside the box', () => {
-    for (const count of [1, 3, 5, 6]) {
+  it('fits up to 7 layers with short labels and stays inside the box', () => {
+    for (const count of [1, 3, 5, 7]) {
       const layout = chain(count);
       expect(layout.fits).toBe(true);
       expectInside(layout);
@@ -299,8 +299,8 @@ describe('fits and limits in the 830x960 content box', () => {
     }
   });
 
-  it('does not fit 7 layers', () => {
-    expect(chain(7).fits).toBe(false);
+  it('does not fit 8 layers', () => {
+    expect(chain(8).fits).toBe(false);
   });
 
   it('fits 5 nodes in a layer but not 6', () => {
@@ -308,7 +308,7 @@ describe('fits and limits in the 830x960 content box', () => {
     expect(fan(6).fits).toBe(false);
   });
 
-  it('needs wider gaps (so 5 layers at most) when an edge skips layers', () => {
+  it('needs wider gaps (so 6 layers at most) when an edge skips layers', () => {
     const build = (count: number) => {
       const ids = Array.from({ length: count }, (_, i) => `n${i}`);
       const edges = ids.slice(1).map((to, i) => ({ from: ids[i] as string, to }));
@@ -319,8 +319,8 @@ describe('fits and limits in the 830x960 content box', () => {
         box,
       );
     };
-    expect(build(5).fits).toBe(true);
-    expect(build(6).fits).toBe(false);
+    expect(build(6).fits).toBe(true);
+    expect(build(7).fits).toBe(false);
   });
 
   it('does not fit when long labels grow the layers past the height', () => {
@@ -331,9 +331,9 @@ describe('fits and limits in the 830x960 content box', () => {
         ids.slice(1).map((id, i) => ({ from: ids[i] as string, to: id })),
         box,
       );
-    // Five such layers still fit (font shrinks to the minimum); six do not.
-    expect(build(['a', 'b', 'c', 'd', 'e']).fits).toBe(true);
-    expect(build(['a', 'b', 'c', 'd', 'e', 'f']).fits).toBe(false);
+    // Six such layers still fit (font shrinks to the minimum); seven do not.
+    expect(build(['a', 'b', 'c', 'd', 'e', 'f']).fits).toBe(true);
+    expect(build(['a', 'b', 'c', 'd', 'e', 'f', 'g']).fits).toBe(false);
   });
 });
 

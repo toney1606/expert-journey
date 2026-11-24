@@ -31,13 +31,12 @@ describe('summaryLayout', () => {
     expect(SUMMARY_BOX).toBe(CONTENT_BOX);
   });
 
-  it('real limits at the minimum font (120-char points): 5 fit with a loop line or without, 6 fit only without a loop line, 7 do not', () => {
+  it('real limits at the minimum font (120-char points): 6 fit with a loop line or without, 7 fit only without a loop line, 8 do not', () => {
     const pts = (n: number) => Array.from({ length: n }, () => long);
-    expect(summaryLayout(pts(5)).fits).toBe(true);
-    expect(summaryLayout(pts(6)).fits).toBe(true);
-    expect(summaryLayout(pts(7)).fits).toBe(false);
-    expect(summaryLayout(pts(5), 'Loop?').fits).toBe(true);
-    expect(summaryLayout(pts(6), 'Loop?').fits).toBe(false);
+    expect(summaryLayout(pts(7)).fits).toBe(true);
+    expect(summaryLayout(pts(8)).fits).toBe(false);
+    expect(summaryLayout(pts(6), 'Loop?').fits).toBe(true);
+    expect(summaryLayout(pts(7), 'Loop?').fits).toBe(false);
   });
 
   it('never lets the loop font drop below the minimum', () => {

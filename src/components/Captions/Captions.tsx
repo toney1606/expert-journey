@@ -12,9 +12,10 @@ type Props = {
   startFrame?: number;
 };
 
-const FONT_SIZE = 52;
-/** 2 lines: 2 * 52 * 1.35 + 2 * 12 = 164px, inside the 170px caption band. */
-const PAD_Y = 12;
+const FONT_SIZE = 64;
+const LINE_HEIGHT = 1.2;
+/** 2 lines: 2 * 64 * 1.2 + 2 * 4 + 2 * 4 border = 169.6px, inside the 170px caption band. */
+const PAD_Y = 4;
 const MAX_WIDTH = CONTENT_BOX.width;
 
 /**
@@ -54,15 +55,13 @@ export const Captions: React.FC<Props> = ({ words, startFrame = 0 }) => {
           maxWidth: MAX_WIDTH,
           boxSizing: 'border-box',
           padding: `${PAD_Y}px ${spacing.md}px`,
-          borderRadius: 36,
-          backgroundColor: 'rgba(49, 50, 68, 0.82)',
           fontFamily: fontFamily.title,
           fontWeight: 800,
           fontSize: FONT_SIZE,
-          lineHeight: 1.35,
+          lineHeight: LINE_HEIGHT,
           textAlign: 'center',
           overflowWrap: 'anywhere',
-          textShadow: '0 3px 10px rgba(0, 0, 0, 0.55)',
+          textShadow: '0 2px 14px rgba(0, 0, 0, 0.8)',
           transform: `scale(${0.85 + 0.15 * pop})`,
           transformOrigin: '50% 100%',
           opacity: Math.min(1, pop * 2),
@@ -71,7 +70,7 @@ export const Captions: React.FC<Props> = ({ words, startFrame = 0 }) => {
         {page.words.map((word, i) => (
           <span
             key={`${word.start}-${i}`}
-            style={{ color: i === active ? colors.accent : colors.text }}
+            style={{ color: i === active ? colors.accent : '#ffffff' }}
           >
             {word.text}
             {i < page.words.length - 1 ? ' ' : ''}

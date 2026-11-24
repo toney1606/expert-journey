@@ -7,7 +7,10 @@ import {
   useVideoConfig,
 } from 'remotion';
 import { Backdrop } from '../../components/Backdrop/Backdrop';
+import { BrandTag } from '../../components/BrandTag';
 import { Captions } from '../../components/Captions/Captions';
+import { Mascot } from '../../components/Mascot/Mascot';
+import { mouthOpenAt } from '../../components/Mascot/mouth';
 import { SafeZoneFrame } from '../../components/SafeZoneFrame';
 import { SceneTimingProvider } from '../../components/SceneTiming';
 import { defaultMoodFor, moodBlendAt } from '../../design/mood';
@@ -41,6 +44,14 @@ export const Video: React.FC<VideoCompositionProps> = ({ video, debugSafeZone, a
   const starts = sceneStartFrames(durations);
   const moods = video.scenes.map((scene) => scene.mood ?? defaultMoodFor(scene.type, scene.props));
   const blend = moodBlendAt(moods, starts, frame, MOOD_WINDOW);
+  let sceneIndex = 0;
+  starts.forEach((start, i) => {
+    if (start <= frame) sceneIndex = i;
+  });
+  const sceneWords =
+    audio?.scenes.find((candidate) => candidate.sceneId === video.scenes[sceneIndex]?.id)?.words ??
+    [];
+  const sceneT = (frame - (starts[sceneIndex] ?? 0)) / fps;
 
   return (
     <AbsoluteFill style={{ background: colors.bg }}>
@@ -68,6 +79,17 @@ export const Video: React.FC<VideoCompositionProps> = ({ video, debugSafeZone, a
           );
         })}
       </Series>
+      <BrandTag />
+      <div
+        style={{
+          position: 'absolute',
+          left: 475,
+          bottom: 0,
+          display: 'flex',
+        }}
+      >
+        <Mascot mouthOpen={mouthOpenAt(sceneWords, sceneT)} />
+      </div>
       {bed ? <Html5Audio src={staticFile(`generated/audio/${video.meta.id}/bed.wav`)} /> : null}
     </AbsoluteFill>
   );
