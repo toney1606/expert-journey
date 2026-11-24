@@ -1,6 +1,6 @@
 # Expert Journey
 
-Vertical video channel (TikTok / Facebook Reels, 1080x1920, 30fps, 2-4 min) teaching real-world
+Vertical video channel (TikTok / Facebook Reels, 1080x1920, 30fps, 2-3 min) teaching real-world
 programming from the **interviewer's** point of view, intern to senior fullstack. Each video answers
 one real interview question. Pipeline goal: topic + notes in → script JSON, TTS, Remotion render, auto QA,
 review queue → human approves before publishing. Narration is Vietnamese; English tech terms stay English.
@@ -27,9 +27,9 @@ any Remotion API or `@remotion/*` package. Never write Remotion code from memory
   `src/schemas/` (scene schemas live next to their scene in `src/scenes/<Scene>/schema.ts`).
 - Feature-based layout, scene folder pattern: `src/scenes/<Scene>/` = component + `schema.ts` (zod) + a pure layout and/or
   timeline helper (no React) + Vitest tests. Scenes are wired in `src/scenes/registry.tsx`. Scene types: `hook`
-  (HookCard), `diagram`, `code` (CodeDiff), `terminal`, `tradeoff`, `summary`, `stat`, `compare`, `callout`, `endcard`.
+  (HookCard), `diagram`, `code` (CodeDiff), `terminal`, `tradeoff`, `summary`, `stat`, `compare`, `callout`, `endcard`, plus the database-story scenes `counterhook`, `pagetree`, `costroads`, `rowsetup`/`rowtwist`/`rowfix` (shared `src/components/RowStrip`), `indexcards`, `pageslider`.
 - Reveal timelines are derived from `durationInFrames` (audio length), never hardcoded frame numbers.
-- Content must fit: layout helpers expose a `fits` (or `wraps`) flag and pick the largest font that fits the 830x960
+- Content must fit: layout helpers expose a `fits` (or `wraps`) flag and pick the largest font that fits the 830x1130
   `CONTENT_BOX` (safe box minus the caption band); do not add a scene that overflows silently.
 - Design tokens (colors, spacing, spring presets, safe zone) only in `src/design/`.
   Non-UI logic = pure functions in `src/lib/`, tested with Vitest.
@@ -43,6 +43,8 @@ any Remotion API or `@remotion/*` package. Never write Remotion code from memory
   counts. `calculateMetadata` reads `public/generated/audio/<id>/manifest.json` (from `pnpm tts`) and uses real audio length + 0.4s tail per scene; without a manifest it falls back to `draft.durationSec`. Re-run `pnpm tts <id>` after editing any `voice`.
 - Scene text and cues: optional `at...` fields (`at`, `atHeadline`, `pointsAt`, `cueAt`, `morphAt`, ...) are narration phrases matched accent-insensitively against the scene's `voice`; keep `voice` free of markup and digits (numbers spelled out), `{accent|word}` markup only in display props. See `docs/content-guide.md`.
 - Music and SFX are synthesized in `pipeline/audio/` (no licensed files); `mood` per scene drives the backdrop and the music.
+- Colours (near-black ground): yellow (`colors.accent`) = the one main concept of a screen, green = fast/right, red = slow/wrong, orange (`colors.pending`) = pending orders and the word "guess"; no other hues. `CodeBlock` (`src/components/CodeBlock`) renders SQL/JS/TS/Python code at >= 40px.
+- Real numbers shown in a video come from a tested measurement in `content/<level>/<day>/<topic>/code/measurements.json` (see `database-index-guess`); never invent figures. Illustrative figures must be labelled as such in `research.md`.
 - Fonts are local files in `public/fonts/` (OFL), loaded via `useFonts()`. Test stacked Vietnamese diacritics.
 - Do not add dependencies outside the approved list without asking the owner.
 - Conventional commits, small steps. Never push without being asked.

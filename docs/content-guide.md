@@ -37,15 +37,15 @@ Run `pnpm validate` after every edit.
 
 Mọi scene có chung các field:
 
-| Field               | Kiểu / ràng buộc                                                                                      |
-| ------------------- | ----------------------------------------------------------------------------------------------------- |
-| `id`                | slug, duy nhất trong video                                                                            |
-| `type`              | `hook`, `diagram`, `code`, `terminal`, `tradeoff`, `summary`, `stat`, `compare`, `callout`, `endcard` |
-| `mood`              | tùy chọn: `neutral`, `problem`, `concept`, `solution`, `warning` (màu nền, xem mục Mood)              |
-| `voice`             | string không rỗng, lời đọc (tiếng Việt, thuật ngữ giữ tiếng Anh)                                      |
-| `props`             | tùy `type`, xem bên dưới                                                                              |
-| `sources`           | tùy chọn, mảng `{ title, url? }`                                                                      |
-| `draft.durationSec` | số > 0 và <= 120, thời lượng tạm khi chưa có audio                                                    |
+| Field               | Kiểu / ràng buộc                                                                                                                                                                                            |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`                | slug, duy nhất trong video                                                                                                                                                                                  |
+| `type`              | `hook`, `diagram`, `code`, `terminal`, `tradeoff`, `summary`, `stat`, `compare`, `callout`, `endcard`, `counterhook`, `pagetree`, `costroads`, `rowsetup`, `rowtwist`, `rowfix`, `indexcards`, `pageslider` |
+| `mood`              | tùy chọn: `neutral`, `problem`, `concept`, `solution`, `warning` (màu nền, xem mục Mood)                                                                                                                    |
+| `voice`             | string không rỗng, lời đọc (tiếng Việt, thuật ngữ giữ tiếng Anh)                                                                                                                                            |
+| `props`             | tùy `type`, xem bên dưới                                                                                                                                                                                    |
+| `sources`           | tùy chọn, mảng `{ title, url? }`                                                                                                                                                                            |
+| `draft.durationSec` | số > 0 và <= 120, thời lượng tạm khi chưa có audio                                                                                                                                                          |
 
 Định nghĩa: `src/schemas/common.ts`, `src/schemas/video.ts`, và `src/scenes/<Scene>/schema.ts`.
 
@@ -61,14 +61,14 @@ Mọi scene có chung các field:
 - **Caption từng từ**: `Video` render component `Captions` cho mỗi scene từ `words` trong manifest. `pnpm tts <id> --provider edge` lấy mốc thời gian
   từng từ từ giọng thật; provider `fake` chỉ chia đều thời gian cho các từ (chỉ để xem bố cục). Caption (52px, 2 dòng) nằm trong dải 170px cuối hộp an toàn,
   nên scene không phải tự vẽ phụ đề; sửa `voice` thì chạy lại `pnpm tts <id>` để `words` khớp.
-- Mục tiêu cả video 2-4 phút, re-hook quanh giây 45 và giây 100 (xem `story-arc.md`).
+- Mục tiêu cả video 2-3 phút, re-hook quanh giây 45 và giây 100 (xem `story-arc.md`).
 
 ## Scene reference
 
 Mọi animation (thứ tự hiện, tốc độ gõ, morph) được suy ra từ độ dài scene, nên scene dài hơn thì reveal chậm hơn.
 Các helper layout trả về cờ `fits`/`wraps`: nội dung quá nhiều sẽ bị co chữ tới mức tối thiểu, rồi tràn hoặc cuộn.
-Hộp an toàn (safe zone) là **830 x 1130 px** (1080 - 90 - 160, 1920 - 230 - 560). Dải 170px dưới cùng của hộp dành cho caption, nên mỗi scene tự bố cục
-trong `CONTENT_BOX` = **830 x 960 px**. Các con số bên dưới là giới hạn thực tế tính từ code, tính cho `CONTENT_BOX`. Số "ước tính" là suy ra từ độ rộng ký tự trung bình, hãy kiểm bằng ảnh tĩnh (xem `qa-checklist.md`).
+Hộp an toàn (safe zone) là **830 x 1300 px** (1080 - 90 - 160, 1920 - 200 - 420). Dải 170px dưới cùng của hộp dành cho caption, nên mỗi scene tự bố cục
+trong `CONTENT_BOX` = **830 x 1130 px**. Các con số bên dưới là giới hạn thực tế tính từ code, tính cho `CONTENT_BOX`. Số "ước tính" là suy ra từ độ rộng ký tự trung bình, hãy kiểm bằng ảnh tĩnh (xem `qa-checklist.md`).
 
 ### hook
 
@@ -130,11 +130,11 @@ khoảng 19 ký tự mỗi dòng ở 88px (830 / (88 x 0.5)), nên giữ `headli
 Cách layout (`layout.ts`): sơ đồ chảy từ trên xuống; tầng của node = đường dài nhất từ nguồn. Mũi tên quay ngược (tạo vòng)
 được vẽ dọc đường ray bên phải (chừa 80px bề ngang). Reveal theo tầng, 80% đầu scene.
 
-Giới hạn thực tế (đo bằng `layoutDiagram`, hộp sơ đồ 830 x 810 px = `CONTENT_BOX` trừ dải tiêu đề 150px; khi có `path` còn 830 x 746 px vì chừa 64px cho huy hiệu bước; `label` một dòng):
+Giới hạn thực tế (đo bằng `layoutDiagram`, hộp sơ đồ 830 x 980 px = `CONTENT_BOX` trừ dải tiêu đề 150px; khi có `path` còn 830 x 916 px vì chừa 64px cho huy hiệu bước; `label` một dòng):
 
-- **Số tầng** (chuỗi thẳng): **tối đa 6 tầng** (7 không vừa); có `path` thì **tối đa 5 tầng**. Khi một edge nhảy qua tầng (phải đi vòng qua đường lane) cần thêm khoảng cách giữa các tầng:
-  chỉ vừa **5 tầng** (có `path`: 4 tầng). Hãy giữ **<= 4 tầng** cho dễ đọc. Chia nhánh cùng tầng thì không tốn thêm chiều cao.
-- **Số node mỗi tầng**: tối đa **5** (vừa tới 6 tầng); 6 node mỗi tầng không bao giờ vừa (node rộng tối thiểu 140px, `MIN_NODE_WIDTH`).
+- **Số tầng** (chuỗi thẳng): **tối đa 7 tầng** (8 không vừa); có `path` thì **tối đa 6 tầng**. Khi một edge nhảy qua tầng (phải đi vòng qua đường lane) cần thêm khoảng cách giữa các tầng:
+  chỉ vừa **6 tầng** (có `path`: 6 tầng). Hãy giữ **<= 4 tầng** cho dễ đọc. Chia nhánh cùng tầng thì không tốn thêm chiều cao.
+- **Số node mỗi tầng**: tối đa **5** (vừa tới 7 tầng); 6 node mỗi tầng không bao giờ vừa (node rộng tối thiểu 140px, `MIN_NODE_WIDTH`).
 - Chữ node tự co từ 46 xuống 30px, rồi mới tăng chiều cao tầng; node rộng tối đa 740px, cao 90-200px. `label` dài sẽ ngắt dòng và tốn chiều cao,
   nên giữ `label` ngắn (một dòng) khi có 3 node/tầng trở lên.
 - `edge.label` rộng tối đa 360px; label ở đường ray bên phải bị cắt bằng dấu `…`.
@@ -179,9 +179,9 @@ Giới hạn (`fit.ts`, `CodeDiff.tsx`):
 - Hộp code rộng 782px (830 - 2 x 24 padding), font JetBrains Mono, bề ngang ký tự = 0.6 x cỡ chữ.
 - `fontSize` tự chọn từ **44px xuống 22px** sao cho dòng dài nhất (trong cả before và after) vừa một hàng: dòng <= **29 ký tự** được 44px, <= 32 ký tự được 40px;
   dòng ~59 ký tự được 22px. Dòng dài hơn thì khối code được **thu nhỏ (scale) tới 0.75** để thêm cột (tối đa ~79 cột ở 22px); quá nữa thì bị ngắt dòng cứng (cờ `wraps`).
-- Chiều cao: vùng code cao tối đa 960 - 72 (header) - 110 (badge) - 48 (padding) = 730px. Khi số hàng x 1.5 x cỡ chữ vượt quá thì cả khối cũng bị thu nhỏ, tối thiểu 0.75.
+- Chiều cao: vùng code cao tối đa 1130 - 72 (header) - 110 (badge) - 48 (padding) = 900px. Khi số hàng x 1.5 x cỡ chữ vượt quá thì cả khối cũng bị thu nhỏ, tối thiểu 0.75.
   Cỡ chữ thực tế thấp nhất vì vậy là khoảng **16.5px** (22 x 0.75), đọc khó trên điện thoại: **hãy giữ snippet ngắn**, ví dụ mẫu dùng 5-6 dòng, mỗi dòng tối đa ~36 ký tự.
-  Ở 22px không co thì vừa ~22 hàng; ở scale 0.75 vừa ~29 hàng. `pnpm qa` cảnh báo `code.line-too-long` khi dòng quá dài.
+  Ở 22px không co thì vừa ~27 hàng; ở scale 0.75 vừa ~36 hàng. `pnpm qa` cảnh báo `code.line-too-long` khi dòng quá dài.
 - Mọi dòng giống nhau giữa before và after được giữ nguyên và trượt vị trí (diff theo dòng, LCS): đổi nhỏ giữa hai bản cho hiệu ứng đẹp nhất.
 - Màu cú pháp: xem `design-system.md`.
 
@@ -213,10 +213,10 @@ Giới hạn (`fit.ts`, `CodeDiff.tsx`):
 
 Giới hạn (`timeline.ts`, `wrap.ts`, `Terminal.tsx`):
 
-- Vùng chữ rộng 782px (830 trừ padding 24px mỗi bên), cao tối đa 856px (960 trừ header 56px và padding). Cỡ chữ tự chọn từ **40 xuống 24px** sao cho toàn bộ bản ghi vừa;
-  ở 24px một hàng chứa ~53 ký tự (cột cuối chừa cho con trỏ) và vừa khoảng **24 hàng** (mỗi lệnh tính thêm `$ ` đầu dòng).
+- Vùng chữ rộng 782px (830 trừ padding 24px mỗi bên), cao tối đa 1026px (1130 trừ header 56px và padding). Cỡ chữ tự chọn từ **40 xuống 24px** sao cho toàn bộ bản ghi vừa;
+  ở 24px một hàng chứa ~53 ký tự (cột cuối chừa cho con trỏ) và vừa khoảng **29 hàng** (mỗi lệnh tính thêm `$ ` đầu dòng).
 - Lệnh và output được **ngắt dòng theo từ** thành các hàng tường minh (`wrap.ts`), không còn break-all. Cửa sổ terminal **cao dần theo số hàng đã hiện**, tối đa bằng `CONTENT_BOX`.
-- Vượt quá ~24 hàng thì giữ 24px và **tự cuộn lên**; `pnpm qa` cảnh báo `terminal.auto-scroll`. Người xem không đọc lại được phần đã cuộn nên hãy rút gọn lệnh/output.
+- Vượt quá ~29 hàng thì giữ 24px và **tự cuộn lên**; `pnpm qa` cảnh báo `terminal.auto-scroll`. Người xem không đọc lại được phần đã cuộn nên hãy rút gọn lệnh/output.
 - Tốc độ gõ tỉ lệ với độ dài lệnh: từ 22 tới tối đa 90 ký tự/giây cho tới khi mọi thứ vừa 85% độ dài scene (phần còn lại để giữ hình).
   Nếu vẫn không vừa thì tất cả bị nén đều. Lời đọc quá ngắn so với nhiều lệnh dài sẽ làm gõ rất nhanh.
 - Số trong `output` được tô màu accent tự động.
@@ -247,9 +247,9 @@ Giới hạn (`timeline.ts`, `wrap.ts`, `Terminal.tsx`):
 ```
 
 Giới hạn (`layout.ts`, hàm `chooseLayout`): cỡ chữ dòng giảm từng 1px từ **36 xuống 28px** (tên 36-56px, tiêu đề 40-60px); khi
-chiều cao ước tính vẫn vượt 97% `CONTENT_BOX` (960px) thì `fits = false`; `pnpm qa` báo lỗi `layout.tradeoff-overflow` (và cảnh báo `layout.tradeoff-tight` khi chỉ vừa ở 28px).
-Ở cỡ chữ nhỏ nhất, với dòng pros/cons ngắn (~20-30 ký tự, một hàng): **1 option** vừa ~14 dòng pros+cons, **2 option** ~6 dòng mỗi option,
-**3 option** ~3 dòng, **4 option** 1 dòng, **5 option** 1 dòng (chỉ cons hoặc chỉ pros, chữ co về ~29px). Dòng ~45 ký tự thì còn 8 dòng cho 1 option, 3 dòng cho 2 option, 1 dòng cho 3 option.
+chiều cao ước tính vẫn vượt 97% `CONTENT_BOX` (1130px) thì `fits = false`; `pnpm qa` báo lỗi `layout.tradeoff-overflow` (và cảnh báo `layout.tradeoff-tight` khi chỉ vừa ở 28px).
+Ở cỡ chữ nhỏ nhất, với dòng pros/cons ngắn (~20-30 ký tự, một hàng): **1 option** vừa ~18 dòng pros+cons, **2 option** ~7 dòng mỗi option,
+**3 option** ~4 dòng, **4 option** 2 dòng, **5 option** 1 dòng (chỉ cons hoặc chỉ pros, chữ co về ~29px). Dòng ~45 ký tự thì còn 10 dòng cho 1 option, 4 dòng cho 2 option, 2 dòng cho 3 option, 1 dòng cho 4 option.
 Nên dùng 2 option (tối đa 3), mỗi dòng dưới ~45 ký tự.
 
 ### summary
@@ -276,9 +276,9 @@ Nên dùng 2 option (tối đa 3), mỗi dòng dưới ~45 ký tự.
 }
 ```
 
-Giới hạn (`layout.ts`, hàm `summaryLayout`): cỡ chữ tự giảm từ **52px xuống 28px** (bước 2); không vừa `CONTENT_BOX` (830 x 960) thì `fits = false`
+Giới hạn (`layout.ts`, hàm `summaryLayout`): cỡ chữ tự giảm từ **52px xuống 28px** (bước 2); không vừa `CONTENT_BOX` (830 x 1130) thì `fits = false`
 (`pnpm qa`: lỗi `layout.summary-overflow`, cảnh báo `layout.summary-tight` khi chỉ vừa ở 28px).
-Ước tính: ý dài ~78 ký tự vừa **8 ý** (7 ý nếu có `loopLine`); ý dài ~120 ký tự vừa **6 ý** (5 ý nếu có `loopLine`), tức 5 ý dài 120 ký tự vừa cả khi có hoặc không có `loopLine`. Nên giữ **3-5 ý**, mỗi ý dưới ~80 ký tự.
+Ước tính: ý dài ~78 ký tự vừa **8 ý** (7 ý nếu có `loopLine`) trở lên (chưa đo lại); ý dài ~120 ký tự vừa **7 ý** (6 ý nếu có `loopLine`), tức 6 ý dài 120 ký tự vừa cả khi có hoặc không có `loopLine`, 8 ý thì không vừa. Nên giữ **3-5 ý**, mỗi ý dưới ~80 ký tự.
 
 ### stat
 
@@ -325,11 +325,11 @@ Hành vi (`format.ts`, `scale.ts`, `timeline.ts`): số hiển thị kiểu Vi�
 **thang log** (`log10(1+v)`), số lớn nhất luôn đầy thanh, số > 0 nào cũng có ít nhất 7% thanh. Counter dài 20% độ dài scene, tối đa 54 frame (1,8 giây).
 Không có `at` thì các hàng hiện đều từ 10% tới 55% độ dài scene.
 
-Giới hạn thực tế (đo bằng `statLayout`, `CONTENT_BOX` 830 x 960; cỡ số tự giảm từ **156px xuống 56px**, bước 4; ví dụ dưới đây dùng `unit` ngắn, `caption` ~40 ký tự):
+Giới hạn thực tế (đo bằng `statLayout`, `CONTENT_BOX` 830 x 1130; cỡ số tự giảm từ **156px xuống 56px**, bước 4; ví dụ dưới đây dùng `unit` ngắn, `caption` ~40 ký tự):
 
 - **1 hàng**: số **156px** (tối đa), kể cả `label` ~50 ký tự. **2 hàng**: ~152px khi không có `caption`, ~104-124px khi có `caption` ~40 ký tự. **3 hàng**: ~88-116px khi không có `caption`
-  (`label` <= ~45 ký tự), ~68-84px khi có `caption`; tối đa **3 hàng còn hiện được `caption`**.
-- **4 hàng**: số ~76px, `label` <= ~40 ký tự, và mọi `caption` bị ẩn (`showCaptions = false`) để vừa; `label` ~44 ký tự trở lên với 4 hàng thì không vừa (`fits = false`).
+  (`label` <= ~45 ký tự), ~68-84px khi có `caption`; tối đa **4 hàng còn hiện được `caption`** (số ~76px; 1-3 hàng có `caption` ~112px với `10.000.000`).
+- **5 hàng**: số ~68px và mọi `caption` bị ẩn (`showCaptions = false`) để vừa; tiêu đề 2 dòng + `footnote` thì 5 hàng không vừa; **6 hàng không bao giờ vừa** (`fits = false`).
 - Độ rộng số: `value` tới 10^14 vẫn vừa (số tự co: 10.000.000 ở ~112px, 10^9 ở ~88px, 10^11 ở ~76px, 10^14 ở ~64px; thêm `unit` dài làm co thêm). Nên giữ `value` dưới 10^11.
 - Nên dùng **1-2 hàng** (một con số gây sốc); 3-4 hàng chỉ khi thật sự cần so sánh.
 - **Chỉ đưa số đo thật** (xem "Quy tắc chính xác" bên dưới).
@@ -376,9 +376,9 @@ Giới hạn thực tế (đo bằng `statLayout`, `CONTENT_BOX` 830 x 960; cỡ
 Bố cục (`chooseLayout`): **cạnh nhau** khi cả hai `label` <= 2 dòng và mọi thứ vừa ở cỡ label >= 36px; không thì **xếp dọc** (thẻ rộng hết hàng, icon bên trái chữ,
 có dấu "vs" giữa). Cỡ label tự giảm từ 48 xuống 36px. Giới hạn đo bằng `chooseLayout` (icon 96px):
 
-- Cạnh nhau: `label` <= ~26 ký tự (một đến hai dòng; ~24 ký tự giữ 48px, ~26 ký tự co về ~38px); `caption` ~90 ký tự vẫn vừa.
-- Xếp dọc (từ `label` ~28 ký tự): `label` tới ~90 ký tự vẫn vừa khi không có gì khác; `label` ~100 ký tự + `caption` ~40 + `verdict` ~40 ký tự thì `fits = false`.
-- `verdict` tới ~200 ký tự vẫn vừa ở layout cạnh nhau với label ngắn, nhưng nên giữ dưới ~60 ký tự (một câu chốt).
+- Cạnh nhau: `label` <= ~26 ký tự (một đến hai dòng; ~24 ký tự giữ 48px, ~26 ký tự co về ~38px); `caption` tới ~300 ký tự vẫn vừa.
+- Xếp dọc (từ `label` ~28 ký tự): `label` tới ~218 ký tự vẫn vừa khi không có gì khác; `label` ~140 ký tự + `caption` ~40 + `verdict` ~40 ký tự thì `fits = false` (vừa tới ~137).
+- `verdict` tới ~350 ký tự vẫn vừa ở layout cạnh nhau với label ngắn, nhưng nên giữ dưới ~60 ký tự (một câu chốt).
 - Reveal: tiêu đề -> trái -> "vs" -> phải -> `verdict`, xong trong 80% scene; mỗi bước tối đa 30 frame nếu không có `at`.
 
 ### callout
@@ -419,7 +419,7 @@ có dấu "vs" giữa). Cỡ label tự giảm từ 48 xuống 36px. Giới hạ
 
 Giới hạn (`calloutLayout`, tính trên chữ hiển thị đã bỏ markup): cỡ `statement` giảm từ **100px xuống 52px** (bước 2), tối đa **4 dòng**, `fits = false` khi hơn 4 dòng.
 Thực tế: <= ~20 ký tự được 100px (2 dòng), ~40 ký tự vẫn 100px (4 dòng), ~54 ký tự ~74px, ~60 ký tự ~70px; **~78 ký tự vẫn vừa** (cỡ ~54px, 4 dòng); từ **~79 ký tự trở lên không vừa**.
-`explanation` (40px) ~120 ký tự không làm đổi giới hạn ở câu ngắn; ~200 ký tự với câu ~30 ký tự thì `statement` còn ~80px, và ~300 ký tự thì không vừa. Nên giữ `statement` <= ~60 ký tự và `explanation` <= ~120 ký tự.
+`explanation` (40px) ~120 ký tự không làm đổi giới hạn ở câu ngắn; ~200 ký tự với câu ~30 ký tự vẫn giữ 100px, ~250 ký tự thì ~92px, ~300 ký tự thì ~66px, và từ ~345 ký tự thì không vừa. Nên giữ `statement` <= ~60 ký tự và `explanation` <= ~120 ký tự.
 
 ### endcard
 
@@ -449,10 +449,135 @@ Thực tế: <= ~20 ký tự được 100px (2 dòng), ~40 ký tự vẫn 100px 
 ```
 
 Không có trường cue: các phần tử hiện đều nhau từ 4% tới 62% độ dài scene (thứ tự `headline`, `subline`, `cta`, `loopLine`, `brand`; phần tử thiếu thì bỏ qua).
-Giới hạn (`endCardLayout`; headline 90px xuống 48px, các dòng phụ 40px): chỉ có `headline` thì <= ~100 ký tự vẫn ở 90px, ~240 ký tự co về ~60px và ~300 ký tự về 52px (vẫn vừa);
-khi có đủ `subline` ~60 + `cta` ~40 + `loopLine` ~60 + `brand`, `headline` ~50 ký tự còn 68px, ~80 ký tự còn 52px, **~100 ký tự co về 48px (vẫn vừa)** và **~120 ký tự trở lên không vừa** (`fits = false`).
+Giới hạn (`endCardLayout`; headline 90px xuống 48px, các dòng phụ 40px): chỉ có `headline` thì <= ~100 ký tự vẫn ở 90px, ~240 ký tự co về ~66px, ~300 ký tự về 56px và **~449 ký tự về 48px (vẫn vừa)**, ~450 ký tự trở lên không vừa;
+khi có đủ `subline` ~60 + `cta` ~40 + `loopLine` ~60 + `brand`, `headline` ~50 ký tự còn 84px, ~80 ký tự còn 68px, ~150 ký tự co về 48px, **~174 ký tự vẫn vừa** và **~175 ký tự trở lên không vừa** (`fits = false`).
 Nên giữ `headline` <= ~50 ký tự, mỗi dòng phụ <= ~60 ký tự.
 `endcard` là scene cuối; câu cuối của `voice` nên là câu hỏi của hook để video lặp.
+
+### counterhook
+
+Opening hook: a latency number counts up from fast (green) to slow (red), three facts appear one by one, then a punchline with one orange word and a single shake beat. Mood default: problem.
+
+| Prop                  | Type              | Notes                                                                       |
+| --------------------- | ----------------- | --------------------------------------------------------------------------- |
+| fastMs                | number            | Fast latency (green), shown first.                                          |
+| slowMs                | number            | Counter ticks up to this (red).                                             |
+| unit                  | string            | Default "ms".                                                               |
+| countAt               | phrase, optional  | Narration phrase at which the counter starts.                               |
+| lines                 | 1-3 x {text, at?} | Facts, revealed one by one at `at`.                                         |
+| finalText, accentWord | string            | Punchline "Database" + "ĐOÁN"; accentWord drawn in orange (colors.pending). |
+| finalAt               | phrase, optional  | Punchline + shake beat.                                                     |
+
+Limits: widest text must fit 830px (number 80-150px, lines >= 40px, punchline >= 60px); `counterHookLayout(props).fits` must be true. Fallback timeline (no `at`): count 12%, lines 40-65%, punchline 82% of the scene.
+
+### `pagetree` — vì sao chỉ ~3 lần đọc
+
+Một "page" phóng to chứa nhiều dòng nhỏ, rồi cây 3 tầng (gốc, tầng 2 nhãn ×fanout, tầng 3 nhãn ×fanout), số tổng đếm lên, đường sáng xanh đi gốc → lá với bộ đếm 1, 2, 3.
+
+| Prop                                                                   | Kiểu                              | Ghi chú                                                      |
+| ---------------------------------------------------------------------- | --------------------------------- | ------------------------------------------------------------ |
+| `pageLabel`                                                            | string                            | "1 page = vài trăm dòng" (1 dòng, tối đa ~830px ở 48-56px)   |
+| `fanout`                                                               | int >= 2                          | hiện thành "×300" ở tầng 2 và 3                              |
+| `total`, `totalUnit`                                                   | number, string (mặc định "dòng")  | số đếm lên, 80-112px                                         |
+| `population`, `populationUnit`                                         | number, string (mặc định "người") | số hiện sau `total`, 60-84px                                 |
+| `readsLabel`                                                           | string                            | "~3 lần đọc"                                                 |
+| `pageAt`, `fanoutAt`, `levelsAt`, `totalAt`, `populationAt`, `readsAt` | cụm trong `voice`                 | thứ tự hiện; cụm không thấy → mốc dự phòng theo độ dài scene |
+
+Giới hạn: `pageTreeLayout(props).fits` false khi số/nhãn rộng hơn 830px hoặc cây thấp hơn 380px. Cây cố định 3 tầng, 3 nhánh x 3 lá (minh hoạ, không đúng số thật).
+
+### `costroads` — hai con đường và công thức giá
+
+Hai làn: nhảy ngẫu nhiên (đỏ, ×4, chạy chậm hơn 4 lần) và đọc liền (xanh, ×1); công thức hiện từng phần; chữ "nghĩ" trong bong bóng suy nghĩ phát sáng cam; thẻ thống kê pending/done; tag engine.
+
+| Prop                                                                                                      | Kiểu              | Ghi chú                                                                 |
+| --------------------------------------------------------------------------------------------------------- | ----------------- | ----------------------------------------------------------------------- |
+| `randomLabel`, `randomCost`                                                                               | string, number    | "Nhảy ngẫu nhiên", 4 (hiện "×4")                                        |
+| `seqLabel`, `seqCost`                                                                                     | string, number    | "Đọc liền mạch", 1                                                      |
+| `formulaBefore`, `guessWord`, `formulaAfter`                                                              | string            | dòng 1: "số dòng NGHĨ là khớp" (từ nghĩ in hoa, cam)                    |
+| `priceLabel`, `costLabel`                                                                                 | string            | dòng 2: "× giá = chi phí"                                               |
+| `pendingLabel/Percent`, `doneLabel/Percent`                                                               | string, 0-100     | thẻ thống kê, 2 thanh nhỏ (cam / xanh dương)                            |
+| `engine`, `engineParam`                                                                                   | string            | tag "PostgreSQL" + "random_page_cost = 4" (giá trị lấy từ `randomCost`) |
+| `roadsAt`, `randomAt`, `seqAt`, `engineAt`, `multAt`, `rowsAt`, `priceAt`, `costAt`, `guessAt`, `statsAt` | cụm trong `voice` | PHẢI theo thứ tự này trong lời đọc; cụm không thấy → mốc dự phòng       |
+
+Khi `guessAt` tới, hai làn mờ đi để bong bóng và thẻ thống kê nổi. `costRoadsLayout(props).fits` false khi nhãn/công thức/thống kê tràn một dòng hoặc khối xếp chồng cao hơn 1130px.
+
+### `rowsetup` (RowSetup)
+
+Bảng orders 10.000.000 dòng, 5% đơn chờ rải đều; con trỏ chạy phải -> trái, gom đủ `limit` ô cam rồi dừng, bộ đếm lên `readCount`. Dùng chung `RowStrip` với `rowtwist`, `rowfix`.
+
+| Prop                                         | Kiểu                          | Ghi chú                                       |
+| -------------------------------------------- | ----------------------------- | --------------------------------------------- |
+| `rowCount`, `rowUnit`                        | number, string                | "10.000.000 dòng" (số định dạng dấu chấm)     |
+| `pendingPercent`, `pendingLabel`             | number 1-25, string           | chú thích "5% = đơn chờ"; cũng là tỉ lệ ô cam |
+| `code`                                       | string                        | SQL, tối đa ~4 dòng, cỡ chữ >= 40px           |
+| `readLabel`, `readCount`                     | string, number (mặc định 200) | bộ đếm "đã đọc: ~200"                         |
+| `limit`                                      | int (mặc định 10)             | số ô cam con trỏ gom trước khi dừng           |
+| `atTable`, `atCode`, `atPending`, `atCursor` | cụm trong `voice`             | lúc hiện số dòng, code, ô cam, con trỏ        |
+
+Giới hạn: `rowSetupLayout(props).fits` (số + strip + bộ đếm + code phải vừa 830x1130).
+
+### `rowtwist` (RowTwist)
+
+Công tắc "tự động duyệt" bật, ô cam trượt hết về phía cũ (trái), con trỏ chạy từ phải, mọi ô đi qua xám + nhãn "bỏ", bộ đếm vọt lên `skippedCount`. Thẻ thống kê luôn "5%". Câu giả định bị gạch đỏ.
+
+| Prop                                                                                | Kiểu                   | Ghi chú                                                                  |
+| ----------------------------------------------------------------------------------- | ---------------------- | ------------------------------------------------------------------------ |
+| `toggleLabel`, `toggleOnText`                                                       | string                 | "Tự động duyệt:" + "BẬT"                                                 |
+| `pendingPercent`, `statLabel`                                                       | number, string         | thẻ thống kê "Thống kê: vẫn 5%" (không bao giờ đổi); cũng là tỉ lệ ô cam |
+| `beliefText`                                                                        | string                 | "Database vẫn tin: ~200 đơn là đủ" (~3 dòng chữ 40px)                    |
+| `assumptionText`                                                                    | string                 | "Giả định: nằm rải đều", gạch đỏ ở `atStrike`                            |
+| `skipLabel`, `skippedLabel`, `skippedCount`                                         | string, string, number | nhãn "bỏ", "đã bỏ qua", số đo thật                                       |
+| `atToggle`, `atSlide`, `atStat`, `atBelief`, `atCursor`, `atAssumption`, `atStrike` | cụm trong `voice`      | thứ tự xuất hiện; con trỏ không bắt đầu trước khi ô cam trượt xong       |
+
+Giới hạn: `rowTwistLayout(props).fits`.
+
+### `rowfix` (RowFix)
+
+Ba bước trong một scene, cross-fade theo cue: (1) EXPLAIN, dòng "Rows Removed by Filter: N" nháy đỏ; (2) nút ANALYZE bấm, thẻ thống kê rung nhẹ rồi đóng dấu "KHÔNG ĐỔI"; (3) strip gom ô cam thành một cụm, con trỏ nhảy vào cụm gom `limit` ô, hiện code CREATE INDEX và kết quả "10 dòng".
+
+| Prop                                                                                        | Kiểu                             | Ghi chú                                                                  |
+| ------------------------------------------------------------------------------------------- | -------------------------------- | ------------------------------------------------------------------------ |
+| `explainTitle`, `explainCode`                                                               | string                           | dấu "…" ở dòng có "Rows Removed" được thay bằng `rowsRemoved` khi render |
+| `rowsRemoved`                                                                               | number                           | số đo thật                                                               |
+| `analyzeLabel`, `statLabel`, `pendingPercent`, `stampText`                                  | string, string, number, string   | bước 2                                                                   |
+| `fixCode`, `readLabel`, `limit`, `resultText`                                               | string, string, int (10), string | bước 3                                                                   |
+| `atRows`, `atAnalyze`, `atStamp`, `atStrip`, `atFixCode`, `atMorph`, `atCursor`, `atResult` | cụm trong `voice`                | `atAnalyze` và `atStrip` là ranh giới giữa các bước                      |
+
+Giới hạn: `rowFixLayout(props).fits` (cả ba bước phải vừa 830x1130; dòng EXPLAIN dài nhất nên <= ~33 ký tự để không xuống dòng ở 40px+).
+
+### indexcards
+
+Kinds of one thing (e.g. index types), one after another: the card being spoken is large and bright, earlier ones collapse into dim name chips on top. Mood default `concept`.
+
+| Prop                              | Type                                                             | Notes                                                                                                                                                                                            |
+| --------------------------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `cards`                           | 2-6 objects                                                      | In narration order                                                                                                                                                                               |
+| `cards[].name`                    | string                                                           | Card title (>= 56px)                                                                                                                                                                             |
+| `cards[].use`                     | string                                                           | One-line use (>= 40px)                                                                                                                                                                           |
+| `cards[].example`                 | string                                                           | Example chip (>= 34px)                                                                                                                                                                           |
+| `cards[].at`                      | string?                                                          | Phrase at which the card becomes active (accent/punctuation-insensitive). Pick a phrase that is unique in `voice` (e.g. "Composite: nhiều cột", not just "composite" if it is also said earlier) |
+| `cards[].extra.bars`              | 1-3 `{label, fraction 0..1, tone diagram/pending/correct/wrong}` | Size bars, `fraction` = share of the track                                                                                                                                                       |
+| `cards[].extra.barsAt` / `codeAt` | string?                                                          | Phrases at which bars grow / code appears (fallback: 25% / 50% of the card's span)                                                                                                               |
+| `cards[].extra.code` / `language` | string / `sql`                                                   | CodeBlock, 40px; lines should stay <= ~30 chars to avoid wrapping                                                                                                                                |
+
+Limits: worst-case screen (chips + active card + extras) must fit 830x1130; `indexCardsLayout(props).fits` is false otherwise.
+
+### pageslider
+
+Closing cliffhanger: SQL on top, a slider dragged from page 1 to page 10.000 with a gauge going green -> orange -> red, then the open question and a pin line. Mood default: warning.
+
+| Prop                       | Type                     | Notes                                                                                       |
+| -------------------------- | ------------------------ | ------------------------------------------------------------------------------------------- |
+| code                       | string                   | SQL, CodeBlock, >= 40px (auto 48/44/40).                                                    |
+| pageLabel                  | string                   | Default "Trang".                                                                            |
+| firstPage, lastPage        | int                      | Default 1 and 10000 (shown with dots: 10.000).                                              |
+| page1Ms, page10000Ms       | number or null, optional | Measured latency. Both set: number ticks "12 ms" -> "1.200 ms". Otherwise the labels below. |
+| page1Label, page10000Label | string                   | Defaults "vài ms" / "chậm hẳn".                                                             |
+| question                   | string                   | e.g. "Vì sao? Sửa thế nào?".                                                                |
+| pinText                    | string                   | Line next to the pin icon, e.g. "Trả lời ở bình luận".                                      |
+| dragAt, questionAt, pinAt  | phrase, optional         | Cues for the drag start, the question and the pin line.                                     |
+
+Limits: stack (code + page number + slider + question + pin line) must fit the 830x1130 CONTENT_BOX; `pageSliderLayout(props).fits` must be true (about 6 short code lines, <= ~24 chars each, at 52px at most; a 7th line drops to 46px and does not fit). Fallback timeline: drag 30%, question 60%, pin 80%; drag lasts 20-45 frames.
 
 ## Cue: hình hiện đúng lúc người đọc nói
 
