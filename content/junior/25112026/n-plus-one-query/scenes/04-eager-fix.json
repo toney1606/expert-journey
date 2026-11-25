@@ -1,0 +1,53 @@
+{
+  "id": "eager-fix",
+  "voice": "Cách sửa: bảo ORM tải trước, gọi là eager loading. Cách một: nối hai bảng bằng JOIN, hỏi một lần là xong. Cách hai: gom hết id người dùng lại, rồi hỏi một lần bằng IN. Một trăm lẻ một query còn một, hoặc hai.",
+  "props": {
+    "kicker": {
+      "label": "CÁCH SỬA",
+      "step": 4,
+      "total": 6
+    },
+    "hero": [
+      {
+        "text": "{wrong|101} query",
+        "at": "Cách sửa"
+      },
+      {
+        "text": "thành {accent|1}",
+        "at": "eager loading"
+      }
+    ],
+    "code": {
+      "text": "SELECT o.*, u.name\nFROM orders o\nJOIN users u\n  ON u.id = o.user_id",
+      "language": "sql",
+      "at": "nối hai bảng bằng JOIN"
+    },
+    "rows": [
+      {
+        "label": "Cách 1: JOIN",
+        "text": "1 query",
+        "tone": "good",
+        "mark": "check",
+        "at": "hỏi một lần là xong"
+      },
+      {
+        "label": "Cách 2: gom id + IN",
+        "text": "2 query",
+        "tone": "good",
+        "mark": "check",
+        "at": "một lần bằng IN"
+      },
+      {
+        "label": "Số đơn tăng",
+        "text": "số query không tăng",
+        "tone": "good",
+        "at": "hoặc hai"
+      }
+    ]
+  },
+  "type": "herocard",
+  "draft": {
+    "durationSec": 18
+  },
+  "mood": "solution"
+}

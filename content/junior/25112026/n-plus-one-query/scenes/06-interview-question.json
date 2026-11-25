@@ -1,0 +1,47 @@
+{
+  "id": "interview-question",
+  "voice": "Giờ đến thử thách. Danh sách mười đơn hàng, mỗi đơn một người dùng, bật lazy loading: bao nhiêu query? Vì sao gọi là N cộng một? Và bạn sửa thế nào, trước khi lên production? Câu này hay gặp khi phỏng vấn. Trả lời ở bình luận, mình ghim đáp án đúng.",
+  "props": {
+    "kicker": {
+      "label": "THỬ THÁCH",
+      "step": 6,
+      "total": 6
+    },
+    "hero": [
+      {
+        "text": "{accent|10 đơn hàng}",
+        "at": "Danh sách mười đơn hàng"
+      },
+      {
+        "text": "bao nhiêu {wrong|query}?",
+        "at": "bao nhiêu query"
+      }
+    ],
+    "rows": [
+      {
+        "text": "Vì sao là N + 1?",
+        "tone": "neutral",
+        "at": "Vì sao gọi là"
+      },
+      {
+        "text": "Sửa thế nào?",
+        "tone": "neutral",
+        "at": "bạn sửa thế nào"
+      },
+      {
+        "text": "Bắt trước khi lên production?",
+        "tone": "neutral",
+        "at": "trước khi lên production"
+      }
+    ],
+    "footer": {
+      "text": "Trả lời ở bình luận",
+      "at": "Trả lời ở bình luận"
+    }
+  },
+  "type": "herocard",
+  "draft": {
+    "durationSec": 21
+  },
+  "mood": "neutral"
+}

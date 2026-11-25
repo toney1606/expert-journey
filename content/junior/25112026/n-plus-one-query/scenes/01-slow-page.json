@@ -1,0 +1,53 @@
+{
+  "id": "slow-page",
+  "voice": "Một trăm đơn hàng, mà trang chạy một trăm lẻ một câu query. Trên máy bạn thì mượt, lên production thì chậm. Code không lỗi. Bạn bật log lên xem. Chuyện gì đang xảy ra?",
+  "props": {
+    "kicker": {
+      "label": "VẤN ĐỀ",
+      "step": 1,
+      "total": 6
+    },
+    "mono": true,
+    "hero": [
+      {
+        "text": "{accent|100 đơn hàng}",
+        "at": "Một trăm đơn hàng"
+      },
+      {
+        "text": "{wrong|101} câu query",
+        "at": "một trăm lẻ một câu query"
+      }
+    ],
+    "rows": [
+      {
+        "label": "Query 1",
+        "text": "SELECT * FROM orders",
+        "tone": "neutral",
+        "at": "Trên máy bạn thì mượt"
+      },
+      {
+        "label": "Query 2",
+        "text": "SELECT * FROM users WHERE id = 1",
+        "tone": "bad",
+        "at": "lên production thì chậm"
+      },
+      {
+        "label": "Query 3",
+        "text": "SELECT * FROM users WHERE id = 2",
+        "tone": "bad",
+        "at": "Bạn bật log lên xem"
+      },
+      {
+        "label": "Query 101",
+        "text": "SELECT * FROM users WHERE id = 100",
+        "tone": "bad",
+        "at": "Chuyện gì đang xảy ra"
+      }
+    ]
+  },
+  "type": "herocard",
+  "draft": {
+    "durationSec": 14
+  },
+  "mood": "problem"
+}

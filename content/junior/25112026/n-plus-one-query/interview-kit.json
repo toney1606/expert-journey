@@ -1,0 +1,43 @@
+{
+  "topic": "n-plus-one-query",
+  "title": "100 đơn hàng, 101 câu query",
+  "level": "junior",
+  "question": "N+1 query là gì, vì sao trang chạy mượt trên máy dev mà chậm trên production, và sửa thế nào khi dùng ORM?",
+  "followUps": [
+    "Danh sách mười đơn hàng, mỗi đơn có một người dùng, lazy loading thì chạy bao nhiêu query?",
+    "Eager loading bằng JOIN và bằng IN khác nhau thế nào, khi nào chọn cái nào?",
+    "Làm sao phát hiện N+1 trước khi lên production?",
+    "Lấy hết bằng một JOIN khổng lồ có luôn tốt hơn không?",
+    "ORM có identity map thì N+1 còn xảy ra không?"
+  ],
+  "keyPoints": [
+    "N+1 là một query lấy danh sách rồi thêm một query cho mỗi phần tử khi chạm vào quan hệ lazy: N phần tử thì N+1 query",
+    "Máy dev ít dữ liệu và database cùng máy nên không thấy; production mỗi query là một chuyến đi qua mạng và số query tăng theo số bản ghi",
+    "Sửa bằng eager loading: JOIN (1 query) hoặc gom id rồi IN (2 query), số query không tăng theo số bản ghi",
+    "Phát hiện sớm: bật log câu lệnh, hoặc viết test đếm số query của trang",
+    "JOIN có thể nhân bản dòng khi quan hệ một-nhiều (cần cân nhắc IN); id quá nhiều thì chia lô"
+  ],
+  "weakAnswer": "Chạy chậm thì thêm cache hoặc thêm server là xong.",
+  "strongAnswer": "Mười đơn hàng, mỗi đơn một người dùng, lazy loading chạy mười một query: một query lấy đơn, rồi mười query lấy từng người dùng khi vòng lặp chạm vào. Đó là N+1. Máy dev ít dữ liệu và database cùng máy nên không thấy, production thì mỗi query là một chuyến đi qua mạng và số query tăng theo số đơn. Sửa bằng eager loading: JOIN lấy một query, hoặc gom id rồi dùng IN lấy hai query. Phát hiện sớm bằng log câu lệnh hoặc test đếm số query.",
+  "pitfalls": [
+    "Thêm cache hay thêm server để che lỗi thay vì giảm số query",
+    "Eager loading mọi quan hệ ở mọi nơi, kéo về cả dữ liệu không dùng",
+    "JOIN quan hệ một-nhiều làm nhân bản dòng cha",
+    "Gom id vào IN với danh sách quá dài mà không chia lô",
+    "Chỉ thử với vài bản ghi trên máy dev nên không bao giờ thấy lỗi"
+  ],
+  "sources": [
+    {
+      "title": "Rails Guides: Active Record Query Interface (Eager Loading Associations)",
+      "url": "https://guides.rubyonrails.org/active_record_querying.html#eager-loading-associations"
+    },
+    {
+      "title": "Django Documentation: QuerySet API (select_related, prefetch_related)",
+      "url": "https://docs.djangoproject.com/en/stable/ref/models/querysets/"
+    },
+    {
+      "title": "SQLAlchemy 2.0: Relationship Loading Techniques",
+      "url": "https://docs.sqlalchemy.org/en/20/orm/queryguide/relationships.html"
+    }
+  ]
+}

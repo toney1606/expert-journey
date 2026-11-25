@@ -1,0 +1,332 @@
+{
+  "meta": {
+    "id": "25112026-n-plus-one-query",
+    "title": "100 đơn hàng, 101 câu query",
+    "topic": "n-plus-one-query",
+    "level": "junior",
+    "question": "N+1 query là gì, vì sao trang chạy mượt trên máy dev mà chậm trên production, và sửa thế nào khi dùng ORM?",
+    "status": "draft",
+    "aiVoiceLabel": true,
+    "visibility": "private"
+  },
+  "sources": [
+    {
+      "title": "Rails Guides: Active Record Query Interface (Eager Loading Associations)",
+      "url": "https://guides.rubyonrails.org/active_record_querying.html#eager-loading-associations"
+    },
+    {
+      "title": "Django Documentation: QuerySet API (select_related, prefetch_related)",
+      "url": "https://docs.djangoproject.com/en/stable/ref/models/querysets/"
+    },
+    {
+      "title": "SQLAlchemy 2.0: Relationship Loading Techniques",
+      "url": "https://docs.sqlalchemy.org/en/20/orm/queryguide/relationships.html"
+    }
+  ],
+  "scenes": [
+    {
+      "id": "slow-page",
+      "voice": "Một trăm đơn hàng, mà trang chạy một trăm lẻ một câu query. Trên máy bạn thì mượt, lên production thì chậm. Code không lỗi. Bạn bật log lên xem. Chuyện gì đang xảy ra?",
+      "props": {
+        "kicker": {
+          "label": "VẤN ĐỀ",
+          "step": 1,
+          "total": 6
+        },
+        "mono": true,
+        "hero": [
+          {
+            "text": "{accent|100 đơn hàng}",
+            "at": "Một trăm đơn hàng"
+          },
+          {
+            "text": "{wrong|101} câu query",
+            "at": "một trăm lẻ một câu query"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Query 1",
+            "text": "SELECT * FROM orders",
+            "tone": "neutral",
+            "at": "Trên máy bạn thì mượt"
+          },
+          {
+            "label": "Query 2",
+            "text": "SELECT * FROM users WHERE id = 1",
+            "tone": "bad",
+            "at": "lên production thì chậm"
+          },
+          {
+            "label": "Query 3",
+            "text": "SELECT * FROM users WHERE id = 2",
+            "tone": "bad",
+            "at": "Bạn bật log lên xem"
+          },
+          {
+            "label": "Query 101",
+            "text": "SELECT * FROM users WHERE id = 100",
+            "tone": "bad",
+            "at": "Chuyện gì đang xảy ra"
+          }
+        ]
+      },
+      "type": "herocard",
+      "draft": {
+        "durationSec": 14
+      },
+      "mood": "problem"
+    },
+    {
+      "id": "lazy-loading",
+      "voice": "ORM là thư viện giúp bạn gọi database bằng code. Nhưng nó làm một việc sau lưng bạn. Dòng đầu lấy một trăm đơn hàng, chỉ một query. Mỗi lần code hỏi: đơn này của ai, ORM lại chạy thêm một query tìm người đó. Đây là lazy loading: chạm tới mới tải.",
+      "props": {
+        "kicker": {
+          "label": "CƠ CHẾ",
+          "step": 2,
+          "total": 6
+        },
+        "hero": [
+          {
+            "text": "{accent|ORM} làm gì",
+            "at": "ORM là thư viện"
+          },
+          {
+            "text": "{wrong|sau lưng} bạn?",
+            "at": "sau lưng bạn"
+          }
+        ],
+        "code": {
+          "text": "const orders = Order.all()\nfor (const o of orders)\n  print(o.user.name)",
+          "language": "js",
+          "at": "Dòng đầu lấy"
+        },
+        "rows": [
+          {
+            "label": "Dòng đầu",
+            "text": "1 query",
+            "tone": "good",
+            "mark": "check",
+            "at": "chỉ một query"
+          },
+          {
+            "label": "Mỗi lần hỏi",
+            "text": "\"đơn của ai?\" +1 query",
+            "tone": "bad",
+            "at": "đơn này của ai"
+          },
+          {
+            "label": "Lazy loading",
+            "text": "chạm tới mới tải",
+            "tone": "neutral",
+            "at": "Đây là lazy loading"
+          }
+        ]
+      },
+      "type": "herocard",
+      "draft": {
+        "durationSec": 21
+      },
+      "mood": "concept"
+    },
+    {
+      "id": "n-plus-one",
+      "voice": "Một trăm đơn, thêm một trăm query. Một cộng một trăm, là một trăm lẻ một. Giới làm nghề gọi là lỗi N cộng một: N là số đơn, cộng một là query lấy danh sách.",
+      "props": {
+        "kicker": {
+          "label": "TÊN GỌI",
+          "step": 3,
+          "total": 6
+        },
+        "hero": [
+          {
+            "text": "Lỗi {accent|N + 1}",
+            "at": "Một trăm đơn"
+          },
+          {
+            "text": "{wrong|1 + 100} = 101",
+            "at": "Một cộng một trăm"
+          }
+        ],
+        "rows": [
+          {
+            "label": "N",
+            "text": "số đơn hàng (100)",
+            "tone": "bad",
+            "at": "N là số đơn"
+          },
+          {
+            "label": "+1",
+            "text": "query lấy danh sách",
+            "tone": "neutral",
+            "at": "cộng một là query"
+          }
+        ]
+      },
+      "type": "herocard",
+      "draft": {
+        "durationSec": 14
+      },
+      "mood": "problem"
+    },
+    {
+      "id": "eager-fix",
+      "voice": "Cách sửa: bảo ORM tải trước, gọi là eager loading. Cách một: nối hai bảng bằng JOIN, hỏi một lần là xong. Cách hai: gom hết id người dùng lại, rồi hỏi một lần bằng IN. Một trăm lẻ một query còn một, hoặc hai.",
+      "props": {
+        "kicker": {
+          "label": "CÁCH SỬA",
+          "step": 4,
+          "total": 6
+        },
+        "hero": [
+          {
+            "text": "{wrong|101} query",
+            "at": "Cách sửa"
+          },
+          {
+            "text": "thành {accent|1}",
+            "at": "eager loading"
+          }
+        ],
+        "code": {
+          "text": "SELECT o.*, u.name\nFROM orders o\nJOIN users u\n  ON u.id = o.user_id",
+          "language": "sql",
+          "at": "nối hai bảng bằng JOIN"
+        },
+        "rows": [
+          {
+            "label": "Cách 1: JOIN",
+            "text": "1 query",
+            "tone": "good",
+            "mark": "check",
+            "at": "hỏi một lần là xong"
+          },
+          {
+            "label": "Cách 2: gom id + IN",
+            "text": "2 query",
+            "tone": "good",
+            "mark": "check",
+            "at": "một lần bằng IN"
+          },
+          {
+            "label": "Số đơn tăng",
+            "text": "số query không tăng",
+            "tone": "good",
+            "at": "hoặc hai"
+          }
+        ]
+      },
+      "type": "herocard",
+      "draft": {
+        "durationSec": 18
+      },
+      "mood": "solution"
+    },
+    {
+      "id": "why-prod",
+      "voice": "Vì sao máy bạn không thấy? Trên máy dev chỉ có vài đơn, database nằm ngay cùng máy. Trên production, mỗi query là một chuyến đi qua mạng, như đi siêu thị mua một trăm món mà đi một trăm chuyến. Hai trăm đơn thì hai trăm lẻ một query. Cách bắt sớm: bật log câu lệnh, hoặc viết test đếm số query.",
+      "props": {
+        "kicker": {
+          "label": "VÌ SAO",
+          "step": 5,
+          "total": 6
+        },
+        "hero": [
+          {
+            "text": "Máy dev {accent|không thấy}",
+            "at": "Vì sao máy bạn không thấy"
+          },
+          {
+            "text": "production {wrong|thấy rõ}",
+            "at": "Trên máy dev"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Máy dev",
+            "text": "vài đơn, không qua mạng",
+            "tone": "neutral",
+            "at": "chỉ có vài đơn"
+          },
+          {
+            "label": "Production",
+            "text": "mỗi query đi qua mạng",
+            "tone": "bad",
+            "at": "một chuyến đi qua mạng"
+          },
+          {
+            "label": "Như đi siêu thị",
+            "text": "mua 100 món, đi 100 chuyến",
+            "tone": "bad",
+            "at": "mua một trăm món"
+          },
+          {
+            "label": "200 đơn",
+            "text": "201 query",
+            "tone": "bad",
+            "at": "Hai trăm đơn"
+          },
+          {
+            "label": "Bắt sớm",
+            "text": "log query, test đếm query",
+            "tone": "good",
+            "mark": "check",
+            "at": "Cách bắt sớm"
+          }
+        ]
+      },
+      "type": "herocard",
+      "draft": {
+        "durationSec": 25
+      },
+      "mood": "warning"
+    },
+    {
+      "id": "interview-question",
+      "voice": "Giờ đến thử thách. Danh sách mười đơn hàng, mỗi đơn một người dùng, bật lazy loading: bao nhiêu query? Vì sao gọi là N cộng một? Và bạn sửa thế nào, trước khi lên production? Câu này hay gặp khi phỏng vấn. Trả lời ở bình luận, mình ghim đáp án đúng.",
+      "props": {
+        "kicker": {
+          "label": "THỬ THÁCH",
+          "step": 6,
+          "total": 6
+        },
+        "hero": [
+          {
+            "text": "{accent|10 đơn hàng}",
+            "at": "Danh sách mười đơn hàng"
+          },
+          {
+            "text": "bao nhiêu {wrong|query}?",
+            "at": "bao nhiêu query"
+          }
+        ],
+        "rows": [
+          {
+            "text": "Vì sao là N + 1?",
+            "tone": "neutral",
+            "at": "Vì sao gọi là"
+          },
+          {
+            "text": "Sửa thế nào?",
+            "tone": "neutral",
+            "at": "bạn sửa thế nào"
+          },
+          {
+            "text": "Bắt trước khi lên production?",
+            "tone": "neutral",
+            "at": "trước khi lên production"
+          }
+        ],
+        "footer": {
+          "text": "Trả lời ở bình luận",
+          "at": "Trả lời ở bình luận"
+        }
+      },
+      "type": "herocard",
+      "draft": {
+        "durationSec": 21
+      },
+      "mood": "neutral"
+    }
+  ]
+}

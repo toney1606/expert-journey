@@ -1,0 +1,52 @@
+{
+  "id": "lazy-loading",
+  "voice": "ORM là thư viện giúp bạn gọi database bằng code. Nhưng nó làm một việc sau lưng bạn. Dòng đầu lấy một trăm đơn hàng, chỉ một query. Mỗi lần code hỏi: đơn này của ai, ORM lại chạy thêm một query tìm người đó. Đây là lazy loading: chạm tới mới tải.",
+  "props": {
+    "kicker": {
+      "label": "CƠ CHẾ",
+      "step": 2,
+      "total": 6
+    },
+    "hero": [
+      {
+        "text": "{accent|ORM} làm gì",
+        "at": "ORM là thư viện"
+      },
+      {
+        "text": "{wrong|sau lưng} bạn?",
+        "at": "sau lưng bạn"
+      }
+    ],
+    "code": {
+      "text": "const orders = Order.all()\nfor (const o of orders)\n  print(o.user.name)",
+      "language": "js",
+      "at": "Dòng đầu lấy"
+    },
+    "rows": [
+      {
+        "label": "Dòng đầu",
+        "text": "1 query",
+        "tone": "good",
+        "mark": "check",
+        "at": "chỉ một query"
+      },
+      {
+        "label": "Mỗi lần hỏi",
+        "text": "\"đơn của ai?\" +1 query",
+        "tone": "bad",
+        "at": "đơn này của ai"
+      },
+      {
+        "label": "Lazy loading",
+        "text": "chạm tới mới tải",
+        "tone": "neutral",
+        "at": "Đây là lazy loading"
+      }
+    ]
+  },
+  "type": "herocard",
+  "draft": {
+    "durationSec": 21
+  },
+  "mood": "concept"
+}

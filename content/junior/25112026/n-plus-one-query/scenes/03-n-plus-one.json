@@ -1,0 +1,40 @@
+{
+  "id": "n-plus-one",
+  "voice": "Một trăm đơn, thêm một trăm query. Một cộng một trăm, là một trăm lẻ một. Giới làm nghề gọi là lỗi N cộng một: N là số đơn, cộng một là query lấy danh sách.",
+  "props": {
+    "kicker": {
+      "label": "TÊN GỌI",
+      "step": 3,
+      "total": 6
+    },
+    "hero": [
+      {
+        "text": "Lỗi {accent|N + 1}",
+        "at": "Một trăm đơn"
+      },
+      {
+        "text": "{wrong|1 + 100} = 101",
+        "at": "Một cộng một trăm"
+      }
+    ],
+    "rows": [
+      {
+        "label": "N",
+        "text": "số đơn hàng (100)",
+        "tone": "bad",
+        "at": "N là số đơn"
+      },
+      {
+        "label": "+1",
+        "text": "query lấy danh sách",
+        "tone": "neutral",
+        "at": "cộng một là query"
+      }
+    ]
+  },
+  "type": "herocard",
+  "draft": {
+    "durationSec": 14
+  },
+  "mood": "problem"
+}

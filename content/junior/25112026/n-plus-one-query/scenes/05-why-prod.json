@@ -1,0 +1,59 @@
+{
+  "id": "why-prod",
+  "voice": "Vì sao máy bạn không thấy? Trên máy dev chỉ có vài đơn, database nằm ngay cùng máy. Trên production, mỗi query là một chuyến đi qua mạng, như đi siêu thị mua một trăm món mà đi một trăm chuyến. Hai trăm đơn thì hai trăm lẻ một query. Cách bắt sớm: bật log câu lệnh, hoặc viết test đếm số query.",
+  "props": {
+    "kicker": {
+      "label": "VÌ SAO",
+      "step": 5,
+      "total": 6
+    },
+    "hero": [
+      {
+        "text": "Máy dev {accent|không thấy}",
+        "at": "Vì sao máy bạn không thấy"
+      },
+      {
+        "text": "production {wrong|thấy rõ}",
+        "at": "Trên máy dev"
+      }
+    ],
+    "rows": [
+      {
+        "label": "Máy dev",
+        "text": "vài đơn, không qua mạng",
+        "tone": "neutral",
+        "at": "chỉ có vài đơn"
+      },
+      {
+        "label": "Production",
+        "text": "mỗi query đi qua mạng",
+        "tone": "bad",
+        "at": "một chuyến đi qua mạng"
+      },
+      {
+        "label": "Như đi siêu thị",
+        "text": "mua 100 món, đi 100 chuyến",
+        "tone": "bad",
+        "at": "mua một trăm món"
+      },
+      {
+        "label": "200 đơn",
+        "text": "201 query",
+        "tone": "bad",
+        "at": "Hai trăm đơn"
+      },
+      {
+        "label": "Bắt sớm",
+        "text": "log query, test đếm query",
+        "tone": "good",
+        "mark": "check",
+        "at": "Cách bắt sớm"
+      }
+    ]
+  },
+  "type": "herocard",
+  "draft": {
+    "durationSec": 25
+  },
+  "mood": "warning"
+}
