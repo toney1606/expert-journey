@@ -1,0 +1,27 @@
+{
+  "id": "timeout-flow",
+  "type": "timeoutflow",
+  "voice": "Yêu cầu tới server, server trừ tiền thành công. Nhưng mạng chậm, câu trả lời không về kịp. Ứng dụng chờ mãi, hết thời gian, và nghĩ: chắc hỏng rồi, thử lại. Yêu cầu thứ hai tới server. Nó không biết đây là lần thử lại, thấy một yêu cầu thanh toán mới, và trừ tiền lần nữa. Nhớ điều này: hết thời gian chờ không có nghĩa là thất bại. Ứng dụng chỉ biết nó không nhận được câu trả lời, không biết server đã làm hay chưa.",
+  "draft": { "durationSec": 29 },
+  "mood": "neutral",
+  "props": {
+    "kicker": { "label": "DIỄN BIẾN", "step": 2, "total": 5 },
+    "hero": "{accent|Timeout} ≠ {wrong|thất bại}",
+    "clientLabel": "Client",
+    "serverLabel": "Server",
+    "requestLabel": "Thanh toán 500.000đ",
+    "chargeLabel": "Trừ tiền",
+    "counterLabel": "Đã trừ:",
+    "lostLabel": "Phản hồi không về kịp",
+    "timeoutLabel": "Chờ… hết giờ",
+    "retryLabel": "Thử lại",
+    "chargeAgainLabel": "Trừ tiền lần 2",
+    "requestAt": "Yêu cầu tới server",
+    "chargeAt": "server trừ tiền thành công",
+    "lostAt": "câu trả lời không về kịp",
+    "timeoutAt": "Ứng dụng chờ mãi",
+    "retryAt": "Yêu cầu thứ hai tới server",
+    "chargeAgainAt": "trừ tiền lần nữa",
+    "lessonAt": "Ứng dụng chỉ biết nó không nhận được câu trả lời"
+  }
+}

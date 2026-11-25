@@ -1,0 +1,37 @@
+{
+  "id": "idempotency-key",
+  "type": "idemkey",
+  "voice": "Cách sửa: mỗi lần bấm thanh toán, ứng dụng tạo một mã riêng, gọi là idempotency key, và gửi kèm theo yêu cầu. Thử lại mười lần, vẫn cùng một mã. Server lưu lại mã này. Gặp mã đã xử lý, nó không trừ tiền nữa, mà trả lại đúng kết quả của lần đầu. Nhiều cổng thanh toán hỗ trợ sẵn cơ chế này.",
+  "draft": { "durationSec": 17 },
+  "mood": "neutral",
+  "props": {
+    "hero": ["{accent|Cùng một mã}", "Chỉ trừ {wrong|một lần}"],
+    "keyLabel": "Idempotency-Key:",
+    "keyValue": "a1b2-c3d4",
+    "counterLabel": "Trừ tiền",
+    "retryBadge": "×10",
+    "lane1": {
+      "title": "Lần 1",
+      "note": "chưa có mã",
+      "ledger": "a1b2-c3d4 → đã trừ",
+      "outcome": "→ trừ tiền, lưu kết quả"
+    },
+    "lane2": {
+      "title": "Lần 2",
+      "note": "đã có mã",
+      "stamp": "ĐÃ CÓ MÃ",
+      "returnText": "trả kết quả cũ",
+      "outcome": "KHÔNG trừ tiền"
+    },
+    "heroAt": "Cách sửa",
+    "lanesAt": "mỗi lần bấm thanh toán",
+    "chipAt": "gọi là idempotency key",
+    "sendAt": "gửi kèm theo yêu cầu",
+    "retryAt": "Thử lại mười lần",
+    "saveAt": "Server lưu lại mã này",
+    "stampAt": "Gặp mã đã xử lý",
+    "noChargeAt": "không trừ tiền nữa",
+    "returnAt": "trả lại đúng kết quả",
+    "kicker": { "label": "CÁCH SỬA", "step": 3, "total": 5 }
+  }
+}

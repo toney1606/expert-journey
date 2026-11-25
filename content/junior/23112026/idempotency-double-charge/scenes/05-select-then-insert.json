@@ -1,0 +1,25 @@
+{
+  "id": "select-then-insert",
+  "type": "racegap",
+  "voice": "Giờ đến câu hỏi phỏng vấn. Nhiều người kiểm tra trước: chạy SELECT xem mã đã có chưa, chưa có thì INSERT. Nghe rất hợp lý. Nhưng nếu lần thử lại đến khi lần đầu còn đang xử lý, khách vẫn bị trừ tiền hai lần. Vì sao? Trả lời ở bình luận, mình sẽ ghim đáp án đúng.",
+  "draft": {
+    "durationSec": 17
+  },
+  "mood": "neutral",
+  "props": {
+    "heroTop": "{accent|SELECT rồi INSERT}",
+    "heroBottom": "vì sao vẫn {wrong|lọt}?",
+    "code": "SELECT 1 FROM payments\nWHERE idempotency_key =\n  'a1b2-c3d4';\n-- không có dòng nào?\n-- → INSERT ...",
+    "request1Label": "Yêu cầu 1: đang xử lý…",
+    "request2Label": "Yêu cầu 2 (thử lại)",
+    "pinText": "Trả lời ở bình luận",
+    "heroAt": "Giờ đến câu hỏi phỏng vấn",
+    "codeAt": "chạy SELECT xem mã",
+    "gapAt": "Nghe rất hợp lý",
+    "request1At": "Nhưng nếu",
+    "request2At": "lần thử lại",
+    "whyAt": "Vì sao",
+    "pinAt": "Trả lời ở bình luận",
+    "kicker": { "label": "THỬ THÁCH", "step": 5, "total": 5 }
+  }
+}

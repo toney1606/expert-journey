@@ -1,0 +1,201 @@
+{
+  "meta": {
+    "id": "23112026-idempotency-double-charge",
+    "title": "Bấm thanh toán hai lần, bị trừ hai lần",
+    "topic": "idempotency-double-charge",
+    "level": "junior",
+    "question": "Client timeout rồi gọi lại API thanh toán: làm sao không trừ tiền hai lần, và vì sao SELECT rồi INSERT vẫn lọt?",
+    "status": "draft",
+    "aiVoiceLabel": true,
+    "visibility": "private"
+  },
+  "sources": [
+    {
+      "title": "Stripe API: Idempotent requests",
+      "url": "https://docs.stripe.com/api/idempotent_requests"
+    },
+    {
+      "title": "MDN: Idempotent",
+      "url": "https://developer.mozilla.org/en-US/docs/Glossary/Idempotent"
+    },
+    {
+      "title": "PostgreSQL Documentation: Unique Constraints",
+      "url": "https://www.postgresql.org/docs/current/ddl-constraints.html#DDL-CONSTRAINTS-UNIQUE-CONSTRAINTS"
+    }
+  ],
+  "scenes": [
+    {
+      "id": "double-charge",
+      "type": "paymenthook",
+      "voice": "Tiền khách bị trừ hai lần. Khách chỉ bấm một lần. Server báo thành công. Database báo thành công. Không một dòng log đỏ. Code chạy đúng hết, vậy lỗi ở đâu?",
+      "draft": {
+        "durationSec": 11
+      },
+      "mood": "neutral",
+      "props": {
+        "moneyLabel": "−500.000đ",
+        "badgeText": "×2",
+        "chargedLine": "Bị trừ {wrong|2 lần}.",
+        "tappedLine": "Bấm {accent|1 lần}.",
+        "tapLabel": "1 tap",
+        "chargeAt": "Tiền khách bị trừ",
+        "chargeAgainAt": "hai lần",
+        "tapAt": "Khách chỉ bấm một lần",
+        "logs": [
+          {
+            "text": "POST /pay → 200 OK",
+            "at": "Server báo thành công"
+          },
+          {
+            "text": "INSERT payments → OK",
+            "at": "Database báo thành công"
+          },
+          {
+            "text": "Không có dòng lỗi nào",
+            "at": "Không một dòng log đỏ"
+          }
+        ],
+        "question": "Lỗi ở {accent|đâu}?",
+        "questionAt": "vậy lỗi ở đâu",
+        "kicker": {
+          "label": "VẤN ĐỀ",
+          "step": 1,
+          "total": 5
+        }
+      }
+    },
+    {
+      "id": "timeout-flow",
+      "type": "timeoutflow",
+      "voice": "Yêu cầu tới server, server trừ tiền thành công. Nhưng mạng chậm, câu trả lời không về kịp. Ứng dụng chờ mãi, hết thời gian, và nghĩ: chắc hỏng rồi, thử lại. Yêu cầu thứ hai tới server. Nó không biết đây là lần thử lại, thấy một yêu cầu thanh toán mới, và trừ tiền lần nữa. Nhớ điều này: hết thời gian chờ không có nghĩa là thất bại. Ứng dụng chỉ biết nó không nhận được câu trả lời, không biết server đã làm hay chưa.",
+      "draft": {
+        "durationSec": 29
+      },
+      "mood": "neutral",
+      "props": {
+        "kicker": {
+          "label": "DIỄN BIẾN",
+          "step": 2,
+          "total": 5
+        },
+        "hero": "{accent|Timeout} ≠ {wrong|thất bại}",
+        "clientLabel": "Client",
+        "serverLabel": "Server",
+        "requestLabel": "Thanh toán 500.000đ",
+        "chargeLabel": "Trừ tiền",
+        "counterLabel": "Đã trừ:",
+        "lostLabel": "Phản hồi không về kịp",
+        "timeoutLabel": "Chờ… hết giờ",
+        "retryLabel": "Thử lại",
+        "chargeAgainLabel": "Trừ tiền lần 2",
+        "requestAt": "Yêu cầu tới server",
+        "chargeAt": "server trừ tiền thành công",
+        "lostAt": "câu trả lời không về kịp",
+        "timeoutAt": "Ứng dụng chờ mãi",
+        "retryAt": "Yêu cầu thứ hai tới server",
+        "chargeAgainAt": "trừ tiền lần nữa",
+        "lessonAt": "Ứng dụng chỉ biết nó không nhận được câu trả lời"
+      }
+    },
+    {
+      "id": "idempotency-key",
+      "type": "idemkey",
+      "voice": "Cách sửa: mỗi lần bấm thanh toán, ứng dụng tạo một mã riêng, gọi là idempotency key, và gửi kèm theo yêu cầu. Thử lại mười lần, vẫn cùng một mã. Server lưu lại mã này. Gặp mã đã xử lý, nó không trừ tiền nữa, mà trả lại đúng kết quả của lần đầu. Nhiều cổng thanh toán hỗ trợ sẵn cơ chế này.",
+      "draft": {
+        "durationSec": 17
+      },
+      "mood": "neutral",
+      "props": {
+        "hero": ["{accent|Cùng một mã}", "Chỉ trừ {wrong|một lần}"],
+        "keyLabel": "Idempotency-Key:",
+        "keyValue": "a1b2-c3d4",
+        "counterLabel": "Trừ tiền",
+        "retryBadge": "×10",
+        "lane1": {
+          "title": "Lần 1",
+          "note": "chưa có mã",
+          "ledger": "a1b2-c3d4 → đã trừ",
+          "outcome": "→ trừ tiền, lưu kết quả"
+        },
+        "lane2": {
+          "title": "Lần 2",
+          "note": "đã có mã",
+          "stamp": "ĐÃ CÓ MÃ",
+          "returnText": "trả kết quả cũ",
+          "outcome": "KHÔNG trừ tiền"
+        },
+        "heroAt": "Cách sửa",
+        "lanesAt": "mỗi lần bấm thanh toán",
+        "chipAt": "gọi là idempotency key",
+        "sendAt": "gửi kèm theo yêu cầu",
+        "retryAt": "Thử lại mười lần",
+        "saveAt": "Server lưu lại mã này",
+        "stampAt": "Gặp mã đã xử lý",
+        "noChargeAt": "không trừ tiền nữa",
+        "returnAt": "trả lại đúng kết quả",
+        "kicker": {
+          "label": "CÁCH SỬA",
+          "step": 3,
+          "total": 5
+        }
+      }
+    },
+    {
+      "id": "unique-constraint",
+      "type": "uniquekey",
+      "voice": "Nhưng chỉ kiểm tra trong code thì chưa đủ. Chốt chặn cuối cùng phải nằm ở database: đặt ràng buộc duy nhất trên cột mã này. Dù code có sai, database cũng không cho phép có hai dòng cùng một mã.",
+      "draft": {
+        "durationSec": 12
+      },
+      "mood": "neutral",
+      "props": {
+        "code": "ALTER TABLE payments\nADD CONSTRAINT\n  uq_payments_idem_key\nUNIQUE (idempotency_key);",
+        "hero": ["Chốt chặn {wrong|cuối}:", "{accent|database}"],
+        "tableName": "payments",
+        "header": "mã · số tiền",
+        "rowOk": "a1b2-c3d4 · 500.000đ",
+        "rowDup": "a1b2-c3d4 · 500.000đ",
+        "badge": "TỪ CHỐI",
+        "heroAt": ["Chốt chặn cuối cùng", "nằm ở database"],
+        "codeAt": "đặt ràng buộc duy nhất",
+        "rowOkAt": "Dù code có sai",
+        "rowDupAt": "database cũng không",
+        "badgeAt": "không cho phép có hai dòng",
+        "kicker": {
+          "label": "CHỐT CHẶN",
+          "step": 4,
+          "total": 5
+        }
+      }
+    },
+    {
+      "id": "select-then-insert",
+      "type": "racegap",
+      "voice": "Giờ đến câu hỏi phỏng vấn. Nhiều người kiểm tra trước: chạy SELECT xem mã đã có chưa, chưa có thì INSERT. Nghe rất hợp lý. Nhưng nếu lần thử lại đến khi lần đầu còn đang xử lý, khách vẫn bị trừ tiền hai lần. Vì sao? Trả lời ở bình luận, mình sẽ ghim đáp án đúng.",
+      "draft": {
+        "durationSec": 17
+      },
+      "mood": "neutral",
+      "props": {
+        "heroTop": "{accent|SELECT rồi INSERT}",
+        "heroBottom": "vì sao vẫn {wrong|lọt}?",
+        "code": "SELECT 1 FROM payments\nWHERE idempotency_key =\n  'a1b2-c3d4';\n-- không có dòng nào?\n-- → INSERT ...",
+        "request1Label": "Yêu cầu 1: đang xử lý…",
+        "request2Label": "Yêu cầu 2 (thử lại)",
+        "pinText": "Trả lời ở bình luận",
+        "heroAt": "Giờ đến câu hỏi phỏng vấn",
+        "codeAt": "chạy SELECT xem mã",
+        "gapAt": "Nghe rất hợp lý",
+        "request1At": "Nhưng nếu",
+        "request2At": "lần thử lại",
+        "whyAt": "Vì sao",
+        "pinAt": "Trả lời ở bình luận",
+        "kicker": {
+          "label": "THỬ THÁCH",
+          "step": 5,
+          "total": 5
+        }
+      }
+    }
+  ]
+}

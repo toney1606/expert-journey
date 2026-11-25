@@ -1,0 +1,25 @@
+{
+  "id": "double-charge",
+  "type": "paymenthook",
+  "voice": "Tiền khách bị trừ hai lần. Khách chỉ bấm một lần. Server báo thành công. Database báo thành công. Không một dòng log đỏ. Code chạy đúng hết, vậy lỗi ở đâu?",
+  "draft": { "durationSec": 11 },
+  "mood": "neutral",
+  "props": {
+    "moneyLabel": "−500.000đ",
+    "badgeText": "×2",
+    "chargedLine": "Bị trừ {wrong|2 lần}.",
+    "tappedLine": "Bấm {accent|1 lần}.",
+    "tapLabel": "1 tap",
+    "chargeAt": "Tiền khách bị trừ",
+    "chargeAgainAt": "hai lần",
+    "tapAt": "Khách chỉ bấm một lần",
+    "logs": [
+      { "text": "POST /pay → 200 OK", "at": "Server báo thành công" },
+      { "text": "INSERT payments → OK", "at": "Database báo thành công" },
+      { "text": "Không có dòng lỗi nào", "at": "Không một dòng log đỏ" }
+    ],
+    "question": "Lỗi ở {accent|đâu}?",
+    "questionAt": "vậy lỗi ở đâu",
+    "kicker": { "label": "VẤN ĐỀ", "step": 1, "total": 5 }
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "topic": "idempotency-double-charge",
+  "title": "Bấm thanh toán hai lần, bị trừ hai lần",
+  "level": "junior",
+  "question": "Client timeout rồi gọi lại API thanh toán: làm sao không trừ tiền hai lần, và vì sao SELECT rồi INSERT vẫn lọt?",
+  "followUps": [
+    "Idempotency key do client hay server sinh, vì sao?",
+    "Hai request cùng key đến cùng lúc thì chuyện gì xảy ra?",
+    "Key nên lưu bao lâu, lưu ở đâu?",
+    "Cùng key nhưng khác body thì server nên làm gì?"
+  ],
+  "keyPoints": [
+    "Timeout không có nghĩa là thất bại: client chỉ biết mình không nhận được phản hồi",
+    "Server không phân biệt được retry với yêu cầu mới nếu không có mã",
+    "Idempotency key: cùng mã thì trả lại kết quả của lần đầu, không xử lý lại",
+    "Kiểm tra trong code là chưa đủ: chốt chặn cuối là ràng buộc UNIQUE ở database",
+    "SELECT rồi INSERT có khoảng hở giữa hai câu lệnh, hai request có thể cùng lọt qua"
+  ],
+  "weakAnswer": "Disable nút thanh toán sau khi bấm, hoặc SELECT kiểm tra trước rồi mới INSERT.",
+  "strongAnswer": "Client sinh idempotency key cho mỗi lần thanh toán và gửi lại cùng key khi retry. Server lưu key cùng kết quả; gặp key đã xử lý thì trả kết quả cũ. Đặt UNIQUE trên cột key để database chặn dòng trùng kể cả khi hai request chạy song song, vì SELECT rồi INSERT có khoảng hở giữa hai câu lệnh.",
+  "pitfalls": [
+    "Chỉ disable nút ở giao diện, retry của mạng và client vẫn gửi lại",
+    "Kiểm tra key bằng SELECT rồi INSERT, không có ràng buộc UNIQUE",
+    "Trả lỗi cho request trùng key thay vì trả kết quả của lần đầu"
+  ],
+  "sources": [
+    {
+      "title": "Stripe API: Idempotent requests",
+      "url": "https://docs.stripe.com/api/idempotent_requests"
+    },
+    {
+      "title": "MDN: Idempotent",
+      "url": "https://developer.mozilla.org/en-US/docs/Glossary/Idempotent"
+    },
+    {
+      "title": "PostgreSQL Documentation: Unique Constraints",
+      "url": "https://www.postgresql.org/docs/current/ddl-constraints.html#DDL-CONSTRAINTS-UNIQUE-CONSTRAINTS"
+    }
+  ]
+}

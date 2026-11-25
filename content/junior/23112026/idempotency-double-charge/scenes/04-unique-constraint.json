@@ -1,0 +1,24 @@
+{
+  "id": "unique-constraint",
+  "type": "uniquekey",
+  "voice": "Nhưng chỉ kiểm tra trong code thì chưa đủ. Chốt chặn cuối cùng phải nằm ở database: đặt ràng buộc duy nhất trên cột mã này. Dù code có sai, database cũng không cho phép có hai dòng cùng một mã.",
+  "draft": {
+    "durationSec": 12
+  },
+  "mood": "neutral",
+  "props": {
+    "code": "ALTER TABLE payments\nADD CONSTRAINT\n  uq_payments_idem_key\nUNIQUE (idempotency_key);",
+    "hero": ["Chốt chặn {wrong|cuối}:", "{accent|database}"],
+    "tableName": "payments",
+    "header": "mã · số tiền",
+    "rowOk": "a1b2-c3d4 · 500.000đ",
+    "rowDup": "a1b2-c3d4 · 500.000đ",
+    "badge": "TỪ CHỐI",
+    "heroAt": ["Chốt chặn cuối cùng", "nằm ở database"],
+    "codeAt": "đặt ràng buộc duy nhất",
+    "rowOkAt": "Dù code có sai",
+    "rowDupAt": "database cũng không",
+    "badgeAt": "không cho phép có hai dòng",
+    "kicker": { "label": "CHỐT CHẶN", "step": 4, "total": 5 }
+  }
+}
