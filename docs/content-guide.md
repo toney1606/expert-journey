@@ -37,15 +37,15 @@ Run `pnpm validate` after every edit.
 
 Mọi scene có chung các field:
 
-| Field               | Kiểu / ràng buộc                                                                                                                                                                                            |
-| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `id`                | slug, duy nhất trong video                                                                                                                                                                                  |
-| `type`              | `hook`, `diagram`, `code`, `terminal`, `tradeoff`, `summary`, `stat`, `compare`, `callout`, `endcard`, `counterhook`, `pagetree`, `costroads`, `rowsetup`, `rowtwist`, `rowfix`, `indexcards`, `pageslider` |
-| `mood`              | tùy chọn: `neutral`, `problem`, `concept`, `solution`, `warning` (màu nền, xem mục Mood)                                                                                                                    |
-| `voice`             | string không rỗng, lời đọc (tiếng Việt, thuật ngữ giữ tiếng Anh)                                                                                                                                            |
-| `props`             | tùy `type`, xem bên dưới                                                                                                                                                                                    |
-| `sources`           | tùy chọn, mảng `{ title, url? }`                                                                                                                                                                            |
-| `draft.durationSec` | số > 0 và <= 120, thời lượng tạm khi chưa có audio                                                                                                                                                          |
+| Field               | Kiểu / ràng buộc                                                                                                                                                                                                        |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`                | slug, duy nhất trong video                                                                                                                                                                                              |
+| `type`              | `hook`, `diagram`, `code`, `terminal`, `tradeoff`, `summary`, `stat`, `compare`, `callout`, `endcard`, `counterhook`, `pagetree`, `costroads`, `rowsetup`, `rowtwist`, `rowfix`, `indexcards`, `pageslider`, `herocard` |
+| `mood`              | tùy chọn: `neutral`, `problem`, `concept`, `solution`, `warning` (màu nền, xem mục Mood)                                                                                                                                |
+| `voice`             | string không rỗng, lời đọc (tiếng Việt, thuật ngữ giữ tiếng Anh)                                                                                                                                                        |
+| `props`             | tùy `type`, xem bên dưới                                                                                                                                                                                                |
+| `sources`           | tùy chọn, mảng `{ title, url? }`                                                                                                                                                                                        |
+| `draft.durationSec` | số > 0 và <= 120, thời lượng tạm khi chưa có audio                                                                                                                                                                      |
 
 Định nghĩa: `src/schemas/common.ts`, `src/schemas/video.ts`, và `src/scenes/<Scene>/schema.ts`.
 
@@ -578,6 +578,23 @@ Closing cliffhanger: SQL on top, a slider dragged from page 1 to page 10.000 wit
 | dragAt, questionAt, pinAt  | phrase, optional         | Cues for the drag start, the question and the pin line.                                     |
 
 Limits: stack (code + page number + slider + question + pin line) must fit the 830x1130 CONTENT_BOX; `pageSliderLayout(props).fits` must be true (about 6 short code lines, <= ~24 chars each, at 52px at most; a 7th line drops to 46px and does not fit). Fallback timeline: drag 30%, question 60%, pin 80%; drag lasts 20-45 frames.
+
+### herocard
+
+Generic "hero + card" scene (code: `src/scenes/HeroCard/`, layout `layout.ts`, cues `timeline.ts`): kicker chip with progress dots, a one or two line hero with one yellow and one red word, then a card made of an optional code block, rows and a footer. Used by the payment videos; usable for any "bold claim + evidence" screen. Mood default: concept.
+
+| Prop     | Type                                              | Notes                                                                                                                                                                           |
+| -------- | ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| kicker   | `{label, step, total}`, optional                  | Same chip and dots as every video 1 scene.                                                                                                                                      |
+| hero     | 1-2 of `{text, at?}`                              | `text` supports `{accent\|..}` (yellow, glow) and `{wrong\|..}` (red). Each line is sized to the width (max 112px, min 48px); line 2 is never larger than line 1.               |
+| code     | `{text, language = "sql", at?}`, optional         | CodeBlock (46-40px). Put line breaks yourself: a line longer than ~33 characters wraps at 40px.                                                                                 |
+| rows     | 1-6 of `{label?, text, tone, mark?, badge?, at?}` | `tone` good/bad/neutral. `mark` check/cross (SVG, no font glyph). `badge` = solid chip at the end (e.g. "TỪ CHỐI"). `label` = muted 44px text, inline when it fits, else above. |
+| mono     | boolean, default false                            | Rows in the code font (log lines).                                                                                                                                              |
+| numbered | boolean, default false                            | Number circle 1..n in front of each row (flow steps).                                                                                                                           |
+| footer   | `{text, at?}`, optional                           | Yellow card with a pin icon (call to action, e.g. "Trả lời ở bình luận").                                                                                                       |
+
+Needs at least one of `code`, `rows`, `footer`. Reveal order: hero lines, code, rows, footer; each item pops at its `at` phrase, otherwise the fallback timeline spreads them from 3% to 80% of the scene, and cues are kept in this order (a later item never appears before an earlier one).
+Limits: `heroCardLayout(props).fits` must be true (kicker + hero + code + rows + footer in 830x1130; rows of at most 3 wrapped lines, preferably 2; row text 56-44px). Six two-line rows do not fit; short labels share the line with the text, which is what makes six steps fit.
 
 ## Cue: hình hiện đúng lúc người đọc nói
 

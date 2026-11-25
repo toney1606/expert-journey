@@ -17,6 +17,12 @@ import { RowTwistSceneSchema } from '../scenes/RowTwist/schema';
 import { RowFixSceneSchema } from '../scenes/RowFix/schema';
 import { IndexCardsSceneSchema } from '../scenes/IndexCards/schema';
 import { PageSliderSceneSchema } from '../scenes/PageSlider/schema';
+import { HeroCardSceneSchema } from '../scenes/HeroCard/schema';
+import { PaymentHookSceneSchema } from '../scenes/PaymentHook/schema';
+import { TimeoutFlowSceneSchema } from '../scenes/TimeoutFlow/schema';
+import { IdemKeySceneSchema } from '../scenes/IdemKey/schema';
+import { UniqueKeySceneSchema } from '../scenes/UniqueKey/schema';
+import { RaceGapSceneSchema } from '../scenes/RaceGap/schema';
 import { LevelSchema, SlugSchema, SourcesSchema } from './common';
 
 export const SceneSchema = z.discriminatedUnion('type', [
@@ -38,6 +44,12 @@ export const SceneSchema = z.discriminatedUnion('type', [
   RowFixSceneSchema,
   IndexCardsSceneSchema,
   PageSliderSceneSchema,
+  HeroCardSceneSchema,
+  PaymentHookSceneSchema,
+  TimeoutFlowSceneSchema,
+  IdemKeySceneSchema,
+  UniqueKeySceneSchema,
+  RaceGapSceneSchema,
 ]);
 
 export const VideoMetaSchema = z.strictObject({

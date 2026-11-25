@@ -50,6 +50,12 @@ const SCENE_MOODS: Record<string, Mood> = {
   rowfix: 'solution',
   indexcards: 'concept',
   pageslider: 'warning',
+  herocard: 'concept',
+  paymenthook: 'neutral',
+  timeoutflow: 'neutral',
+  idemkey: 'neutral',
+  uniquekey: 'neutral',
+  racegap: 'neutral',
 };
 
 /** Natural mood of a scene type; callouts depend on `props.kind`. */

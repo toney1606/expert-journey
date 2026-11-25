@@ -13,6 +13,12 @@ import { RowTwist } from './RowTwist/RowTwist';
 import { RowFix } from './RowFix/RowFix';
 import { IndexCards } from './IndexCards/IndexCards';
 import { PageSlider } from './PageSlider/PageSlider';
+import { HeroCard } from './HeroCard/HeroCard';
+import { PaymentHook } from './PaymentHook/PaymentHook';
+import { TimeoutFlow } from './TimeoutFlow/TimeoutFlow';
+import { IdemKey } from './IdemKey/IdemKey';
+import { UniqueKey } from './UniqueKey/UniqueKey';
+import { RaceGap } from './RaceGap/RaceGap';
 import { Stat } from './Stat/Stat';
 import { Summary } from './Summary/Summary';
 import { Terminal } from './Terminal/Terminal';
@@ -57,5 +63,17 @@ export const renderScene = (scene: Scene): React.ReactElement => {
       return <IndexCards scene={scene} />;
     case 'pageslider':
       return <PageSlider scene={scene} />;
+    case 'herocard':
+      return <HeroCard scene={scene} />;
+    case 'paymenthook':
+      return <PaymentHook scene={scene} />;
+    case 'timeoutflow':
+      return <TimeoutFlow scene={scene} />;
+    case 'idemkey':
+      return <IdemKey scene={scene} />;
+    case 'uniquekey':
+      return <UniqueKey scene={scene} />;
+    case 'racegap':
+      return <RaceGap scene={scene} />;
   }
 };

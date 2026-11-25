@@ -14,6 +14,12 @@ import { rowTwistLayout } from '../../src/scenes/RowTwist/layout';
 import { rowFixLayout } from '../../src/scenes/RowFix/layout';
 import { indexCardsLayout } from '../../src/scenes/IndexCards/layout';
 import { pageSliderLayout } from '../../src/scenes/PageSlider/layout';
+import { paymentHookLayout } from '../../src/scenes/PaymentHook/layout';
+import { timeoutFlowLayout } from '../../src/scenes/TimeoutFlow/layout';
+import { idemKeyLayout } from '../../src/scenes/IdemKey/layout';
+import { uniqueKeyLayout } from '../../src/scenes/UniqueKey/layout';
+import { raceGapLayout } from '../../src/scenes/RaceGap/layout';
+import { heroCardLayout } from '../../src/scenes/HeroCard/layout';
 import type { QaCheck, QaIssue } from './types';
 
 /** Tradeoff lays itself out in the shared content box. */
@@ -148,6 +154,30 @@ export const checkLayout: QaCheck = (ctx) => {
     } else if (scene.type === 'pageslider') {
       if (!pageSliderLayout(scene.props).fits) {
         issues.push(overflow(scene.id, 'pageslider', 'shorten the text or split the scene'));
+      }
+    } else if (scene.type === 'paymenthook') {
+      if (!paymentHookLayout(scene.props).fits) {
+        issues.push(overflow(scene.id, 'paymenthook', 'shorten the text or split the scene'));
+      }
+    } else if (scene.type === 'timeoutflow') {
+      if (!timeoutFlowLayout(scene.props).fits) {
+        issues.push(overflow(scene.id, 'timeoutflow', 'shorten the text or split the scene'));
+      }
+    } else if (scene.type === 'idemkey') {
+      if (!idemKeyLayout(scene.props).fits) {
+        issues.push(overflow(scene.id, 'idemkey', 'shorten the text or split the scene'));
+      }
+    } else if (scene.type === 'uniquekey') {
+      if (!uniqueKeyLayout(scene.props).fits) {
+        issues.push(overflow(scene.id, 'uniquekey', 'shorten the text or split the scene'));
+      }
+    } else if (scene.type === 'racegap') {
+      if (!raceGapLayout(scene.props).fits) {
+        issues.push(overflow(scene.id, 'racegap', 'shorten the text or split the scene'));
+      }
+    } else if (scene.type === 'herocard') {
+      if (!heroCardLayout(scene.props).fits) {
+        issues.push(overflow(scene.id, 'herocard', 'shorten the text or split the scene'));
       }
     } else if (scene.type === 'endcard') {
       if (!endCardLayout(scene.props).fits) {
