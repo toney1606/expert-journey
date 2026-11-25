@@ -1,0 +1,55 @@
+{
+  "id": "booking-bug",
+  "voice": "Khách hàng ở New York đặt lịch lúc chín giờ sáng. Email nhắc hẹn ghi: mười bốn giờ. Khách tin email, đến đúng mười bốn giờ. Muộn năm tiếng. Bạn kiểm tra database: lưu không sai một con số. Vậy bug nằm ở đâu?",
+  "props": {
+    "kicker": {
+      "label": "VẤN ĐỀ",
+      "step": 1,
+      "total": 5
+    },
+    "mono": true,
+    "hero": [
+      {
+        "text": "{wrong|Bug} mà database",
+        "at": "Khách hàng ở New York"
+      },
+      {
+        "text": "{accent|không có lỗi}",
+        "at": "đặt lịch lúc chín giờ sáng"
+      }
+    ],
+    "rows": [
+      {
+        "label": "Khách (New York) đặt",
+        "text": "09:00",
+        "tone": "neutral",
+        "at": "lúc chín giờ sáng"
+      },
+      {
+        "label": "Email nhắc hẹn",
+        "text": "\"14:00\"",
+        "tone": "bad",
+        "mark": "cross",
+        "at": "Email nhắc hẹn ghi"
+      },
+      {
+        "label": "Khách đến",
+        "text": "14:00 → muộn 5 giờ",
+        "tone": "bad",
+        "at": "Muộn năm tiếng"
+      },
+      {
+        "label": "Database lưu",
+        "text": "14:00 UTC",
+        "tone": "good",
+        "mark": "check",
+        "at": "lưu không sai một con số"
+      }
+    ]
+  },
+  "type": "herocard",
+  "draft": {
+    "durationSec": 20
+  },
+  "mood": "neutral"
+}

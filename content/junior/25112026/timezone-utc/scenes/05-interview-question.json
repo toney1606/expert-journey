@@ -1,0 +1,43 @@
+{
+  "id": "interview-question",
+  "voice": "Câu hỏi phỏng vấn. Đồng hồ Berlin đã đổi, nhưng cột UTC trong database của bạn thì không. Thứ Hai tuần đó, cuộc hẹn hiện lên lúc mấy giờ? Lệch bao nhiêu, theo hướng nào? Và rốt cuộc, nên lưu cái gì cho đúng?",
+  "props": {
+    "kicker": {
+      "label": "THỬ THÁCH",
+      "step": 5,
+      "total": 5
+    },
+    "hero": [
+      {
+        "text": "Berlin đã {wrong|đổi} giờ",
+        "at": "Đồng hồ Berlin đã đổi"
+      },
+      {
+        "text": "{accent|UTC thì không}",
+        "at": "cột UTC trong database của bạn thì không"
+      }
+    ],
+    "rows": [
+      {
+        "text": "08:00 UTC → ??:?? Berlin",
+        "tone": "neutral",
+        "at": "cuộc hẹn hiện lên lúc mấy giờ"
+      },
+      {
+        "text": "Lệch bao nhiêu? Hướng nào?",
+        "tone": "neutral",
+        "at": "Lệch bao nhiêu"
+      },
+      {
+        "text": "Lưu gì cho đúng?",
+        "tone": "neutral",
+        "at": "nên lưu cái gì cho đúng"
+      }
+    ]
+  },
+  "type": "herocard",
+  "draft": {
+    "durationSec": 20
+  },
+  "mood": "neutral"
+}

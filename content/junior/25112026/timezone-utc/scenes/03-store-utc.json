@@ -1,0 +1,51 @@
+{
+  "id": "store-utc",
+  "voice": "Sửa email xong, khách hết đến muộn. Quy tắc rút ra là: thời điểm nào đã xảy ra hoặc đã chốt thì lưu bằng UTC. Múi giờ chỉ dùng lúc hiển thị. Cùng một dòng dữ liệu, New York thấy chín giờ sáng, Hà Nội thấy chín giờ tối. Trong PostgreSQL, dùng timestamptz. Trong MySQL, TIMESTAMP đổi về UTC khi lưu, còn DATETIME chỉ ghi con số, không biết múi giờ nào.",
+  "props": {
+    "kicker": {
+      "label": "QUY TẮC",
+      "step": 3,
+      "total": 5
+    },
+    "hero": [
+      {
+        "text": "{accent|Lưu UTC}",
+        "at": "Quy tắc rút ra"
+      },
+      {
+        "text": "{wrong|hiển thị} theo người xem",
+        "at": "Múi giờ chỉ dùng lúc hiển thị"
+      }
+    ],
+    "rows": [
+      {
+        "text": "14:00 UTC → New York 09:00",
+        "tone": "good",
+        "at": "New York thấy chín giờ sáng"
+      },
+      {
+        "label": "PostgreSQL",
+        "text": "timestamptz → lưu UTC",
+        "tone": "neutral",
+        "at": "Trong PostgreSQL"
+      },
+      {
+        "label": "MySQL TIMESTAMP",
+        "text": "đổi về UTC khi lưu",
+        "tone": "neutral",
+        "at": "Trong MySQL"
+      },
+      {
+        "label": "MySQL DATETIME",
+        "text": "chỉ con số, không múi giờ",
+        "tone": "bad",
+        "at": "còn DATETIME"
+      }
+    ]
+  },
+  "type": "herocard",
+  "draft": {
+    "durationSec": 32
+  },
+  "mood": "neutral"
+}

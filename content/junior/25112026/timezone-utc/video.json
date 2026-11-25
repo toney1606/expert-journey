@@ -1,0 +1,275 @@
+{
+  "meta": {
+    "id": "25112026-timezone-utc",
+    "title": "Bug mà database không có lỗi",
+    "topic": "timezone-utc",
+    "level": "junior",
+    "question": "Lịch hẹn lặp lại mỗi tuần lúc 9 giờ sáng lưu bằng UTC thì lệch ra sao khi đổi giờ mùa hè, và nên lưu gì cho đúng?",
+    "status": "draft",
+    "aiVoiceLabel": true,
+    "visibility": "private"
+  },
+  "sources": [
+    {
+      "title": "PostgreSQL Documentation: Date/Time Types",
+      "url": "https://www.postgresql.org/docs/current/datatype-datetime.html"
+    },
+    {
+      "title": "MySQL Reference Manual: The DATE, DATETIME, and TIMESTAMP Types",
+      "url": "https://dev.mysql.com/doc/refman/8.4/en/datetime.html"
+    },
+    {
+      "title": "IANA Time Zone Database",
+      "url": "https://www.iana.org/time-zones"
+    },
+    {
+      "title": "RFC 5545: iCalendar (recurrence rules)",
+      "url": "https://www.rfc-editor.org/rfc/rfc5545"
+    }
+  ],
+  "scenes": [
+    {
+      "id": "booking-bug",
+      "voice": "Khách hàng ở New York đặt lịch lúc chín giờ sáng. Email nhắc hẹn ghi: mười bốn giờ. Khách tin email, đến đúng mười bốn giờ. Muộn năm tiếng. Bạn kiểm tra database: lưu không sai một con số. Vậy bug nằm ở đâu?",
+      "props": {
+        "kicker": {
+          "label": "VẤN ĐỀ",
+          "step": 1,
+          "total": 5
+        },
+        "mono": true,
+        "hero": [
+          {
+            "text": "{wrong|Bug} mà database",
+            "at": "Khách hàng ở New York"
+          },
+          {
+            "text": "{accent|không có lỗi}",
+            "at": "đặt lịch lúc chín giờ sáng"
+          }
+        ],
+        "rows": [
+          {
+            "label": "Khách (New York) đặt",
+            "text": "09:00",
+            "tone": "neutral",
+            "at": "lúc chín giờ sáng"
+          },
+          {
+            "label": "Email nhắc hẹn",
+            "text": "\"14:00\"",
+            "tone": "bad",
+            "mark": "cross",
+            "at": "Email nhắc hẹn ghi"
+          },
+          {
+            "label": "Khách đến",
+            "text": "14:00 → muộn 5 giờ",
+            "tone": "bad",
+            "at": "Muộn năm tiếng"
+          },
+          {
+            "label": "Database lưu",
+            "text": "14:00 UTC",
+            "tone": "good",
+            "mark": "check",
+            "at": "lưu không sai một con số"
+          }
+        ]
+      },
+      "type": "herocard",
+      "draft": {
+        "durationSec": 20
+      },
+      "mood": "neutral"
+    },
+    {
+      "id": "utc-offset",
+      "voice": "Vào mùa đông, New York chậm hơn UTC năm tiếng. Chín giờ sáng ở đó là mười bốn giờ UTC. Database lưu đúng khoảnh khắc ấy. Lỗi nằm ở email: nó in thẳng giờ UTC ra, quên đổi sang múi giờ của khách.",
+      "props": {
+        "kicker": {
+          "label": "NGUYÊN NHÂN",
+          "step": 2,
+          "total": 5
+        },
+        "hero": [
+          {
+            "text": "9:00 {wrong|New York}",
+            "at": "Vào mùa đông"
+          },
+          {
+            "text": "= {accent|14:00 UTC}",
+            "at": "New York chậm hơn"
+          }
+        ],
+        "rows": [
+          {
+            "text": "09:00 America/New_York (UTC−5)",
+            "tone": "neutral",
+            "at": "UTC năm tiếng"
+          },
+          {
+            "text": "+ 5 giờ",
+            "tone": "neutral",
+            "at": "Chín giờ sáng ở đó"
+          },
+          {
+            "text": "= 14:00 UTC (database lưu)",
+            "tone": "good",
+            "mark": "check",
+            "at": "Database lưu đúng khoảnh khắc ấy"
+          },
+          {
+            "text": "Email in thẳng \"14:00\"",
+            "tone": "bad",
+            "mark": "cross",
+            "at": "Lỗi nằm ở email"
+          }
+        ]
+      },
+      "type": "herocard",
+      "draft": {
+        "durationSec": 19
+      },
+      "mood": "neutral"
+    },
+    {
+      "id": "store-utc",
+      "voice": "Sửa email xong, khách hết đến muộn. Quy tắc rút ra là: thời điểm nào đã xảy ra hoặc đã chốt thì lưu bằng UTC. Múi giờ chỉ dùng lúc hiển thị. Cùng một dòng dữ liệu, New York thấy chín giờ sáng, Hà Nội thấy chín giờ tối. Trong PostgreSQL, dùng timestamptz. Trong MySQL, TIMESTAMP đổi về UTC khi lưu, còn DATETIME chỉ ghi con số, không biết múi giờ nào.",
+      "props": {
+        "kicker": {
+          "label": "QUY TẮC",
+          "step": 3,
+          "total": 5
+        },
+        "hero": [
+          {
+            "text": "{accent|Lưu UTC}",
+            "at": "Quy tắc rút ra"
+          },
+          {
+            "text": "{wrong|hiển thị} theo người xem",
+            "at": "Múi giờ chỉ dùng lúc hiển thị"
+          }
+        ],
+        "rows": [
+          {
+            "text": "14:00 UTC → New York 09:00",
+            "tone": "good",
+            "at": "New York thấy chín giờ sáng"
+          },
+          {
+            "label": "PostgreSQL",
+            "text": "timestamptz → lưu UTC",
+            "tone": "neutral",
+            "at": "Trong PostgreSQL"
+          },
+          {
+            "label": "MySQL TIMESTAMP",
+            "text": "đổi về UTC khi lưu",
+            "tone": "neutral",
+            "at": "Trong MySQL"
+          },
+          {
+            "label": "MySQL DATETIME",
+            "text": "chỉ con số, không múi giờ",
+            "tone": "bad",
+            "at": "còn DATETIME"
+          }
+        ]
+      },
+      "type": "herocard",
+      "draft": {
+        "durationSec": 32
+      },
+      "mood": "neutral"
+    },
+    {
+      "id": "berlin-dst",
+      "voice": "Bạn tưởng xong rồi. Khách mới ở Berlin đặt lịch lặp: mỗi thứ Hai, chín giờ sáng. Bạn làm đúng bài vừa rồi: đổi ra UTC, lưu lại. Tám giờ UTC, tuần nào cũng vậy. Rồi tới cuối tháng Ba, châu Âu chuyển sang giờ mùa hè.",
+      "props": {
+        "kicker": {
+          "label": "BẤT NGỜ",
+          "step": 4,
+          "total": 5
+        },
+        "mono": true,
+        "hero": [
+          {
+            "text": "Họp {wrong|9 giờ} mỗi thứ Hai",
+            "at": "Bạn tưởng xong rồi"
+          },
+          {
+            "text": "{accent|lưu 8 giờ UTC}",
+            "at": "Khách mới ở Berlin"
+          }
+        ],
+        "rows": [
+          {
+            "text": "Khách Berlin: mỗi T2 09:00 (Europe/Berlin)",
+            "tone": "neutral",
+            "at": "mỗi thứ Hai"
+          },
+          {
+            "text": "Bạn lưu: 08:00 UTC, lặp mỗi 7 ngày",
+            "tone": "neutral",
+            "at": "đổi ra UTC, lưu lại"
+          },
+          {
+            "text": "28/03/2027: châu Âu chuyển sang giờ mùa hè",
+            "tone": "bad",
+            "at": "cuối tháng Ba"
+          }
+        ]
+      },
+      "type": "herocard",
+      "draft": {
+        "durationSec": 21
+      },
+      "mood": "neutral"
+    },
+    {
+      "id": "interview-question",
+      "voice": "Câu hỏi phỏng vấn. Đồng hồ Berlin đã đổi, nhưng cột UTC trong database của bạn thì không. Thứ Hai tuần đó, cuộc hẹn hiện lên lúc mấy giờ? Lệch bao nhiêu, theo hướng nào? Và rốt cuộc, nên lưu cái gì cho đúng?",
+      "props": {
+        "kicker": {
+          "label": "THỬ THÁCH",
+          "step": 5,
+          "total": 5
+        },
+        "hero": [
+          {
+            "text": "Berlin đã {wrong|đổi} giờ",
+            "at": "Đồng hồ Berlin đã đổi"
+          },
+          {
+            "text": "{accent|UTC thì không}",
+            "at": "cột UTC trong database của bạn thì không"
+          }
+        ],
+        "rows": [
+          {
+            "text": "08:00 UTC → ??:?? Berlin",
+            "tone": "neutral",
+            "at": "cuộc hẹn hiện lên lúc mấy giờ"
+          },
+          {
+            "text": "Lệch bao nhiêu? Hướng nào?",
+            "tone": "neutral",
+            "at": "Lệch bao nhiêu"
+          },
+          {
+            "text": "Lưu gì cho đúng?",
+            "tone": "neutral",
+            "at": "nên lưu cái gì cho đúng"
+          }
+        ]
+      },
+      "type": "herocard",
+      "draft": {
+        "durationSec": 20
+      },
+      "mood": "neutral"
+    }
+  ]
+}

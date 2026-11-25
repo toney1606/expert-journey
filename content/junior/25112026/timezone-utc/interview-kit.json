@@ -1,0 +1,46 @@
+{
+  "topic": "timezone-utc",
+  "title": "Bug mà database không có lỗi",
+  "level": "junior",
+  "question": "Lịch hẹn lặp lại mỗi tuần lúc 9 giờ sáng lưu bằng UTC thì lệch ra sao khi đổi giờ mùa hè, và nên lưu gì cho đúng?",
+  "followUps": [
+    "UTC sai à? Khi nào thì lưu UTC là đúng?",
+    "timestamptz có lưu múi giờ không?",
+    "MySQL TIMESTAMP và DATETIME khác nhau thế nào?",
+    "Sao không lưu offset +02:00 hay viết tắt CEST?",
+    "Giờ không tồn tại và giờ lặp khi đổi giờ xử lý thế nào?"
+  ],
+  "keyPoints": [
+    "Thời điểm đã xảy ra hoặc đã chốt (created_at, thanh toán, log) lưu bằng UTC, múi giờ chỉ dùng lúc hiển thị",
+    "Lịch lặp theo giờ địa phương (9 giờ mỗi thứ Hai) không phải một thời điểm cố định: lưu cứng UTC thì lệch một tiếng khi đổi giờ mùa hè",
+    "Lưu giờ địa phương + tên múi giờ IANA (Europe/Berlin) + quy tắc lặp, rồi tính UTC cho từng lần xảy ra",
+    "Offset không chứa luật đổi giờ, viết tắt như CEST thì mơ hồ: dùng tên IANA",
+    "Luật múi giờ có thể đổi, nên cuộc hẹn tương lai tính UTC muộn nhất có thể"
+  ],
+  "weakAnswer": "Lưu hết bằng UTC là đúng rồi, hiển thị thì đổi sang múi giờ người dùng.",
+  "strongAnswer": "UTC đúng cho thời điểm đã xảy ra, nhưng lịch lặp '9 giờ sáng mỗi thứ Hai' là giờ địa phương. Lưu 08:00 UTC thì sau khi Berlin sang giờ mùa hè (28/03/2027) cuộc họp hiện 10:00. Cần lưu 09:00 + Europe/Berlin + quy tắc lặp (RRULE: FREQ=WEEKLY;BYDAY=MO), rồi tính UTC cho từng lần bằng tzdata, nên giờ Berlin luôn là 9 giờ.",
+  "pitfalls": [
+    "Đổi lịch lặp sang UTC rồi cộng 7 ngày mỗi tuần",
+    "Lưu offset (+02:00) hoặc viết tắt (CEST) thay cho tên IANA",
+    "Quên giờ không tồn tại (02:30 ngày 28/03/2027 ở Berlin) và giờ xảy ra hai lần (02:30 ngày 31/10/2027)",
+    "Cho rằng Việt Nam không đổi giờ nên bỏ qua lỗi này"
+  ],
+  "sources": [
+    {
+      "title": "PostgreSQL Documentation: Date/Time Types",
+      "url": "https://www.postgresql.org/docs/current/datatype-datetime.html"
+    },
+    {
+      "title": "MySQL Reference Manual: The DATE, DATETIME, and TIMESTAMP Types",
+      "url": "https://dev.mysql.com/doc/refman/8.4/en/datetime.html"
+    },
+    {
+      "title": "IANA Time Zone Database",
+      "url": "https://www.iana.org/time-zones"
+    },
+    {
+      "title": "RFC 5545: iCalendar (recurrence rules)",
+      "url": "https://www.rfc-editor.org/rfc/rfc5545"
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "id": "utc-offset",
+  "voice": "Vào mùa đông, New York chậm hơn UTC năm tiếng. Chín giờ sáng ở đó là mười bốn giờ UTC. Database lưu đúng khoảnh khắc ấy. Lỗi nằm ở email: nó in thẳng giờ UTC ra, quên đổi sang múi giờ của khách.",
+  "props": {
+    "kicker": {
+      "label": "NGUYÊN NHÂN",
+      "step": 2,
+      "total": 5
+    },
+    "hero": [
+      {
+        "text": "9:00 {wrong|New York}",
+        "at": "Vào mùa đông"
+      },
+      {
+        "text": "= {accent|14:00 UTC}",
+        "at": "New York chậm hơn"
+      }
+    ],
+    "rows": [
+      {
+        "text": "09:00 America/New_York (UTC−5)",
+        "tone": "neutral",
+        "at": "UTC năm tiếng"
+      },
+      {
+        "text": "+ 5 giờ",
+        "tone": "neutral",
+        "at": "Chín giờ sáng ở đó"
+      },
+      {
+        "text": "= 14:00 UTC (database lưu)",
+        "tone": "good",
+        "mark": "check",
+        "at": "Database lưu đúng khoảnh khắc ấy"
+      },
+      {
+        "text": "Email in thẳng \"14:00\"",
+        "tone": "bad",
+        "mark": "cross",
+        "at": "Lỗi nằm ở email"
+      }
+    ]
+  },
+  "type": "herocard",
+  "draft": {
+    "durationSec": 19
+  },
+  "mood": "neutral"
+}

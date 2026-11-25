@@ -1,0 +1,44 @@
+{
+  "id": "berlin-dst",
+  "voice": "Bạn tưởng xong rồi. Khách mới ở Berlin đặt lịch lặp: mỗi thứ Hai, chín giờ sáng. Bạn làm đúng bài vừa rồi: đổi ra UTC, lưu lại. Tám giờ UTC, tuần nào cũng vậy. Rồi tới cuối tháng Ba, châu Âu chuyển sang giờ mùa hè.",
+  "props": {
+    "kicker": {
+      "label": "BẤT NGỜ",
+      "step": 4,
+      "total": 5
+    },
+    "mono": true,
+    "hero": [
+      {
+        "text": "Họp {wrong|9 giờ} mỗi thứ Hai",
+        "at": "Bạn tưởng xong rồi"
+      },
+      {
+        "text": "{accent|lưu 8 giờ UTC}",
+        "at": "Khách mới ở Berlin"
+      }
+    ],
+    "rows": [
+      {
+        "text": "Khách Berlin: mỗi T2 09:00 (Europe/Berlin)",
+        "tone": "neutral",
+        "at": "mỗi thứ Hai"
+      },
+      {
+        "text": "Bạn lưu: 08:00 UTC, lặp mỗi 7 ngày",
+        "tone": "neutral",
+        "at": "đổi ra UTC, lưu lại"
+      },
+      {
+        "text": "28/03/2027: châu Âu chuyển sang giờ mùa hè",
+        "tone": "bad",
+        "at": "cuối tháng Ba"
+      }
+    ]
+  },
+  "type": "herocard",
+  "draft": {
+    "durationSec": 21
+  },
+  "mood": "neutral"
+}
