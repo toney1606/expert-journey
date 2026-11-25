@@ -37,15 +37,15 @@ Run `pnpm validate` after every edit.
 
 Mọi scene có chung các field:
 
-| Field               | Kiểu / ràng buộc                                                                                                                                                                                                        |
-| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `id`                | slug, duy nhất trong video                                                                                                                                                                                              |
-| `type`              | `hook`, `diagram`, `code`, `terminal`, `tradeoff`, `summary`, `stat`, `compare`, `callout`, `endcard`, `counterhook`, `pagetree`, `costroads`, `rowsetup`, `rowtwist`, `rowfix`, `indexcards`, `pageslider`, `herocard` |
-| `mood`              | tùy chọn: `neutral`, `problem`, `concept`, `solution`, `warning` (màu nền, xem mục Mood)                                                                                                                                |
-| `voice`             | string không rỗng, lời đọc (tiếng Việt, thuật ngữ giữ tiếng Anh)                                                                                                                                                        |
-| `props`             | tùy `type`, xem bên dưới                                                                                                                                                                                                |
-| `sources`           | tùy chọn, mảng `{ title, url? }`                                                                                                                                                                                        |
-| `draft.durationSec` | số > 0 và <= 120, thời lượng tạm khi chưa có audio                                                                                                                                                                      |
+| Field               | Kiểu / ràng buộc                                                                                                                                                                                                                                                                         |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`                | slug, duy nhất trong video                                                                                                                                                                                                                                                               |
+| `type`              | `hook`, `diagram`, `code`, `terminal`, `tradeoff`, `summary`, `stat`, `compare`, `callout`, `endcard`, `counterhook`, `pagetree`, `costroads`, `rowsetup`, `rowtwist`, `rowfix`, `indexcards`, `pageslider`, `herocard`, `paymenthook`, `timeoutflow`, `idemkey`, `uniquekey`, `racegap` |
+| `mood`              | tùy chọn: `neutral`, `problem`, `concept`, `solution`, `warning` (màu nền, xem mục Mood)                                                                                                                                                                                                 |
+| `voice`             | string không rỗng, lời đọc (tiếng Việt, thuật ngữ giữ tiếng Anh)                                                                                                                                                                                                                         |
+| `props`             | tùy `type`, xem bên dưới                                                                                                                                                                                                                                                                 |
+| `sources`           | tùy chọn, mảng `{ title, url? }`                                                                                                                                                                                                                                                         |
+| `draft.durationSec` | số > 0 và <= 120, thời lượng tạm khi chưa có audio                                                                                                                                                                                                                                       |
 
 Định nghĩa: `src/schemas/common.ts`, `src/schemas/video.ts`, và `src/scenes/<Scene>/schema.ts`.
 
@@ -595,6 +595,69 @@ Generic "hero + card" scene (code: `src/scenes/HeroCard/`, layout `layout.ts`, c
 
 Needs at least one of `code`, `rows`, `footer`. Reveal order: hero lines, code, rows, footer; each item pops at its `at` phrase, otherwise the fallback timeline spreads them from 3% to 80% of the scene, and cues are kept in this order (a later item never appears before an earlier one).
 Limits: `heroCardLayout(props).fits` must be true (kicker + hero + code + rows + footer in 830x1130; rows of at most 3 wrapped lines, preferably 2; row text 56-44px). Six two-line rows do not fit; short labels share the line with the text, which is what makes six steps fit.
+
+### Payment story scenes (video 2)
+
+Five animated scenes for `23112026-idempotency-double-charge`; each lives in `src/scenes/<Scene>/` (schema, `layout.ts` with a `fits` flag, `timeline.ts`, tests). Mood default: neutral (near-black, grey glow). Amounts and the key value are illustrative, not measurements. Every scene takes the optional `kicker` chip and `at...` cue phrases matched against `voice`; without a cue the fallback timeline spreads the steps over the scene.
+
+**`paymenthook`** (PaymentHook, opening hook; first scene may be `paymenthook`). Two red charge chips slam in, a tap ring, three typed green logs, then the question.
+
+| Prop                                       | Type                       | Notes                                                             |
+| ------------------------------------------ | -------------------------- | ----------------------------------------------------------------- |
+| moneyLabel                                 | string                     | Chip text, e.g. "−500.000đ".                                      |
+| badgeText, tapLabel                        | string                     | Defaults "×2" / "1 tap".                                          |
+| chargedLine, tappedLine, question          | string with markup         | Hero line 1 (red word), line 2 (yellow word), the final question. |
+| logs                                       | exactly 3 of `{text, at?}` | Typed one by one, each ends with a green check.                   |
+| chargeAt, chargeAgainAt, tapAt, questionAt | phrase, optional           | Cues.                                                             |
+
+Limit: `paymentHookLayout(props).fits`.
+
+**`timeoutflow`** (TimeoutFlow). Client/Server sequence diagram in six steps with a travelling packet, a lost reply (red cross), a timeout ring and a counter "Đã trừ" that goes 1 to 2.
+
+| Prop                                                                             | Type               | Notes                                         |
+| -------------------------------------------------------------------------------- | ------------------ | --------------------------------------------- |
+| hero                                                                             | string with markup | e.g. "{accent\|Timeout} ≠ {wrong\|thất bại}". |
+| clientLabel, serverLabel, counterLabel                                           | string             | Defaults "Client", "Server", "Đã trừ:".       |
+| requestLabel, chargeLabel, lostLabel, timeoutLabel, retryLabel, chargeAgainLabel | string             | Labels of steps 1-6.                          |
+| requestAt, chargeAt, lostAt, timeoutAt, retryAt, chargeAgainAt, lessonAt         | phrase, optional   | Step cues; `lessonAt` pulses the red cross.   |
+
+Limit: `timeoutFlowLayout(props).fits`; keep step labels short (two lines at most).
+
+**`idemkey`** (IdemKey). A key chip is generated and rides on every attempt; lane 1 charges and stores the key, lane 2 (the retry) hits the stamp and gets the old result; a counter stays at 1.
+
+| Prop                                                                            | Type                                        | Notes                                                        |
+| ------------------------------------------------------------------------------- | ------------------------------------------- | ------------------------------------------------------------ |
+| hero                                                                            | 1-2 strings with markup                     | Each as large as fits.                                       |
+| keyLabel, keyValue, counterLabel, retryBadge                                    | string                                      | Defaults "Idempotency-Key:", "a1b2-c3d4", "Trừ tiền", "×10". |
+| lane1                                                                           | `{title, note, ledger, outcome}`            | First attempt.                                               |
+| lane2                                                                           | `{title, note, stamp, returnText, outcome}` | Retry; `stamp` is the "known key" stamp.                     |
+| heroAt, lanesAt, chipAt, sendAt, retryAt, saveAt, stampAt, noChargeAt, returnAt | phrase, optional                            | Cues, in this order.                                         |
+
+Limit: `idemKeyLayout(props).fits` (the layout is close to the 1130px height; extra text overflows).
+
+**`uniquekey`** (UniqueKey). SQL typed character by character, then a table with a UNIQUE wall: the first row enters, the duplicate bounces back and a rotated stamp lands on it.
+
+| Prop                                               | Type                    | Notes                                               |
+| -------------------------------------------------- | ----------------------- | --------------------------------------------------- |
+| code                                               | string                  | SQL; line breaks are final (keep lines short).      |
+| hero                                               | 1-2 strings with markup | Each as large as fits.                              |
+| tableName, header                                  | string                  | Defaults "payments", "mã · số tiền".                |
+| rowOk, rowDup, badge                               | string                  | Green row, red row, stamp text (default "TỪ CHỐI"). |
+| heroAt (max 2), codeAt, rowOkAt, rowDupAt, badgeAt | phrase, optional        | Cues.                                               |
+
+Limit: `uniqueKeyLayout(props).fits`. The first seconds show only the kicker and an empty table frame when `heroAt` comes late.
+
+**`racegap`** (RaceGap, closing cliffhanger; the last scene may be `racegap`). SQL typed out, a pulsing orange "?" in the gap between SELECT and INSERT, two overlapping request bars, then the pinned footer. It does not reveal the answer.
+
+| Prop                                                        | Type               | Notes                                                           |
+| ----------------------------------------------------------- | ------------------ | --------------------------------------------------------------- |
+| heroTop, heroBottom                                         | string with markup | Two hero lines.                                                 |
+| code                                                        | string             | SQL, exact line breaks; the last line is the one after the gap. |
+| request1Label, request2Label                                | string             | Bar labels (44px or more).                                      |
+| pinText                                                     | string             | Footer next to the pin.                                         |
+| heroAt, codeAt, gapAt, request1At, request2At, whyAt, pinAt | phrase, optional   | Cues.                                                           |
+
+Limit: `raceGapLayout(props).fits`.
 
 ## Cue: hình hiện đúng lúc người đọc nói
 

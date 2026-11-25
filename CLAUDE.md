@@ -27,7 +27,7 @@ any Remotion API or `@remotion/*` package. Never write Remotion code from memory
   `src/schemas/` (scene schemas live next to their scene in `src/scenes/<Scene>/schema.ts`).
 - Feature-based layout, scene folder pattern: `src/scenes/<Scene>/` = component + `schema.ts` (zod) + a pure layout and/or
   timeline helper (no React) + Vitest tests. Scenes are wired in `src/scenes/registry.tsx`. Scene types: `hook`
-  (HookCard), `diagram`, `code` (CodeDiff), `terminal`, `tradeoff`, `summary`, `stat`, `compare`, `callout`, `endcard`, plus the database-story scenes `counterhook`, `pagetree`, `costroads`, `rowsetup`/`rowtwist`/`rowfix` (shared `src/components/RowStrip`), `indexcards`, `pageslider`, and the generic `herocard` (kicker + hero + code/rows/footer card).
+  (HookCard), `diagram`, `code` (CodeDiff), `terminal`, `tradeoff`, `summary`, `stat`, `compare`, `callout`, `endcard`, plus the database-story scenes `counterhook`, `pagetree`, `costroads`, `rowsetup`/`rowtwist`/`rowfix` (shared `src/components/RowStrip`), `indexcards`, `pageslider`, the payment-story scenes `paymenthook`, `timeoutflow`, `idemkey`, `uniquekey`, `racegap`, and the generic `herocard` (kicker + hero + code/rows/footer card).
 - Reveal timelines are derived from `durationInFrames` (audio length), never hardcoded frame numbers.
 - Content must fit: layout helpers expose a `fits` (or `wraps`) flag and pick the largest font that fits the 830x1130
   `CONTENT_BOX` (safe box minus the caption band); do not add a scene that overflows silently.
