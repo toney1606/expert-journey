@@ -24,9 +24,13 @@ Nguồn bên dưới là tài liệu chính thức (đã kiểm URL trả về 2
 - Cảnh `herocard` không có `testPath`; test đọc `video.json` để bảo đảm code hiển thị trùng code đã chạy.
 - Khác biệt với ORM thật: ORM thật có thể có identity map hoặc cache khiến user trùng không bị hỏi lại (demo cho mỗi đơn một user riêng nên N+1 luôn đúng); `IN (...)` với danh sách id quá dài cần chia lô; `JOIN` trong demo là INNER JOIN, đơn không có user cần LEFT JOIN.
 
+- Câu hỏi cuối (cảnh 6) và đáp án ghim: JOIN cho quan hệ nhiều-một (khách của đơn), IN cho quan hệ một-nhiều (sản phẩm của đơn, thẻ của sản phẩm), tổng 3 query; query nằm trong vòng lặp mới là N+1, gom id hỏi một lần rồi ráp trong bộ nhớ thì không. Đây là quy tắc ngón tay cái theo thông lệ của ba nguồn ORM ở trên (UNVERIFIED fetch), không phải luật tuyệt đối: dữ liệu nhỏ thì một JOIN vẫn có thể ổn.
+- `code/page-demo.ts` + `page-demo.test.ts` (SQLite, 20 đơn × 10 sản phẩm × 5 thẻ): 3 query cho cả trang; cùng trang với query trong vòng lặp = 1 + 20 + 200 = 221; hai cách trả cùng kết quả; JOIN đơn với khách 20 dòng, với sản phẩm 200 dòng, JOIN hết 1000 dòng (mỗi đơn lặp 50 lần); `LIMIT 20` trên JOIN sản phẩm chỉ ra 2 đơn.
+
 ## Số minh hoạ
 
 - Số đo thật (đếm câu lệnh, tất định): 100 đơn → 101 query lazy, 1 query JOIN, 2 query IN; 10 đơn → 11; 200 đơn → 201.
+- Số đo thật cho đáp án ghim (đếm câu lệnh/dòng, tất định): 3 và 221 query, 20/200/1000 dòng, LIMIT 20 ra 2 đơn (`code/page-demo.test.ts`); kích thước 20 × 10 × 5 là minh hoạ.
 - Không có số nào khác trong video: không có thời gian, không có số mili giây.
 - Tên cột/bảng (`orders`, `users`, `user-1`...) là minh hoạ.
 - Ví dụ "đi siêu thị mua 100 món, đi 100 chuyến" (cảnh 5) là phép so sánh đời thường để giải thích mỗi query là một chuyến đi qua mạng, không phải số đo.

@@ -4,6 +4,7 @@
   "level": "junior",
   "question": "N+1 query là gì, vì sao trang chạy mượt trên máy dev mà chậm trên production, và sửa thế nào khi dùng ORM?",
   "followUps": [
+    "Một trang cần khách, sản phẩm và thẻ của sản phẩm: JOIN hay IN cho từng thứ, cả trang cần bao nhiêu query?",
     "Danh sách mười đơn hàng, mỗi đơn có một người dùng, lazy loading thì chạy bao nhiêu query?",
     "Eager loading bằng JOIN và bằng IN khác nhau thế nào, khi nào chọn cái nào?",
     "Làm sao phát hiện N+1 trước khi lên production?",

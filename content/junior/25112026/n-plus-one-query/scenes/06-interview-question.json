@@ -1,6 +1,6 @@
 {
   "id": "interview-question",
-  "voice": "Giờ đến thử thách. Danh sách mười đơn hàng, mỗi đơn một người dùng, bật lazy loading: bao nhiêu query? Vì sao gọi là N cộng một? Và bạn sửa thế nào, trước khi lên production? Câu này hay gặp khi phỏng vấn. Trả lời ở bình luận, mình ghim đáp án đúng.",
+  "voice": "Giờ đến thử thách. Một trang đơn hàng cần ba thứ: khách của đơn, các sản phẩm trong đơn, và các thẻ gắn trên mỗi sản phẩm. Cái nào lấy bằng JOIN, cái nào lấy riêng bằng IN? Cả trang cần bao nhiêu query? Câu này hay gặp khi phỏng vấn. Trả lời ở bình luận, mình ghim đáp án đúng.",
   "props": {
     "kicker": {
       "label": "THỬ THÁCH",
@@ -9,29 +9,34 @@
     },
     "hero": [
       {
-        "text": "{accent|10 đơn hàng}",
-        "at": "Danh sách mười đơn hàng"
+        "text": "{accent|Ba thứ} cần lấy",
+        "at": "Một trang đơn hàng"
       },
       {
-        "text": "bao nhiêu {wrong|query}?",
-        "at": "bao nhiêu query"
+        "text": "{wrong|JOIN} hay IN?",
+        "at": "cần ba thứ"
       }
     ],
     "rows": [
       {
-        "text": "Vì sao là N + 1?",
+        "text": "Khách của đơn",
         "tone": "neutral",
-        "at": "Vì sao gọi là"
+        "at": "khách của đơn"
       },
       {
-        "text": "Sửa thế nào?",
+        "text": "Sản phẩm trong đơn",
         "tone": "neutral",
-        "at": "bạn sửa thế nào"
+        "at": "các sản phẩm trong đơn"
       },
       {
-        "text": "Bắt trước khi lên production?",
+        "text": "Thẻ của sản phẩm",
         "tone": "neutral",
-        "at": "trước khi lên production"
+        "at": "các thẻ gắn trên mỗi sản phẩm"
+      },
+      {
+        "text": "Cả trang: bao nhiêu query?",
+        "tone": "neutral",
+        "at": "Cả trang cần bao nhiêu query"
       }
     ],
     "footer": {
@@ -41,7 +46,7 @@
   },
   "type": "herocard",
   "draft": {
-    "durationSec": 21
+    "durationSec": 24
   },
   "mood": "neutral"
 }
